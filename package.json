@@ -1,0 +1,49 @@
+{
+  "name": "goraku",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "start": "react-native start",
+    "test": "jest",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@react-native-async-storage/async-storage": "^1.15.7",
+    "@react-native-clipboard/clipboard": "^1.8.4",
+    "@react-native-community/eslint-plugin": "^1.1.0",
+    "@react-navigation/material-bottom-tabs": "^6.0.5",
+    "@react-navigation/material-top-tabs": "^6.0.2",
+    "@react-navigation/native": "^6.0.2",
+    "@react-navigation/stack": "^6.0.7",
+    "axios": "^0.21.1",
+    "eslint-config-prettier": "^8.3.0",
+    "react": "17.0.2",
+    "react-native": "0.65.1",
+    "react-native-elements": "^3.4.2",
+    "react-native-gesture-handler": "^1.10.3",
+    "react-native-pager-view": "^5.4.1",
+    "react-native-paper": "^4.9.2",
+    "react-native-render-html": "^6.0.5",
+    "react-native-safe-area-context": "^3.3.0",
+    "react-native-screens": "^3.6.0",
+    "react-native-tab-view": "^3.1.1",
+    "react-native-toast-message": "^1.4.9",
+    "react-native-vector-icons": "^8.1.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.9",
+    "@babel/runtime": "^7.12.5",
+    "@react-native-community/eslint-config": "^3.0.0",
+    "babel-jest": "^27.1.0",
+    "eslint": "^7.32.0",
+    "jest": "^27.1.0",
+    "metro-react-native-babel-preset": "^0.66.0",
+    "react-native-codegen": "^0.0.7",
+    "react-test-renderer": "17.0.2"
+  },
+  "jest": {
+    "preset": "react-native"
+  }
+}
