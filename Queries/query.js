@@ -35,6 +35,7 @@ export const ITEMQUERY = `
 query ($id: Int) {
   Media (id:$id) {
     format
+    synonyms
     meanScore
     type
     bannerImage
@@ -44,7 +45,11 @@ query ($id: Int) {
     volumes
     chapters
     episodes
-    staff {
+    nextAiringEpisode {
+      timeUntilAiring
+      airingAt
+    }
+    staff (sort:RELEVANCE) {
       edges{
         role
         node {
@@ -90,6 +95,7 @@ query ($id: Int) {
       id
       name
       description
+      rank
     }
     streamingEpisodes {
       title
@@ -250,6 +256,22 @@ query ($id: Int, $page: Int, $perPage: Int, $sort: [CharacterSort]) {
         }
       }
     }
+    staffMedia {
+      edges {
+        id
+        staffRole
+        node {
+          id
+          title {
+            romaji
+            native
+          }
+          coverImage {
+            extraLarge
+          }
+        }
+      }
+    }
     bloodType
     favourites
     description (asHtml:true)
@@ -272,43 +294,57 @@ query ($id: Int, $page: Int, $perPage: Int, $sort: [CharacterSort]) {
 
 // LOOKING INTO USER LISTS
 export const USER_QUERY = `
-query ($name: String!, $pageC: Int) {
-  User(name: $name) {
+query ($name: String) {
+  User (name:$name) {
     name
     avatar {
       large
     }
     bannerImage
-    options {
-      displayAdultContent
-      titleLanguage
-      profileColor
-      timezone
-    }
-    favourites {
-      characters (page:$pageC, perPage:3){
-        pageInfo {
-          currentPage
-          hasNextPage
+    about
+    statistics {
+      anime {
+        count
+        minutesWatched
+        episodesWatched
+        statuses (sort:PROGRESS_DESC){
+          status
+          minutesWatched
         }
-        edges {
-          id
-          node {
-            id
+        staff(limit:3, sort:COUNT_DESC) {
+          count
+          minutesWatched
+          staff {
             name {
               full
-              native
+            }
+            image{
+              large
             }
           }
         }
       }
-    }
-    mediaListOptions {
-      animeList {
-        customLists
-      }
-      mangaList {
-        customLists
+      manga {
+        count
+        chaptersRead
+        volumesRead
+        statuses (sort:PROGRESS_DESC) {
+          status
+          count
+          chaptersRead
+        }
+        staff(limit:3, sort:COUNT_DESC) {
+          count
+          chaptersRead
+          staff{
+            name {
+              full
+            }
+            image {
+              large
+            }
+          }
+        }
       }
     }
   }
