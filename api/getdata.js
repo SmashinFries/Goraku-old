@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { CHARACTERS, FILTER_QUERY, HPQUERY, ITEMQUERY, REVIEWS, VA_QUERY } from '../Queries/query';
+import { CHARACTERS, FILTER_QUERY, HPQUERY, ITEMQUERY, REVIEWS, USER_QUERY, VA_QUERY } from '../Queries/query';
 import { cacheA, cacheM, cacheN, cacheS, cacheFilter } from '../Queries/query';
 import { getNSFW } from '../Components/storagehooks';
 
@@ -171,6 +171,18 @@ export const getSearch = async(search=undefined, isAdult=undefined, page=1, type
         //console.log(data.headers["x-ratelimit-remaining"]);
         cacheS.Page = await media.pageInfo;
         cacheS.Content = await media.media;
+        return media;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+export const getUser = async(name) => {
+    try {
+        const data = await axios.post(url, {query: USER_QUERY, variables:{name:name}},
+            {headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}});
+        const media = await data.data.data.User;
+        //console.log(data.headers["x-ratelimit-remaining"]);
         return media;
     } catch (error) {
         console.error(error);
