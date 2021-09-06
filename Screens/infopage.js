@@ -158,7 +158,7 @@ const InfoPage = ({route}) => {
                     <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
                         {data.externalLinks.map((elem) => <Button key={elem.id} title={elem.site} containerStyle={{margin:4, borderRadius:8}} buttonStyle={{backgroundColor:'#E50914'}} onPress={() => {Linking.openURL(elem.url)}} />)}
                     </ScrollView>
-                    <Text h3 style={{ color: colors.text }}>Description</Text>
+                    {(data.description !== '') ? <Text h3 style={{ color: colors.text }}>Description</Text> : null}
                     <RenderHTML baseStyle={{color:colors.text}} contentWidth={width} source={source} />
                 </ScrollView>
             </View>
