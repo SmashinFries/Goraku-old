@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { View, ScrollView, ActivityIndicator, FlatList, StatusBar } from 'react-native';
-import { SearchBar, Chip, Text, Button, Divider, Overlay, ListItem, Icon, Tooltip, colors } from 'react-native-elements';
+import { SearchBar, Chip, Text, Button, Divider, Overlay, ListItem, Icon, Tooltip, Image } from 'react-native-elements';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useTheme, useRoute } from '@react-navigation/native';
 import { getFilters, getSearch } from '../api/getdata';
@@ -64,6 +64,7 @@ const SearchPage = React.memo(() => {
     const [data, setData] = useState([]);
     const [page, setPage] = useState(1);
     const [filter, setFilter] = useState([]);
+    const [refresh, setRefresh] = useState(false);
     const [toggleType, setToggleType] = useState(false);
     const [toggleFilter, setToggleFilter] = useState(false);
     const [toggleSort, setToggleSort] = useState(false);
@@ -92,7 +93,7 @@ const SearchPage = React.memo(() => {
             filterObj.format_in = [...filterObj.format_in, "NOVEL"];
             const content = await getSearch(
                 (text.length > 0) ? text : undefined, 
-                (adult === false) ? undefined : false,
+                (nsfw === false) ? false : undefined,
                 1, 
                 "MANGA", 
                 filterObj.sort.toUpperCase(),
@@ -109,12 +110,12 @@ const SearchPage = React.memo(() => {
             {const index = filterObj.format_in.indexOf("NOVEL"); if (index > -1) filterObj.format_in.splice(index, 1)};
             const content = await getSearch(
                 (text.length > 0) ? text : undefined,
-                (adult === false) ? undefined : false,
+                (adult === false) ? false : undefined,
                 1, 
                 filterObj.type.toUpperCase(), 
                 filterObj.sort.toUpperCase(),
                 (filterObj.format_in.length > 0) ? filterObj.format_in : undefined,
-                undefined,
+                (filterObj.type === 'Manga') ? 'NOVEL' : undefined,
                 (filterObj.genre_in.length > 0) ? filterObj.genre_in : undefined,
                 (filterObj.genre_not.length > 0) ? filterObj.genre_not : undefined,
                 (filterObj.tags_in.length > 0) ? filterObj.tags_in : undefined,
@@ -128,7 +129,7 @@ const SearchPage = React.memo(() => {
     const fetchMore = async() => {
         const content = await getSearch(
             (text.length > 0) ? text : undefined, 
-            (adult === false) ? undefined : false,
+            (adult === false) ? false : undefined,
             page+1, 
             (filterObj.type !== 'Novel') ? filterObj.type.toUpperCase() : "MANGA", 
             filterObj.sort.toUpperCase(), 
@@ -149,7 +150,7 @@ const SearchPage = React.memo(() => {
                 <Text h4 style={{color:colors.text}}>Select a format</Text>
                 {
                     TYPE_OPTIONS.map((item, i) => (
-                        <ListItem key={i} containerStyle={{width:200, backgroundColor:colors.card}} onPress={() => { filterObj['type'] = item; setToggleType(false); fetchSearch();}}>
+                        <ListItem key={i} containerStyle={{width:200, backgroundColor:colors.card}} onPress={() => { filterObj['type'] = item; setToggleType(false); setPage(1); fetchSearch();}}>
                             <Icon name={item.icon} type='material' color={colors.text} />
                             <ListItem.Content>
                                 <ListItem.Title style={{color:colors.text}}>{item}</ListItem.Title>
@@ -168,7 +169,7 @@ const SearchPage = React.memo(() => {
                 <Text h4 style={{color:colors.text}}>Sorts</Text>
                 {
                     SORT_OPTIONS.map((item, i) => (
-                        <ListItem key={i} containerStyle={{width:200, backgroundColor:colors.card}} onPress={() => {filterObj['sort'] = item; setToggleSort(false); fetchSearch();} }>
+                        <ListItem key={i} containerStyle={{width:200, backgroundColor:colors.card}} onPress={() => {filterObj['sort'] = item; setToggleSort(false); setPage(1); fetchSearch();} }>
                             <ListItem.Content>
                                 <ListItem.Title style={{color:colors.text}}>{item.slice(0, -5)}</ListItem.Title>
                             </ListItem.Content>
@@ -194,10 +195,22 @@ const SearchPage = React.memo(() => {
                         </View>
                     );})}
                 </ScrollView>
-                <Button title='Apply' containerStyle={{borderRadius:15}} buttonStyle={{backgroundColor:'green'}} onPress={() => {fetchSearch(); setToggleFilter(false);}} />
+                <Button title='Apply' containerStyle={{borderRadius:15}} buttonStyle={{backgroundColor:'green'}} onPress={() => {setPage(1); fetchSearch(); setToggleFilter(false);}} />
                 <Button icon={{name:'close', type:'material', color:colors.text, size:20}} onPress={() => setToggleFilter(false)} containerStyle={{position:'absolute', right:0, borderRadius:100}} buttonStyle={{backgroundColor:'rgba(0,0,0,0)'}} />
             </Overlay>
         );
+    }
+
+    const onRefresh = async() => {
+        setRefresh(true);
+        const filtering = await getFilters();
+        const nsfw = await getNSFW();
+        setAdult(nsfw);
+        setFilter(filtering);
+        setData([]);
+        setPage(1);
+        await fetchSearch();
+        setRefresh(false);
     }
 
     useEffect(() => {
@@ -207,41 +220,47 @@ const SearchPage = React.memo(() => {
     return (
         <View style={{ flex: 1, justifyContent: 'flex-start' }}>
             <View style={{ flex: 1 }}>
-            <View style={{ paddingTop:StatusBar.currentHeight, backgroundColor:colors.background }}>
-                <SearchBar containerStyle={{ backgroundColor: 'rgba(0,0,0,0)', borderBottomColor: 'rgba(0,0,0,0)', borderTopColor: 'rgba(0,0,0,0)' }}
-                    round={true}
-                    searchIcon={{ name: 'ramen-dining', type: 'material' }}
-                    placeholder='Search the sauce...'
-                    inputContainerStyle={{ backgroundColor: colors.card }}
-                    autoCapitalize='words'
-                    returnKeyType='search'
-                    selectionColor={colors.primary}
-                    onChangeText={(text) => setText(text)}
-                    value={text}
-                    onSubmitEditing={fetchSearch}
-                />
-                <View style={{ flexDirection: 'row', justifyContent: 'space-around', paddingLeft: 10, paddingRight: 10, paddingBottom: 5, borderRadius: 12 }}>
-                    <Button title={filterObj.type} titleStyle={{ fontSize: 15, textTransform:'capitalize' }} onPress={() => setToggleType(true)} type='clear' icon={{ name: 'play-arrow', type: 'material', color: colors.text }} raised={true} containerStyle={{ borderRadius: 12, flexGrow: 1 }} buttonStyle={{ borderRadius: 12 }} />
-                    <Button title={filterObj.sort.slice(0, -5)} titleStyle={{textTransform:'capitalize'}} type='clear' icon={{ name: 'sort', type: 'material', color: colors.text }} onPress={() => setToggleSort(true)} raised={true} containerStyle={{ borderRadius: 12, flexGrow: 1 }} buttonStyle={{ borderRadius: 12 }} />
-                    <Button type='clear' icon={{ name: 'filter-list', type: 'material', color:colors.text }} onPress={() => setToggleFilter(true)} raised={true} containerStyle={{ borderRadius: 12, flexGrow: 1 }} buttonStyle={{ borderRadius: 12}} />
+                <View style={{ paddingTop: StatusBar.currentHeight, backgroundColor: colors.background }}>
+                    <SearchBar containerStyle={{ backgroundColor: 'rgba(0,0,0,0)', borderBottomColor: 'rgba(0,0,0,0)', borderTopColor: 'rgba(0,0,0,0)' }}
+                        round={true}
+                        searchIcon={{ name: 'ramen-dining', type: 'material' }}
+                        placeholder='Search the sauce...'
+                        inputContainerStyle={{ backgroundColor: colors.card }}
+                        autoCapitalize='words'
+                        returnKeyType='search'
+                        selectionColor={colors.primary}
+                        onChangeText={(text) => setText(text)}
+                        value={text}
+                        onSubmitEditing={fetchSearch}
+                    />
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-around', paddingLeft: 10, paddingRight: 10, paddingBottom: 5, borderRadius: 12 }}>
+                        <Button title={filterObj.type} titleStyle={{ fontSize: 15, textTransform: 'capitalize' }} onPress={() => setToggleType(true)} type='clear' icon={{ name: 'play-arrow', type: 'material', color: colors.text }} raised={true} containerStyle={{ borderRadius: 12, flexGrow: 1 }} buttonStyle={{ borderRadius: 12 }} />
+                        <Button title={filterObj.sort.slice(0, -5)} titleStyle={{ textTransform: 'capitalize' }} type='clear' icon={{ name: 'sort', type: 'material', color: colors.text }} onPress={() => setToggleSort(true)} raised={true} containerStyle={{ borderRadius: 12, flexGrow: 1 }} buttonStyle={{ borderRadius: 12 }} />
+                        <Button type='clear' icon={{ name: 'filter-list', type: 'material', color: colors.text }} onPress={() => setToggleFilter(true)} raised={true} containerStyle={{ borderRadius: 12, flexGrow: 1 }} buttonStyle={{ borderRadius: 12 }} />
+                    </View>
+                    <TypeModal />
+                    <SortModal />
+                    <FilterModal />
                 </View>
-                <TypeModal />
-                <SortModal />
-                <FilterModal />
-            </View>
                 <View style={{ flex: 1 }}>
                     {(loading) ? <View style={{ flex: 1, justifyContent: 'center' }}><ActivityIndicator size='large' color='#00ff00' style={{ justifyContent: 'center' }} /></View> :
-                        <FlatList
-                            data={data}
-                            renderItem={({ item }) => <_ContentTile item={item} routeName={routeName} />}
-                            windowSize={3}
-                            numColumns={2}
-                            columnWrapperStyle={{ paddingTop: 15, paddingBottom: 20, justifyContent: 'center' }}
-                            keyExtractor={(item, index) => index.toString()}
-                            onEndReached={fetchMore}
-                            onEndReachedThreshold={.4}
-                            showsVerticalScrollIndicator={false}
-                        />
+                        (data.length > 0) ?
+                            <FlatList
+                                data={data}
+                                renderItem={({ item }) => <_ContentTile item={item} routeName={routeName} />}
+                                windowSize={3}
+                                numColumns={2}
+                                columnWrapperStyle={{ paddingTop: 15, paddingBottom: 20, justifyContent: 'center' }}
+                                keyExtractor={(item, index) => index.toString()}
+                                onEndReached={fetchMore}
+                                onEndReachedThreshold={.4}
+                                showsVerticalScrollIndicator={false}
+                                refreshing={refresh}
+                                onRefresh={onRefresh}
+                            />
+                            : <View>
+                                <Text h3 style={{ color: colors.text, textAlign: 'center' }}>{`No results!${'\n'}┏༼ ◉ ╭╮ ◉༽┓`}</Text>
+                            </View>
                     }
                 </View>
             </View>
