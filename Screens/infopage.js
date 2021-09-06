@@ -1,18 +1,26 @@
 import React, { useEffect, useState } from 'react';
-import { View, ScrollView, ActivityIndicator, useWindowDimensions, Pressable, FlatList, Linking, Vibration } from 'react-native';
+import { View, ScrollView, ActivityIndicator, useWindowDimensions, Pressable, FlatList, Linking } from 'react-native';
 import { Chip, Text, Avatar, Image, Icon, Button } from 'react-native-elements';
 import RenderHTML, {HTMLContentModel, HTMLElementModel} from 'react-native-render-html';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createStackNavigator, HeaderStyleInterpolators } from '@react-navigation/stack';
 import { useTheme, useNavigation } from '@react-navigation/native';
 import { getOverview, getReviews } from '../api/getdata';
-import Clipboard from '@react-native-clipboard/clipboard';
-import Toast from 'react-native-toast-message';
-import { CharacterPage } from './character';
+import { CharacterPage, copyText } from './character';
 import { VA_Page } from './voiceactor';
 
 const TopTab = createMaterialTopTabNavigator();
 const Stack = createStackNavigator();
+
+export const SectionInfo = ({header, info, style=null}) => {
+    const { colors } = useTheme();
+    return(
+        <View style={{ justifyContent: 'center', margin: 5 }}>
+            <Text style={{ textAlign: 'center', fontWeight: 'bold', color:colors.text}}>{header}</Text>
+            <Text style={(style === null) ? { textAlign: 'center', color:colors.text} : style}>{(info !== null) ? info : 'Unknown'}</Text>
+        </View>
+    );
+}
 
 const ReviewPage = ({route}) => {
     const body = route.params;
@@ -46,14 +54,8 @@ const InfoPage = ({route}) => {
 
     const navigation  = useNavigation();
     const { colors } = useTheme();
-    // const EXTERNALLINKS = [{'Official Site': colors.text}, {'Crunchyroll': '#DF6300'}, {'Funimation': '#5B0BB5'}, {'Netflix': '#E50914'}];
     const { width, height } = useWindowDimensions();
     const {id, title} = route.params;
-
-    const copyText = async(text) => {
-        await Clipboard.setString(text);
-        Toast.show({text1:'Text is copied!', position:'bottom', visibilityTime: 2000, autoHide:true, type:'success', topOffset:8 });
-    }
 
     const getData = async() => {
         let temp = [];
@@ -61,7 +63,7 @@ const InfoPage = ({route}) => {
             const content = await getOverview(id);
             const reviews = await getReviews(id);
             content.genres.forEach((genre, idx) => {temp = [...temp, {'name': genre}]});
-            content.tags.forEach((item, index) => {temp = [...temp, item]}); 
+            content.tags.forEach((item, index) => {temp = [...temp, {'name': item.name, 'rank': item.rank}]}); 
             await setTags(temp);
             await setData(content);
             await setReviews(reviews.reviews.edges);
@@ -79,22 +81,13 @@ const InfoPage = ({route}) => {
     const OverView = () => {
         const source = {html: data.description};
 
-        const SectionInfo = ({header, info, style=null}) => {
-            return(
-                <View style={{ justifyContent: 'center', margin: 5 }}>
-                    <Text style={{ textAlign: 'center', fontWeight: 'bold', color:colors.text}}>{header}</Text>
-                    <Text style={(style === null) ? { textAlign: 'center', color:colors.text} : style}>{(info !== null) ? info : 'Unknown'}</Text>
-                </View>
-            );
-        }
-
         const _relatedMedia = ({ item }) => {
             return(
-                <View style={{ paddingTop: 5, paddingBottom: 5, paddingRight: 10}}>
+                <View style={{ paddingRight: 10}}>
                     <Image source={{ uri: item.node.coverImage.extraLarge }} style={{ resizeMode: 'cover', width: 125, height: 180, borderRadius: 8 }}
                         onPress={() => {navigation.push('Info', {id:item.node.id, title:item.node.title})}}
                     />
-                    <View style={{ backgroundColor: 'rgba(0,0,0,.6)', position: 'absolute', width: 125, height: 30, top: 155, borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}>
+                    <View style={{ backgroundColor: 'rgba(0,0,0,.6)', justifyContent:'center', position: 'absolute', width: 125, height: 30, bottom:0, borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}>
                         <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={1}>{item.relationType}</Text>
                     </View>
                 </View>
@@ -105,7 +98,7 @@ const InfoPage = ({route}) => {
             return(
                 <View style={{ paddingTop: 5, paddingBottom: 5, paddingRight: 10}}>
                     <Image source={{ uri: item.node.image.large }} style={{ resizeMode: 'cover', width: 125, height: 180, borderRadius: 8 }}
-                        onPress={() => {Vibration.vibrate(200); copyText(item.node.name.full)}}
+                        onPress={() => {navigation.push('VA', {id:item.node.id, role:item.role})}}
                     />
                     <View style={{ backgroundColor: 'rgba(0,0,0,.6)', position: 'absolute', width: 125, height: 40, top: 145, borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}>
                         <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={1}>{item.node.name.full}</Text>
@@ -118,22 +111,24 @@ const InfoPage = ({route}) => {
         return(
             <View style={{paddingRight:10, paddingLeft:10, paddingBottom:10}}>
                 <ScrollView showsVerticalScrollIndicator={false}>
-                    <Pressable onLongPress={() => {Vibration.vibrate(200); copyText(title.romaji)}}>
+                    <Pressable onLongPress={() => {copyText(title.romaji)}}>
                         <Text style={{ fontSize: 30, fontWeight: 'bold', flexWrap: 'wrap', color: colors.text, textAlign: 'center' }}>{title.romaji}</Text>
                     </Pressable>
                     <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-                    <View style={{flex:1, flexDirection:'row', justifyContent:'space-evenly', borderWidth:1, height:60, marginTop:5, borderColor:colors.border}}>
-                        <SectionInfo header='FORMAT' info={data.format} style={{textTransform: (data.format !== 'TV') ? 'capitalize' : 'none', textAlign: 'center', color:colors.text}} />
-                        <SectionInfo header='SCORE' info={`${data.meanScore}%`} style={{textAlign:'center', color: (data.meanScore >= 75) ? 'green' : (data.meanScore < 75 && data.meanScore >= 65) ? 'orange' : 'red'}} />
-                        {(data.status !== null) ? <SectionInfo header='STATUS' info={data.status} style={{textTransform:'capitalize', textAlign: 'center', color:colors.text}} /> : null}
-                        {(data.type === 'MANGA') ? <SectionInfo header='VOLUMES' info={(data.volumes !== null) ? data.volumes : 'N/A'} /> : null}
-                        {(data.type === 'MANGA') ? <SectionInfo header='CHAPTERS' info={(data.chapters !== null) ? data.chapters : 'N/A'} /> : null}
-                        {(data.episodes !== null) ? <SectionInfo header='EPISODES' info={data.episodes} /> : null}
-                        <SectionInfo header='DATE' info={`${data.startDate.month}/${data.startDate.day}/${data.startDate.year} - ${`${(data.endDate.year !== null) ? `${data.endDate.month}/${data.endDate.day}/${data.endDate.year}` : 'Present' }`}`} />
-                        {(data.studios.edges.length > 0) ? <SectionInfo header='STUDIO' info={data.studios.edges[0].node.name} /> : null}
-                    </View>
+                        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-evenly', borderWidth: 1, height: 60, marginTop: 5, borderColor: colors.border }}>
+                            <SectionInfo header='FORMAT' info={data.format} style={{ textTransform: (data.format !== 'TV') ? 'capitalize' : 'none', textAlign: 'center', color: colors.text }} />
+                            <SectionInfo header='SCORE' info={`${data.meanScore}%`} style={{ textAlign: 'center', color: (data.meanScore >= 75) ? 'green' : (data.meanScore < 75 && data.meanScore >= 65) ? 'orange' : 'red' }} />
+                            {(data.status !== null) ? <SectionInfo header='STATUS' info={data.status} style={{ textTransform: 'capitalize', textAlign: 'center', color: colors.text }} /> : null}
+                            {(data.nextAiringEpisode !== null) ?<SectionInfo header='NEXT EP' info={`${(data.nextAiringEpisode.timeUntilAiring / 86400).toFixed(1)} days`} /> : null}
+                            {(data.type === 'MANGA') ? <SectionInfo header='VOLUMES' info={(data.volumes !== null) ? data.volumes : 'N/A'} /> : null}
+                            {(data.type === 'MANGA') ? <SectionInfo header='CHAPTERS' info={(data.chapters !== null) ? data.chapters : 'N/A'} /> : null}
+                            {(data.episodes !== null) ? <SectionInfo header='EPISODES' info={data.episodes} /> : null}
+                            <SectionInfo header='DATE' info={`${data.startDate.month}/${data.startDate.day}/${data.startDate.year} - ${`${(data.endDate.year !== null) ? `${data.endDate.month}/${data.endDate.day}/${data.endDate.year}` : 'Present'}`}`} />
+                            {(data.studios.edges.length > 0) ? <SectionInfo header='STUDIO' info={data.studios.edges[0].node.name} /> : null}
+                            <SectionInfo header='ENGLISH TITLE' info={title.english} />
+                        </View>
                     </ScrollView>
-                    <FlatList data={tags} horizontal={true} keyExtractor={(item, index) => index.toString()} renderItem={({ item }) => <Chip title={item.name} buttonStyle={{backgroundColor:colors.primary}} containerStyle={{ marginHorizontal: 2, marginVertical: 5, paddingTop: 5 }} />} showsHorizontalScrollIndicator={false}/>
+                    <FlatList data={tags} horizontal={true} keyExtractor={(item, index) => index.toString()} renderItem={({ item }) => <View style={{marginVertical:5}}><Chip title={`${item.name} ${item.rank !== undefined ? item.rank+'%' : '' }`} buttonStyle={{backgroundColor:colors.primary}} containerStyle={{ marginHorizontal: 2, marginVertical: 5, paddingTop: 5 }} /></View>} showsHorizontalScrollIndicator={false}/>
                     <View>
                         <FlatList
                             data={data.relations.edges}
@@ -175,7 +170,7 @@ const InfoPage = ({route}) => {
             return (
                 <View style={{paddingTop:10, paddingBottom:5}}>
                     <Image source={{uri:item.thumbnail}} style={{resizeMode:'cover', width:width-25, height: 150, borderRadius:8}} onPress={()=>{Linking.openURL(item.url)}}/>
-                    <View style={{backgroundColor:'rgba(0,0,0,.5)', position:'absolute', width:width-25, height:30, top:130, borderBottomLeftRadius:8, borderBottomRightRadius:8}}>
+                    <View style={{backgroundColor:'rgba(0,0,0,.5)', justifyContent:'center', position:'absolute', width:width-25, height:30, top:130, borderBottomLeftRadius:8, borderBottomRightRadius:8}}>
                         <Text style={{color:'#FFF', textAlign:'center'}} numberOfLines={1}>{item.title}</Text>
                     </View>
                 </View>
@@ -279,11 +274,11 @@ const InfoPage = ({route}) => {
 
 export const InfoNav = () => {
     return(
-        <Stack.Navigator>
+        <Stack.Navigator screenOptions={{animationTypeForReplace:'pop', headerStyleInterpolator:HeaderStyleInterpolators.forFade}}>
             <Stack.Screen name='Info' component={InfoPage} options={{headerTransparent:true, headerMode:'float', headerTintColor:'#FFF', headerBackgroundContainerStyle:{backgroundColor:'rgba(0,0,0,.5)'}}}/>
             <Stack.Screen name='Review' component={ReviewPage} />
             <Stack.Screen name='Character' component={CharacterPage} />
-            <Stack.Screen name='VA' component={VA_Page} options={{headerTitle:'Voice Actor'}} />
+            <Stack.Screen name='VA' component={VA_Page} options={{headerTitle:'Staff Info'}} />
         </Stack.Navigator>
     );
 }

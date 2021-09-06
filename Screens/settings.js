@@ -1,10 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { View, StatusBar, Linking } from 'react-native';
+import { View, ToastAndroid } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ListItem, Icon, Overlay, Switch, Text } from 'react-native-elements';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useTheme } from '@react-navigation/native';
-import Toast from 'react-native-toast-message';
 
 const Stack = createStackNavigator();
 export const ThemeContext = React.createContext({theme: 'Light', setTheme: () => {}});
@@ -54,7 +53,7 @@ const Settings = () => {
         storeNSFW();
     }, [isNSFW]);
 
-    const toggleNSFW = () => {setNSFW(!isNSFW);  Toast.show({text1:'Restart Required', position:'top', visibilityTime: 3000, autoHide:true, type:'success', topOffset:StatusBar.currentHeight })};
+    const toggleNSFW = () => {setNSFW(!isNSFW); ToastAndroid.show('Refresh Required', ToastAndroid.SHORT)};
 
     const getNSFW = async() => {
         try {
@@ -100,7 +99,7 @@ const Settings = () => {
             <Overlay isVisible={visLang} onBackdropPress={toggleLang} overlayStyle={{ borderRadius: 8, backgroundColor:colors.card }}  >
                 {
                     langs.map((item, i) => (
-                        <ListItem key={i} containerStyle={{ width: 200, backgroundColor:colors.card }} onPress={() => {storeLang(item); Toast.show({text1:'Restart Required', position:'top', visibilityTime: 3000, autoHide:true, type:'success', topOffset:StatusBar.currentHeight })}}>
+                        <ListItem key={i} containerStyle={{ width: 200, backgroundColor:colors.card }} onPress={() => {storeLang(item); ToastAndroid.show('Refresh Required', ToastAndroid.SHORT)}}>
                             <ListItem.Content>
                                 <ListItem.Title style={{color:colors.text}}>{item}</ListItem.Title>
                             </ListItem.Content>
@@ -150,7 +149,7 @@ const Settings = () => {
         return(
             <Overlay isVisible={visAbout} onBackdropPress={() => setVisAbout(false)}>
                 <Text h3>Work in Progress</Text>
-                <Text>Version: 0.01</Text>
+                <Text>Version: 0.02</Text>
             </Overlay>
         );
     }

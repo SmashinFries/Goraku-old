@@ -1,28 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import { View, ScrollView, ActivityIndicator, useWindowDimensions, FlatList, Linking, Vibration } from 'react-native';
+import { View, ScrollView, ActivityIndicator, useWindowDimensions, FlatList, Linking } from 'react-native';
 import { Text, Image, Divider } from 'react-native-elements';
 import RenderHTML from 'react-native-render-html';
 import { useTheme, useNavigation } from '@react-navigation/native';
-import Clipboard from '@react-native-clipboard/clipboard';
 import { getVA } from '../api/getdata';
+import { copyText } from './character';
 
 export const VA_Page = ({route}) => {
     const [data, setData] = useState({});
     const [loading, setLoading] = useState(true);
     const { colors } = useTheme();
     const navigation  = useNavigation();
-    const {id} = route.params;
+    const {id, role} = route.params;
     const {width, height} = useWindowDimensions();
 
     const getData = async() => {
         const info = await getVA(id);
         setData(info);
         setLoading(false);
-    }
-
-    const copyText = async(text) => {
-        await Clipboard.setString(text);
-        Vibration.vibrate(200);
     }
 
     useEffect(() => {
@@ -35,7 +30,7 @@ export const VA_Page = ({route}) => {
                 <Image source={{ uri: item.node.image.large }} style={{ resizeMode: 'cover', width: 125, height: 180, borderRadius: 8 }}
                     onPress={() => {navigation.push('Character', {id: item.node.id, actor: [data]})}} 
                 >
-                    <View style={{ position:'absolute', backgroundColor: 'rgba(0,0,0,.5)', bottom:0, width: 125, height: 40, borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}>
+                    <View style={{ position:'absolute', justifyContent:'center', backgroundColor: 'rgba(0,0,0,.5)', bottom:0, width: 125, height: 40, borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}>
                         <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={1}>{item.node.name.full}</Text>
                         <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={1}>{item.role}</Text>
                     </View>
@@ -43,6 +38,23 @@ export const VA_Page = ({route}) => {
             </View>
         )
     };
+
+    const _relatedMedia = ({ item }) => {
+        return (
+            <View style={{ margin:5 }}>
+                <Image source={{ uri: item.node.coverImage.extraLarge }} style={{ resizeMode: 'cover', width: 125, height: 180, borderRadius: 8 }}
+                    onPress={() => {navigation.push('Info', {id:item.node.id, title:item.node.title})}}
+                >
+                    <View style={{ position:'absolute', justifyContent:'center', backgroundColor: 'rgba(0,0,0,.5)', bottom:0, width: 125, height: 40, borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}>
+                        <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={2}>{item.staffRole}</Text>
+                    </View>
+                    <View style={{ position:'absolute', justifyContent:'center', backgroundColor: 'rgba(0,0,0,.5)', top:0, width: 125, height: 40, borderTopLeftRadius: 8, borderTopRightRadius: 8 }}>
+                        <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={2}>{item.node.title.romaji}</Text>
+                    </View>
+                </Image>
+            </View>
+        )
+    }
 
     const SectionInfo = ({header, info}) => {
         return(
@@ -75,7 +87,7 @@ export const VA_Page = ({route}) => {
                             <Divider orientation='vertical' />
                             <SectionInfo header='Language' info={data.languageV2} />
                             <Divider orientation='vertical' />
-                            <SectionInfo header='DOB' info={(data.dateOfBirth.month !== null) ? `${data.dateOfBirth.month}/${data.dateOfBirth.day}/${data.dateOfBirth.year}` : 'Unknown'} />
+                            <SectionInfo header='DOB' info={(data.dateOfBirth !== null) ? `${data.dateOfBirth.month}/${data.dateOfBirth.day}/${data.dateOfBirth.year}` : 'Unknown'} />
                             <Divider orientation='vertical' />
                             <SectionInfo header='Blood Type' info={data.bloodType} />
                             <Divider orientation='vertical' />
@@ -89,13 +101,13 @@ export const VA_Page = ({route}) => {
                         </View>
                     </ScrollView>
                 </View>
-                <Text h4 style={{paddingLeft:5, color:colors.text}}>Characters</Text>
+                <Text h4 style={{paddingLeft:5, color:colors.text}}>{(role === undefined) ? 'Characters' : 'Roles'}</Text>
                 <FlatList
-                    data={data.characters.edges}
+                    data={(role === undefined) ? data.characters.edges : data.staffMedia.edges }
                     windowSize={3}
                     horizontal={true}
                     maxToRenderPerBatch={3}
-                    renderItem={_characterItem}
+                    renderItem={(role === undefined) ? _characterItem : _relatedMedia}
                     style={{ flexGrow: 0, paddingBottom: 10, paddingTop: 5, paddingLeft:5 }}
                     keyExtractor={(item) => item.id.toString()}
                     contentContainerStyle={{ alignSelf: 'center' }}

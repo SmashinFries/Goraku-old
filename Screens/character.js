@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { View, ScrollView, ActivityIndicator, useWindowDimensions, FlatList, Linking, Vibration } from 'react-native';
+import { View, ScrollView, ActivityIndicator, useWindowDimensions, FlatList, Linking, Vibration, ToastAndroid } from 'react-native';
 import { Text, Image, Divider } from 'react-native-elements';
 import RenderHTML from 'react-native-render-html';
 import { useTheme, useNavigation } from '@react-navigation/native';
 import Clipboard from '@react-native-clipboard/clipboard';
-import Toast from 'react-native-toast-message';
 import { getCharacter } from '../api/getdata';
+
+export const copyText = async(text) => {
+    await Clipboard.setString(text);
+    ToastAndroid.show('Text copied!', ToastAndroid.SHORT);
+    Vibration.vibrate(20);
+}
 
 export const CharacterPage = ({route}) => {
     const [data, setData] = useState({});
@@ -21,21 +26,16 @@ export const CharacterPage = ({route}) => {
         setLoading(false);
     }
 
-    const copyText = async(text) => {
-        await Clipboard.setString(text);
-        Vibration.vibrate(200);
-    }
-
     useEffect(() => {
         getData();
     }, []);
 
     const _voiceActor = ({ item }) => {
         return(
-            <View style={{ paddingTop: 5, paddingBottom: 5, paddingRight: 10}}>
+            <View style={{ paddingTop: 5, paddingRight: 10}}>
                 <Image source={{ uri: item.image.large }} onPress={() => {navigation.push('VA', {id:item.id})}} style={{ resizeMode: 'cover', width: 150, height: 200, borderRadius: 8 }}
                 />
-                <View style={{ backgroundColor: 'rgba(0,0,0,.6)', position: 'absolute', width: 150, height: 40, top: 165, borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}>
+                <View style={{ backgroundColor: 'rgba(0,0,0,.6)', justifyContent:'center', position: 'absolute', width: 150, height: 40, bottom:0, borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}>
                     <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={1}>{item.name.full}</Text>
                     <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={1}>{item.languageV2}</Text>
                 </View>
@@ -45,11 +45,11 @@ export const CharacterPage = ({route}) => {
 
     const _relatedMedia = ({ item }) => {
         return(
-            <View style={{ paddingTop: 5, paddingBottom: 5, paddingRight: 10}}>
+            <View style={{ paddingTop: 5, paddingRight: 10}}>
                 <Image source={{ uri: item.node.coverImage.extraLarge }} style={{ resizeMode: 'cover', width: 125, height: 180, borderRadius: 8 }}
                     onPress={() => {navigation.push('Info', {id:item.node.id, title:item.node.title})}}
                 />
-                <View style={{ backgroundColor: 'rgba(0,0,0,.6)', position: 'absolute', width: 125, height: 30, top: 155, borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}>
+                <View style={{ backgroundColor: 'rgba(0,0,0,.6)', justifyContent:'center', position: 'absolute', width: 125, height: 30, bottom:0, borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}>
                     <Text style={{ color: '#FFF', textAlign: 'center'}} numberOfLines={1}>{item.node.format}</Text>
                 </View>
             </View>
@@ -85,7 +85,7 @@ export const CharacterPage = ({route}) => {
                             <Divider orientation='vertical' />
                             <SectionInfo header='Age' info={(data.age !== null) ? data.age : 'N/A'} />
                             <Divider orientation='vertical' />
-                            <SectionInfo header='DOB' info={(data.dateOfBirth.month !== null) ? `${data.dateOfBirth.month}/${data.dateOfBirth.day}/${(data.dateOfBirth.year !== null) ? data.dateOfBirth.year : '????'}` : 'Unknown'} />
+                            <SectionInfo header='DOB' info={(data.dateOfBirth.month !== null) ? `${(data.dateOfBirth.month !== null) ? data.dateOfBirth.month : '?' }/${(data.dateOfBirth.day !== null) ? data.dateOfBirth.day : '?' }/${(data.dateOfBirth.year !== null) ? data.dateOfBirth.year : '?'}` : 'Unknown'} />
                             <Divider orientation='vertical' />
                             <SectionInfo header='Blood Type' info={(data.bloodType !== null) ? data.bloodType : 'Unknown'} />
                             <Divider orientation='vertical' />
