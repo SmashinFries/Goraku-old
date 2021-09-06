@@ -93,7 +93,7 @@ const SearchPage = React.memo(() => {
             filterObj.format_in = [...filterObj.format_in, "NOVEL"];
             const content = await getSearch(
                 (text.length > 0) ? text : undefined, 
-                (nsfw === false) ? false : undefined,
+                (adult === false) ? false : undefined,
                 1, 
                 "MANGA", 
                 filterObj.sort.toUpperCase(),
