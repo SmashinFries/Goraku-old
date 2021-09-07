@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { View, ScrollView, ActivityIndicator, FlatList, StatusBar } from 'react-native';
-import { SearchBar, Chip, Text, Button, Divider, Overlay, ListItem, Icon, Tooltip, Image } from 'react-native-elements';
+import { SearchBar, Chip, Text, Button, Divider, Overlay, ListItem, Icon, Tooltip, CheckBox } from 'react-native-elements';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useTheme, useRoute } from '@react-navigation/native';
 import { getFilters, getSearch } from '../api/getdata';
@@ -13,6 +13,7 @@ import { filterObj } from '../Queries/query';
 const Stack = createStackNavigator();
 const SORT_OPTIONS = ["Trending_DESC", "Popularity_DESC", "Score_DESC"]
 const TYPE_OPTIONS = ["Anime", "Manga", "Novel"];
+const ORIGIN = ["All", "Japanese", "Korean", "Chinese"];
 
 const FilterList = ({id, tag}) => {
     const [color, setColor] = useState((filterObj.genre_in.indexOf(tag.tag) > -1 || filterObj.tags_in.indexOf(tag.tag) > -1) ? 'green' : (filterObj.genre_not.indexOf(tag.tag) > -1 || filterObj.tags_not.indexOf(tag.tag) > -1) ? 'red' : 'blue');
@@ -68,6 +69,7 @@ const SearchPage = React.memo(() => {
     const [toggleType, setToggleType] = useState(false);
     const [toggleFilter, setToggleFilter] = useState(false);
     const [toggleSort, setToggleSort] = useState(false);
+    const [toggleOrigin, setToggleOrigin] = useState(false);
     const [loading, setLoading] = useState(true);
     const [initLoad, setInitLoad] = useState(true);
     const [text, setText] = useState('');
@@ -75,7 +77,7 @@ const SearchPage = React.memo(() => {
 
     const getInitial = async() => {
         const nsfw = await getNSFW();
-        const content = await getSearch(undefined, (nsfw === true) ? undefined : false);
+        const content = await getSearch(undefined, undefined, (nsfw === true) ? undefined : false);
         const filtering = await getFilters();
         setAdult(nsfw);
         setFilter(filtering);
@@ -90,15 +92,17 @@ const SearchPage = React.memo(() => {
     const fetchSearch = async() => {
         setLoading(true);
         if (filterObj.type === 'Novel') {
-            filterObj.format_in = [...filterObj.format_in, "NOVEL"];
+            {const index = filterObj.format_not.indexOf("NOVEL"); if (index > -1) filterObj.format_not.splice(index, 1)};
+            (filterObj.format_in.indexOf('NOVEL') === -1) ? filterObj.format_in = [...filterObj.format_in, "NOVEL"] : null;
             const content = await getSearch(
                 (text.length > 0) ? text : undefined, 
+                filterObj.origin,
                 (adult === false) ? false : undefined,
                 1, 
                 "MANGA", 
                 filterObj.sort.toUpperCase(),
-                filterObj.format_in,
-                filterObj.format_not,
+                (filterObj.format_in.length > 0) ? filterObj.format_in : undefined,
+                (filterObj.format_not.length > 0) ? filterObj.format_not : undefined,
                 (filterObj.genre_in.length > 0) ? filterObj.genre_in : undefined,
                 (filterObj.genre_not.length > 0) ? filterObj.genre_not : undefined,
                 (filterObj.tags_in.length > 0) ? filterObj.tags_in : undefined,
@@ -108,14 +112,16 @@ const SearchPage = React.memo(() => {
             setLoading(false);
         } else {
             {const index = filterObj.format_in.indexOf("NOVEL"); if (index > -1) filterObj.format_in.splice(index, 1)};
+            (filterObj.format_not.indexOf('NOVEL') === -1) ? filterObj.format_not = [...filterObj.format_not, "NOVEL"] : null;
             const content = await getSearch(
                 (text.length > 0) ? text : undefined,
+                filterObj.origin,
                 (adult === false) ? false : undefined,
                 1, 
                 filterObj.type.toUpperCase(), 
                 filterObj.sort.toUpperCase(),
                 (filterObj.format_in.length > 0) ? filterObj.format_in : undefined,
-                (filterObj.type === 'Manga') ? 'NOVEL' : undefined,
+                (filterObj.format_not.length > 0) ? filterObj.format_not : undefined,
                 (filterObj.genre_in.length > 0) ? filterObj.genre_in : undefined,
                 (filterObj.genre_not.length > 0) ? filterObj.genre_not : undefined,
                 (filterObj.tags_in.length > 0) ? filterObj.tags_in : undefined,
@@ -128,7 +134,8 @@ const SearchPage = React.memo(() => {
 
     const fetchMore = async() => {
         const content = await getSearch(
-            (text.length > 0) ? text : undefined, 
+            (text.length > 0) ? text : undefined,
+            (filterObj.origin === 'All') ? undefined : filterObj.origin,
             (adult === false) ? false : undefined,
             page+1, 
             (filterObj.type !== 'Novel') ? filterObj.type.toUpperCase() : "MANGA", 
@@ -163,6 +170,28 @@ const SearchPage = React.memo(() => {
         );
     }
 
+    const OriginModal = () => {
+        const handleOrigin = async(item) => {
+            filterObj['origin'] = (item === 'Japanese') ? 'JP' : (item === 'Korean') ? 'KR' : (item === 'Chinese') ? 'CN' : undefined;
+            setPage(1);
+            await fetchSearch();
+        }
+        return(
+            <Overlay isVisible={toggleOrigin} onBackdropPress={() => setToggleOrigin(false)} overlayStyle={{backgroundColor:colors.card}} >
+                <Text h4 style={{color:colors.text}}>Select an Origin</Text>
+                {
+                    ORIGIN.map((item, i) => (
+                        <ListItem key={i} containerStyle={{width:200, backgroundColor:colors.card}} onPress={() => {handleOrigin(item); setToggleOrigin(false);}}>
+                            <ListItem.Content>
+                                <ListItem.Title style={{color:colors.text}}>{item}</ListItem.Title>
+                            </ListItem.Content>
+                        </ListItem>
+                    ))
+                }
+            </Overlay>
+        );
+    }
+
     const SortModal = () => {
         return(
             <Overlay isVisible={toggleSort} onBackdropPress={() => setToggleSort(false)} overlayStyle={{backgroundColor:colors.card}} >
@@ -173,7 +202,6 @@ const SearchPage = React.memo(() => {
                             <ListItem.Content>
                                 <ListItem.Title style={{color:colors.text}}>{item.slice(0, -5)}</ListItem.Title>
                             </ListItem.Content>
-                            <ListItem.Chevron />
                         </ListItem>
                     ))
                 }
@@ -235,12 +263,14 @@ const SearchPage = React.memo(() => {
                     />
                     <View style={{ flexDirection: 'row', justifyContent: 'space-around', paddingLeft: 10, paddingRight: 10, paddingBottom: 5, borderRadius: 12 }}>
                         <Button title={filterObj.type} titleStyle={{ fontSize: 15, textTransform: 'capitalize' }} onPress={() => setToggleType(true)} type='clear' icon={{ name: 'play-arrow', type: 'material', color: colors.text }} raised={true} containerStyle={{ borderRadius: 12, flexGrow: 1 }} buttonStyle={{ borderRadius: 12 }} />
+                        <Button title={(filterObj.origin === undefined) ? 'All' : filterObj.origin} type='clear' icon={{ name: 'emoji-people', type: 'material', color: colors.text }} onPress={() => setToggleOrigin(true)} raised={true} containerStyle={{borderRadius: 12, flexGrow:1}} buttonStyle={{ borderRadius: 12 }} />
                         <Button title={filterObj.sort.slice(0, -5)} titleStyle={{ textTransform: 'capitalize' }} type='clear' icon={{ name: 'sort', type: 'material', color: colors.text }} onPress={() => setToggleSort(true)} raised={true} containerStyle={{ borderRadius: 12, flexGrow: 1 }} buttonStyle={{ borderRadius: 12 }} />
                         <Button type='clear' icon={{ name: 'filter-list', type: 'material', color: colors.text }} onPress={() => setToggleFilter(true)} raised={true} containerStyle={{ borderRadius: 12, flexGrow: 1 }} buttonStyle={{ borderRadius: 12 }} />
                     </View>
                     <TypeModal />
                     <SortModal />
                     <FilterModal />
+                    <OriginModal />
                 </View>
                 <View style={{ flex: 1 }}>
                     {(loading) ? <View style={{ flex: 1, justifyContent: 'center' }}><ActivityIndicator size='large' color='#00ff00' style={{ justifyContent: 'center' }} /></View> :
