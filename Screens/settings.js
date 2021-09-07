@@ -149,7 +149,7 @@ const Settings = () => {
         return(
             <Overlay isVisible={visAbout} onBackdropPress={() => setVisAbout(false)}>
                 <Text h3>Work in Progress</Text>
-                <Text>Version: 0.02</Text>
+                <Text>Version: 0.03</Text>
             </Overlay>
         );
     }
