@@ -5,16 +5,24 @@ import RenderHTML from 'react-native-render-html';
 import { useTheme, useNavigation } from '@react-navigation/native';
 import { getVA } from '../api/getdata';
 import { copyText } from './character';
+import { getLanguage } from '../Components/storagehooks';
 
 export const VA_Page = ({route}) => {
     const [data, setData] = useState({});
     const [loading, setLoading] = useState(true);
+    const [lang, setLang] = useState('Romaji');
     const { colors } = useTheme();
     const navigation  = useNavigation();
     const {id, role} = route.params;
     const {width, height} = useWindowDimensions();
 
+    const fetchLang = async () => {
+        const language = await getLanguage();
+        setLang(language);
+    }
+
     const getData = async() => {
+        await fetchLang();
         const info = await getVA(id);
         setData(info);
         setLoading(false);
@@ -31,7 +39,7 @@ export const VA_Page = ({route}) => {
                     onPress={() => {navigation.push('Character', {id: item.node.id, actor: [data]})}} 
                 >
                     <View style={{ position:'absolute', justifyContent:'center', backgroundColor: 'rgba(0,0,0,.5)', bottom:0, width: 125, height: 40, borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}>
-                        <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={1}>{item.node.name.full}</Text>
+                        <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={1}>{(lang === 'Native') ? item.node.name.native : item.node.name.full}</Text>
                         <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={1}>{item.role}</Text>
                     </View>
                 </Image>
@@ -49,7 +57,7 @@ export const VA_Page = ({route}) => {
                         <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={2}>{item.staffRole}</Text>
                     </View>
                     <View style={{ position:'absolute', justifyContent:'center', backgroundColor: 'rgba(0,0,0,.5)', top:0, width: 125, height: 40, borderTopLeftRadius: 8, borderTopRightRadius: 8 }}>
-                        <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={2}>{item.node.title.romaji}</Text>
+                        <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={2}>{(lang === 'Native') ? item.node.title.native : item.node.title.romaji}</Text>
                     </View>
                 </Image>
             </View>

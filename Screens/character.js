@@ -5,6 +5,7 @@ import RenderHTML from 'react-native-render-html';
 import { useTheme, useNavigation } from '@react-navigation/native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { getCharacter } from '../api/getdata';
+import { getLanguage } from '../Components/storagehooks';
 
 export const copyText = async(text) => {
     await Clipboard.setString(text);
@@ -15,12 +16,19 @@ export const copyText = async(text) => {
 export const CharacterPage = ({route}) => {
     const [data, setData] = useState({});
     const [loading, setLoading] = useState(true);
+    const [lang, setLang] = useState('Romaji');
     const { colors } = useTheme();
     const navigation  = useNavigation();
     const {id, actor} = route.params;
     const {width, height} = useWindowDimensions();
 
+    const fetchLang = async () => {
+        const language = await getLanguage();
+        setLang(language);
+    }
+
     const getData = async() => {
+        await fetchLang();
         const info = await getCharacter(id);
         setData(info);
         setLoading(false);
@@ -36,7 +44,7 @@ export const CharacterPage = ({route}) => {
                 <Image source={{ uri: item.image.large }} onPress={() => {navigation.push('VA', {id:item.id})}} style={{ resizeMode: 'cover', width: 150, height: 200, borderRadius: 8 }}
                 />
                 <View style={{ backgroundColor: 'rgba(0,0,0,.6)', justifyContent:'center', position: 'absolute', width: 150, height: 40, bottom:0, borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}>
-                    <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={1}>{item.name.full}</Text>
+                    <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={1}>{(lang === 'Native') ? item.name.native : item.name.native}</Text>
                     <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={1}>{item.languageV2}</Text>
                 </View>
             </View>
@@ -93,7 +101,7 @@ export const CharacterPage = ({route}) => {
                         </View>
                     </ScrollView>
                 </View>
-                <Text h4 style={{paddingLeft:5, color:colors.text}}>Voiced By</Text>
+                {(actor.length > 0) ? <Text h4 style={{paddingLeft:5, color:colors.text}}>Voiced By</Text> : null}
                 <FlatList
                     data={actor}
                     windowSize={3}
