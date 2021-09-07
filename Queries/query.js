@@ -3,11 +3,11 @@ export const cacheM = {Trending: {Page: {}, content: []}, Popular: {Page: {}, co
 export const cacheN = {Trending: {Page: {}, content: []}, Popular: {Page: {}, content: []}, Top: {Page: {}, content: []}};
 export const cacheS = {Page: {}, Content:[]};
 export const cacheFilter = [{title: 'Genres', data: []}];
-export const filterObj = {type: "ANIME", format_in:[], format_not:[], filter_in: [], filter_not: [], tags_in: [], tags_not: [], genre_in: [], genre_not: [], sort:"POPULARITY_DESC"};
+export const filterObj = {type: "ANIME", origin:undefined, format_in:[], format_not:[], filter_in: [], filter_not: [], tags_in: [], tags_not: [], genre_in: [], genre_not: [], sort:"POPULARITY_DESC"};
 export const activeList = [];
 
 export const HPQUERY = `
-query ($id: Int, $isAdult: Boolean, $page: Int, $perPage: Int, $format: MediaFormat, $sort: [MediaSort], $search: String, $format_in: [MediaFormat], $format_not_in: [MediaFormat], $tag_in: [String], $tag_not_in: [String], $genre_in: [String], $genre_not_in: [String], $season: MediaSeason, $seasonYear: Int, $type: MediaType) {
+query ($id: Int, $origin: CountryCode, $isAdult: Boolean, $page: Int, $perPage: Int, $format: MediaFormat, $sort: [MediaSort], $search: String, $format_in: [MediaFormat], $format_not_in: [MediaFormat], $tag_in: [String], $tag_not_in: [String], $genre_in: [String], $genre_not_in: [String], $season: MediaSeason, $seasonYear: Int, $type: MediaType) {
   Page (page: $page, perPage: $perPage) {
     pageInfo {
       currentPage
@@ -15,7 +15,7 @@ query ($id: Int, $isAdult: Boolean, $page: Int, $perPage: Int, $format: MediaFor
       hasNextPage
       perPage
     }
-    media (id: $id, sort: $sort, isAdult: $isAdult, search:$search, format:$format, format_in: $format_in, format_not_in: $format_not_in, tag_in: $tag_in, tag_not_in: $tag_not_in, genre_in: $genre_in, genre_not_in: $genre_not_in, season:$season, seasonYear:$seasonYear, type: $type) {
+    media (id: $id, sort: $sort, countryOfOrigin:$origin, isAdult: $isAdult, search:$search, format:$format, format_in: $format_in, format_not_in: $format_not_in, tag_in: $tag_in, tag_not_in: $tag_not_in, genre_in: $genre_in, genre_not_in: $genre_not_in, season:$season, seasonYear:$seasonYear, type: $type) {
       id
       title {
         romaji
@@ -74,6 +74,7 @@ query ($id: Int) {
           id
           name {
             full
+            native
           }
           image {
             large
