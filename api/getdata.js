@@ -161,10 +161,10 @@ export const getVA = async(id, page=1) => {
     }
 }
 
-export const getSearch = async(search=undefined, isAdult=undefined, page=1, type=undefined, sort='POPULARITY_DESC', format_in=undefined, format_not_in=undefined, genre_in=undefined, genre_not_in=undefined, tag_in=undefined, tag_not_in=undefined) => {
+export const getSearch = async(search=undefined, origin=undefined, isAdult=undefined, page=1, type=undefined, sort='POPULARITY_DESC', format_in=undefined, format_not_in=undefined, genre_in=undefined, genre_not_in=undefined, tag_in=undefined, tag_not_in=undefined) => {
     try {
         const data = await axios.post(url, {query: HPQUERY, variables:{
-            page: page, perPage:10, search: search, type:type, isAdult:isAdult, sort:sort, format_in:format_in, format_not_in:format_not_in, genre_in:genre_in, genre_not_in:genre_not_in, tag_in:tag_in, tag_not_in:tag_not_in
+            page: page, perPage:10, search: search, origin:origin, type:type, isAdult:isAdult, sort:sort, format_in:format_in, format_not_in:format_not_in, genre_in:genre_in, genre_not_in:genre_not_in, tag_in:tag_in, tag_not_in:tag_not_in
         }},
             {headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}});
         const media = await data.data.data.Page;
