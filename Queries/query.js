@@ -45,6 +45,24 @@ query ($id: Int) {
     volumes
     chapters
     episodes
+    recommendations {
+      edges {
+        node {
+          mediaRecommendation {
+            id
+            title {
+              romaji
+              english
+              native
+            }
+            coverImage {
+              extraLarge
+            }
+            meanScore
+          }
+        }
+      }
+    }
     nextAiringEpisode {
       timeUntilAiring
       airingAt

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { View, ScrollView, ActivityIndicator, useWindowDimensions, Pressable, FlatList, Linking } from 'react-native';
-import { Chip, Text, Avatar, Image, Icon, Button } from 'react-native-elements';
+import { Chip, Text, Avatar, Image, Icon, Button, Badge } from 'react-native-elements';
 import RenderHTML, {HTMLContentModel, HTMLElementModel} from 'react-native-render-html';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { createStackNavigator, HeaderStyleInterpolators } from '@react-navigation/stack';
-import { useTheme, useNavigation } from '@react-navigation/native';
+import { useTheme, useNavigation, useRoute } from '@react-navigation/native';
 import { getOverview, getReviews } from '../api/getdata';
 import { CharacterPage, copyText } from './character';
 import { VA_Page } from './voiceactor';
@@ -53,6 +53,7 @@ const InfoPage = ({route}) => {
     const [page, setPages] = useState();
 
     const navigation  = useNavigation();
+    const routeName = useRoute();
     const { colors } = useTheme();
     const { width, height } = useWindowDimensions();
     const {id, title} = route.params;
@@ -226,6 +227,47 @@ const InfoPage = ({route}) => {
         );
     }
 
+    const Recommendation = () => {
+        const _recommendedItem = ({ item }) => {
+            return (
+                <View style={{ margin:5 }}>
+                    <Image source={{ uri: item.node.mediaRecommendation.coverImage.extraLarge }} style={{ resizeMode: 'cover', width: 180, height: 230, borderRadius: 8 }}
+                        onPress={() => {navigation.push('Info', {id:item.node.mediaRecommendation.id, title:item.node.mediaRecommendation.title})}}
+                    >
+                        <View style={{ position:'absolute', backgroundColor: 'rgba(0,0,0,.7)', justifyContent:'center', bottom:0, width: 180, height: 40, borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}>
+                            <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={2}>{item.node.mediaRecommendation.title.romaji}</Text>
+                        </View>
+                    </Image>
+                    <Badge value={(typeof item.node.mediaRecommendation.meanScore == 'number') ? `${item.node.mediaRecommendation.meanScore}%` : '?'}
+                        containerStyle={{ alignSelf: 'flex-end', position: 'absolute', elevation: 24, top: -4, transform:[{scale: 1.2}] }}
+                        badgeStyle={{ borderColor: 'rgba(0,0,0,0)' }}
+                        status={(item.node.mediaRecommendation.meanScore >= 75) ? 'success'
+                            : (item.node.mediaRecommendation.meanScore < 75 && item.node.mediaRecommendation.meanScore >= 65) ? 'warning'
+                                : (item.node.mediaRecommendation.meanScore < 65) ? 'error' : undefined
+                        }
+                        
+                    />
+                </View>
+            )
+        };
+
+        return(
+            <View style={{ flex: 1 }}>
+                <FlatList
+                    data={data.recommendations.edges}
+                    numColumns={2}
+                    columnWrapperStyle={{paddingBottom:5}}
+                    windowSize={3}
+                    renderItem={_recommendedItem}
+                    style={{ flexGrow: 0, paddingBottom: 10, paddingTop: 10 }}
+                    keyExtractor={(item, index) => index.toString()}
+                    contentContainerStyle={{ alignSelf: 'center', paddingBottom:20 }}
+                    showsVerticalScrollIndicator={false}
+                />
+            </View>
+        );
+    }
+
     const Reviews = () => {
         const _reviewItem = ({item}) => {
             return (
@@ -266,6 +308,7 @@ const InfoPage = ({route}) => {
                 <TopTab.Screen name='Overview' component={OverView} />
                 {(data.type === 'ANIME' && data.streamingEpisodes.length > 0) ? <TopTab.Screen name='Watch' component={Watch} /> : null}
                 <TopTab.Screen name='Characters' component={Characters} />
+                <TopTab.Screen name='Recommendations' component={Recommendation} />
                 <TopTab.Screen name='Reviews' component={Reviews} />
             </TopTab.Navigator>
         </View>
