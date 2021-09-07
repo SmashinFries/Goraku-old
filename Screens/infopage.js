@@ -8,6 +8,7 @@ import { useTheme, useNavigation, useRoute } from '@react-navigation/native';
 import { getOverview, getReviews } from '../api/getdata';
 import { CharacterPage, copyText } from './character';
 import { VA_Page } from './voiceactor';
+import { getLanguage } from '../Components/storagehooks';
 
 const TopTab = createMaterialTopTabNavigator();
 const Stack = createStackNavigator();
@@ -51,15 +52,21 @@ const InfoPage = ({route}) => {
     const [review, setReviews] = useState();
     const [tags, setTags] = useState([]);
     const [page, setPages] = useState();
+    const [lang, setLang] = useState('Romaji');
 
     const navigation  = useNavigation();
-    const routeName = useRoute();
     const { colors } = useTheme();
     const { width, height } = useWindowDimensions();
     const {id, title} = route.params;
 
+    const fetchLang = async () => {
+        const language = await getLanguage();
+        setLang(language);
+    }
+
     const getData = async() => {
         let temp = [];
+        await fetchLang();
         if (Object.keys(data).length === 0) {
             const content = await getOverview(id);
             const reviews = await getReviews(id);
@@ -102,7 +109,7 @@ const InfoPage = ({route}) => {
                         onPress={() => {navigation.push('VA', {id:item.node.id, role:item.role})}}
                     />
                     <View style={{ backgroundColor: 'rgba(0,0,0,.6)', position: 'absolute', width: 125, height: 40, top: 145, borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}>
-                        <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={1}>{item.node.name.full}</Text>
+                        <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={1}>{(lang === 'Native') ? item.node.name.native : item.node.name.full}</Text>
                         <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={1}>{item.role}</Text>
                     </View>
                 </View>
@@ -113,7 +120,7 @@ const InfoPage = ({route}) => {
             <View style={{paddingRight:10, paddingLeft:10, paddingBottom:10}}>
                 <ScrollView showsVerticalScrollIndicator={false}>
                     <Pressable onLongPress={() => {copyText(title.romaji)}}>
-                        <Text style={{ fontSize: 30, fontWeight: 'bold', flexWrap: 'wrap', color: colors.text, textAlign: 'center' }}>{title.romaji}</Text>
+                        <Text style={{ fontSize: 30, fontWeight: 'bold', flexWrap: 'wrap', color: colors.text, textAlign: 'center' }}>{(lang === 'Native') ? title.native : title.romaji}</Text>
                     </Pressable>
                     <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
                         <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-evenly', borderWidth: 1, height: 60, marginTop: 5, borderColor: colors.border }}>
@@ -202,7 +209,7 @@ const InfoPage = ({route}) => {
                         onPress={() => {navigation.navigate('Character', {id: item.node.id, actor: item.voiceActors})}} 
                     >
                         <View style={{ position:'absolute', backgroundColor: 'rgba(0,0,0,.5)', bottom:0, width: 180, height: 40, borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}>
-                            <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={1}>{item.node.name.full}</Text>
+                            <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={1}>{(lang === 'Native') ? item.node.name.native : item.node.name.full}</Text>
                             <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={1}>{item.role}</Text>
                         </View>
                     </Image>
@@ -235,7 +242,7 @@ const InfoPage = ({route}) => {
                         onPress={() => {navigation.push('Info', {id:item.node.mediaRecommendation.id, title:item.node.mediaRecommendation.title})}}
                     >
                         <View style={{ position:'absolute', backgroundColor: 'rgba(0,0,0,.7)', justifyContent:'center', bottom:0, width: 180, height: 40, borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}>
-                            <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={2}>{item.node.mediaRecommendation.title.romaji}</Text>
+                            <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={2}>{(lang === 'Native') ? item.node.mediaRecommendation.title.native : item.node.mediaRecommendation.title.romaji}</Text>
                         </View>
                     </Image>
                     <Badge value={(typeof item.node.mediaRecommendation.meanScore == 'number') ? `${item.node.mediaRecommendation.meanScore}%` : '?'}
@@ -321,7 +328,7 @@ export const InfoNav = () => {
             <Stack.Screen name='Info' component={InfoPage} options={{headerTransparent:true, headerMode:'float', headerTintColor:'#FFF', headerBackgroundContainerStyle:{backgroundColor:'rgba(0,0,0,.5)'}}}/>
             <Stack.Screen name='Review' component={ReviewPage} />
             <Stack.Screen name='Character' component={CharacterPage} />
-            <Stack.Screen name='VA' component={VA_Page} options={{headerTitle:'Staff Info'}} />
+            <Stack.Screen name='VA' component={VA_Page} options={{headerTitle:'Staff'}} />
         </Stack.Navigator>
     );
 }
