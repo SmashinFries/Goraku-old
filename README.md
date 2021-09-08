@@ -1,11 +1,11 @@
-# Goraku (Alpha)
+# Goraku
 
-Goraku is a Japanese media discovery app for android utilzing the Anilist API.
+Goraku is a Japanese media discovery app for android utilizing the Anilist API.
 
 ## Features
 
 - Discover Anime, Manga, and Light Novels by pre-selected categories or by using search filters.
-- Find tons of information about each media, character, and voice actor (more coming soon)
+- Find tons of information about each media, character, and staff (more coming soon)
 - Curious about a character's / VA's kanji? Long press the kanji to find out what they mean!
 
 ## Next Major Update
@@ -13,11 +13,10 @@ Goraku is a Japanese media discovery app for android utilzing the Anilist API.
 - User Login / Interactions
 
 ## About
-I started this project as a way to learn JS and React Native. Goraku is currently in alpha because of the lack of features and I still think it needs to be more refined before 
-adding the next major update.
+I started this project as a way to learn JS and React Native. Goraku is currently in alpha because of the lack of features. Once I complete the next major update, the app will be complete with all core features.
 
-Updates will be slow because fall semester has started but I will be working on new content whenever I'm not studying.  
+Updates will be slow because the fall semester has started, but I will be working on new content whenever I'm not studying.
 
-## Social
-
-Join the [Discord](https://discord.gg/rPf2vyRkB6) for progress updates, issues, or to just talk.
+## Notices
+Beware that trending results may not show the correct data at times. I believe this is due to the API, so there's not much I can do.
+I recommend refreshing the page when this happens. 
