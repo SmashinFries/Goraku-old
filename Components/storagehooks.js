@@ -27,3 +27,14 @@ export const getNSFW = async() => {
         console.log(error);
     }
 }
+
+export const checkUserID = async(userID) => {
+    try {
+        const id = await AsyncStorage.getItem('@UserID');
+        if (typeof id !== 'string') {
+            await AsyncStorage.setItem('@UserID', userID);
+        }
+    } catch (e) {
+        console.log('Asyncstorage ERROR:', e);
+    };
+}
