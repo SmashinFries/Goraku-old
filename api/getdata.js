@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { CHARACTERS, FILTER_QUERY, HPQUERY, ITEMQUERY, REVIEWS, USER_QUERY, VA_QUERY } from '../Queries/query';
+import { ACTIVITY, AUTH_USER_QUERY, CHARACTERS, FILTER_QUERY, FOLLOWING_QUERY, HPQUERY, ITEMQUERY, LISTS, REVIEWS, USER_QUERY, VA_QUERY } from '../Queries/query';
 import { cacheA, cacheM, cacheN, cacheS, cacheFilter } from '../Queries/query';
 import { getNSFW } from '../Components/storagehooks';
 
@@ -7,9 +7,10 @@ const url = 'https://graphql.anilist.co';
 const perPage = 8;
 
 const date = new Date();
+export const time = date.getTime();
 let year = date.getFullYear();
-let nextYear = year;
 let month = date.getMonth() + 1;
+let nextYear = year;
 let season = '';
 let nextSeason = '';
 
@@ -30,11 +31,23 @@ if (month <= 3 ) {
     nextYear +=1;
 }
 
-export const getSeason = async (page=1, isAdult=undefined) => {
+export const getDateDiff = (createdAt) => {
+    let timeDifference = time - createdAt;
+    const daysDif = Math.floor(timeDifference/1000/60/60/24);
+
+    const hoursDif = Math.floor(timeDifference/1000/60/60);
+
+    const minutesDif = Math.floor(timeDifference/1000/60);
+
+    const secondsDif = Math.floor(timeDifference/1000);
+    return{daysDif, hoursDif, minutesDif, secondsDif};
+}
+
+export const getSeason = async (page=1, isAdult=undefined, token=undefined) => {
     try {
         if (cacheA.Season.Page.currentPage < page || Object.keys(cacheA.Season.Page).length === 0 ) {
             const data = await axios.post(url, {query: HPQUERY, variables:{page:page, perPage:perPage, isAdult: isAdult, sort:'POPULARITY_DESC', type:"ANIME", season:season, seasonYear:year}}, 
-                {headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}});
+                (typeof token !== 'string') ? {headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}} : {headers: {'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Accept': 'application/json'}} );
             const media = await data.data.data.Page.media;
             const pages = await data.data.data.Page.pageInfo;
             cacheA.Season.content = await [...cacheA.Season.content, ...media]; 
@@ -46,11 +59,11 @@ export const getSeason = async (page=1, isAdult=undefined) => {
     }
 }
 
-export const getNextSeason = async (page=1, isAdult=undefined) => {
+export const getNextSeason = async (page=1, isAdult=undefined, token=undefined) => {
     try {
         if (cacheA.NextSeason.Page.currentPage < page || Object.keys(cacheA.NextSeason.Page).length === 0) {
             const data = await axios.post(url, {query: HPQUERY, variables:{page:page, perPage:perPage, isAdult: isAdult, sort:'POPULARITY_DESC', type:"ANIME", season:nextSeason, seasonYear:nextYear}}, 
-                {headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}});
+            (typeof token !== 'string') ? {headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}} : {headers: {'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Accept': 'application/json'}});
             const media = await data.data.data.Page.media;
             const pages = await data.data.data.Page.pageInfo;
             cacheA.NextSeason.content = await [...cacheA.NextSeason.content, ...media];
@@ -62,13 +75,13 @@ export const getNextSeason = async (page=1, isAdult=undefined) => {
     }
 }
 
-export const getTrend = async (type, page=1, format=undefined, isAdult=undefined) => {
+export const getTrend = async (type, page=1, format=undefined, isAdult=undefined, token=undefined) => {
     try {
         if (((type === "ANIME" && cacheA.Trending.Page.currentPage < page) || Object.keys(cacheA.Trending.Page).length === 0 ) ||
          ((type === "MANGA" && cacheM.Trending.Page.currentPage < page) || Object.keys(cacheM.Trending.Page).length === 0) || 
          ((format === "NOVEL" && cacheN.Trending.Page.currentPage < page) || Object.keys(cacheN.Trending.Page).length === 0)) {
             const data = await axios.post(url, {query: HPQUERY, variables:{page:page, perPage:perPage, sort:'TRENDING_DESC', isAdult: isAdult, format:format, type:type}}, 
-                {headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}});
+            (typeof token !== 'string') ? {headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}} : {headers: {'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Accept': 'application/json'}});
             const media = await data.data.data.Page.media;
             const pages = await data.data.data.Page.pageInfo;
             if (type === "ANIME") {cacheA.Trending.content = [...cacheA.Trending.content, ...media]; cacheA.Trending.Page = pages; return cacheA.Trending.content;}
@@ -80,13 +93,13 @@ export const getTrend = async (type, page=1, format=undefined, isAdult=undefined
     }
 }
 
-export const getPopular = async (type, page=1, format=undefined, isAdult=undefined) => {
+export const getPopular = async (type, page=1, format=undefined, isAdult=undefined, token=undefined) => {
     try {
         if ((type === "ANIME" && cacheA.Popular.Page.currentPage < page || Object.keys(cacheA.Popular.Page).length === 0) || 
         (type === "MANGA" && cacheM.Popular.Page.currentPage < page || Object.keys(cacheM.Popular.Page).length === 0) || 
         (format === "NOVEL" && cacheN.Popular.Page.currentPage < page || Object.keys(cacheN.Popular.Page).length === 0)) {
             const data = await axios.post(url, {query: HPQUERY, variables:{page:page, perPage:perPage, isAdult: isAdult, sort:'POPULARITY_DESC', format:format, type:type}}, 
-                {headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}});
+            (typeof token !== 'string') ? {headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}} : {headers: {'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Accept': 'application/json'}});
             const media = await data.data.data.Page.media;
             const pages = await data.data.data.Page.pageInfo;
             if (type === "ANIME") {cacheA.Popular.content = [...cacheA.Popular.content, ...media]; cacheA.Popular.Page = pages; return cacheA.Popular.content;}
@@ -98,13 +111,13 @@ export const getPopular = async (type, page=1, format=undefined, isAdult=undefin
     }
 }
 
-export const getTop = async(type, page=1, format=undefined, isAdult=undefined) => {
+export const getTop = async(type, page=1, format=undefined, isAdult=undefined, token=undefined) => {
     try {
         if ((type === "ANIME" && cacheA.Top.Page.currentPage < page || Object.keys(cacheA.Top.Page).length === 0) || 
         (type === "MANGA" && cacheM.Top.Page.currentPage < page || Object.keys(cacheM.Top.Page).length === 0) || 
         (format === "NOVEL" && cacheN.Top.Page.currentPage < page || Object.keys(cacheN.Top.Page).length === 0)) {
             const data = await axios.post(url, {query: HPQUERY, variables:{page:page, perPage:perPage, isAdult: isAdult, sort:'SCORE_DESC', format:format, type:type}}, 
-                {headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}});
+            (typeof token !== 'string') ? {headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}} : {headers: {'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Accept': 'application/json'}});
             const media = await data.data.data.Page.media;
             const pages = await data.data.data.Page.pageInfo;
             if (type === "ANIME") {cacheA.Top.content = [...cacheA.Top.content, ...media]; cacheA.Top.Page = pages; return cacheA.Top.content;}
@@ -116,10 +129,10 @@ export const getTop = async(type, page=1, format=undefined, isAdult=undefined) =
     }
 }
 
-export const getOverview = async(id) => {
+export const getOverview = async(id, token, page=1) => {
     try {
-        const data = await axios.post(url, {query: ITEMQUERY, variables:{id:id}},
-            {headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}});
+        const data = await axios.post(url, {query: ITEMQUERY, variables:{id:id, page:page, perPage:perPage}},
+            (typeof token !== 'string') ? {headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}} : {headers: {'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Accept': 'application/json'}});
         const media = await data.data.data.Media;
         //console.log(data.headers["x-ratelimit-remaining"]);
         return media;
@@ -161,12 +174,12 @@ export const getVA = async(id, page=1) => {
     }
 }
 
-export const getSearch = async(search=undefined, origin=undefined, isAdult=undefined, page=1, type=undefined, sort='POPULARITY_DESC', format_in=undefined, format_not_in=undefined, genre_in=undefined, genre_not_in=undefined, tag_in=undefined, tag_not_in=undefined) => {
+export const getSearch = async(token=undefined, search=undefined, origin=undefined, isAdult=undefined, page=1, type=undefined, sort='POPULARITY_DESC', format_in=undefined, format_not_in=undefined, genre_in=undefined, genre_not_in=undefined, tag_in=undefined, tag_not_in=undefined) => {
     try {
         const data = await axios.post(url, {query: HPQUERY, variables:{
             page: page, perPage:10, search: search, origin:origin, type:type, isAdult:isAdult, sort:sort, format_in:format_in, format_not_in:format_not_in, genre_in:genre_in, genre_not_in:genre_not_in, tag_in:tag_in, tag_not_in:tag_not_in
         }},
-            {headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}});
+        (typeof token !== 'string') ? {headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}} : {headers: {'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Accept': 'application/json'}});
         const media = await data.data.data.Page;
         //console.log(data.headers["x-ratelimit-remaining"]);
         cacheS.Page = await media.pageInfo;
@@ -182,6 +195,30 @@ export const getUser = async(name) => {
         const data = await axios.post(url, {query: USER_QUERY, variables:{name:name}},
             {headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}});
         const media = await data.data.data.User;
+        //console.log(data.headers["x-ratelimit-remaining"]);
+        return media;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+export const getActivity = async(userId, page=1, perPage=10 ) => {
+    try {
+        const data = await axios.post(url, {query: ACTIVITY, variables:{userId:userId, page:page, perPage:perPage }},
+            {headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}});
+        const media = await data.data.data.Page;
+        //console.log(data.headers["x-ratelimit-remaining"]);
+        return media;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+export const getLists = async(userId, page=1, status, type, sort='UPDATED_TIME_DESC', perPage=12) => {
+    try {
+        const data = await axios.post(url, {query: LISTS, variables:{userId:userId, page:page, perPage:perPage, status:status, type:type, sort:sort }},
+            {headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}});
+        const media = await data.data.data.Page;
         //console.log(data.headers["x-ratelimit-remaining"]);
         return media;
     } catch (error) {
@@ -221,6 +258,28 @@ export const getFilters = async() => {
             })
         });
         return cacheFilter;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+export const getAuthUserData = async(token, page=1, perPage=10) => {
+    try {
+        const data = await axios.post(url, {query: AUTH_USER_QUERY, variables:{page:page, perPage:perPage}},
+            {headers: {'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Accept': 'application/json'}});
+        const media = await data.data.data.Viewer;
+        return media;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+export const getFollowing = async(userId, page=1, perPage=10) => {
+    try {
+        const data = await axios.post(url, {query: FOLLOWING_QUERY, variables:{userId: userId, page:page, perPage:perPage}},
+            {headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}});
+        const media = await data.data.data.Page;
+        return media;
     } catch (error) {
         console.error(error);
     }
