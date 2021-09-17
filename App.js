@@ -2,24 +2,51 @@ import 'react-native-gesture-handler';
 import React, { useState, useEffect } from "react";
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from "react-native";
-import { Icon, Text } from 'react-native-elements';
+import { Icon } from 'react-native-elements';
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import { DefaultTheme, DarkTheme, NavigationContainer, useTheme } from '@react-navigation/native';
 import { HomeStack } from "./Screens/hmtabs";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Toast from 'react-native-toast-message';
 import { SearchNav } from './Screens/search';
 import { SettingsPage, ThemeContext } from './Screens/settings';
 import { UserPage } from './Screens/userinfo';
+import { ListPage } from './Screens/lists';
 
 const BTab = createMaterialBottomTabNavigator();
+
+const MyTheme = {
+  ...DarkTheme,
+  colors: {
+    ...DarkTheme.colors,
+    primary: '#28c922',
+    inactive: '#d1d1d1',
+  }
+};
+
+const LightTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: '#28c922',
+    inactive: '#000',
+  }
+};
 
 const config = {
   screens: {
     Explore: 'explore/',
     Find: 'search/',
     Setting: 'settings/',
-    UserTab: 'user/'
+    UserTab: {
+      screens: {
+        UserPage: {
+          path: 'user/:access_token?',
+          parse: {
+            access_token: (access_token) => `${access_token}`,
+          },
+        },
+      },
+    },
   },
 };
 
@@ -30,33 +57,36 @@ const linking = {
 
 const BottomNav = () => {
   const { colors } = useTheme();
+
   return(
-    <BTab.Navigator initialRouteName='Explore' activeColor={colors.primary} inactiveColor={colors.text} shifting={true} >
+    <BTab.Navigator initialRouteName='Explore' activeColor={colors.primary} inactiveColor={colors.inactive} shifting={true} barStyle={{height:50, backgroundColor:colors.background}} >
       <BTab.Screen name='Explore' component={HomeStack} 
         options={{
-          tabBarColor: colors.background,
-          tabBarIcon: ({color}) => <Icon name='explore' type='material' color={color} size={25} />
+          tabBarIcon: ({color}) => <Icon name='explore' type='material' color={color} size={22} />
         }} 
       />
       <BTab.Screen name='Find' component={SearchNav} 
         options={{
           title:'Search',
-          tabBarColor: colors.background,
-          tabBarIcon: ({color}) => <Icon name='search' type='material' color={color} size={25} />
+          tabBarIcon: ({color}) => <Icon name='search' type='material' color={color} size={22} />
         }} 
       />
-      {/* <BTab.Screen name='UserTab' component={UserPage} 
+      <BTab.Screen name='Lists' component={ListPage}
+        options={{
+          title:'Lists',
+          tabBarIcon: ({color}) => <Icon name='view-list' type='material' color={color} size={22} />
+        }} 
+      />
+      <BTab.Screen name='UserTab' component={UserPage} 
         options={{
           title:'User',
-          tabBarColor: colors.background,
-          tabBarIcon: ({color}) => <Icon name='account-circle' type='material' color={color} size={25} />
+          tabBarIcon: ({color}) => <Icon name='account-circle' type='material' color={color} size={22} />
         }} 
-      /> */}
+      />
       <BTab.Screen name='Setting' component={SettingsPage} 
         options={{
           title:'Settings',
-          tabBarColor: colors.background,
-          tabBarIcon: ({color}) => <Icon name='settings' type='material' color={color} size={25} />
+          tabBarIcon: ({color}) => <Icon name='settings' type='material' color={color} size={22} />
         }} 
       />
     </BTab.Navigator>
@@ -83,10 +113,9 @@ const App = () => {
   return(
     <ThemeContext.Provider value={value} >
       <SafeAreaProvider>
-        <NavigationContainer linking={linking} theme={(theme === 'Light') ? DefaultTheme : DarkTheme}>
+        <NavigationContainer linking={linking} theme={(theme === 'Light') ? LightTheme : MyTheme}>
           <StatusBar translucent={true} backgroundColor='rgba(0,0,0,0)' barStyle={((theme === 'Light')) ? 'dark-content' : 'light-content'} />
           <BottomNav />
-          <Toast ref={(ref) => Toast.setRef(ref)} />
         </NavigationContainer>
       </SafeAreaProvider>
     </ThemeContext.Provider>
