@@ -1,20 +1,23 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { View, ToastAndroid } from 'react-native';
+import { View, ToastAndroid, Linking } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ListItem, Icon, Overlay, Switch, Text } from 'react-native-elements';
 import { createStackNavigator } from '@react-navigation/stack';
-import { useTheme } from '@react-navigation/native';
+import { useTheme, useFocusEffect, CommonActions } from '@react-navigation/native';
+import { getToken } from '../api/getstorage';
+import * as Keychain from 'react-native-keychain';
 
 const Stack = createStackNavigator();
 export const ThemeContext = React.createContext({theme: 'Light', setTheme: () => {}});
 
-const Settings = () => {
+const Settings = ({navigation}) => {
     const {theme, setTheme} = useContext(ThemeContext);
     const [language, setLanguage] = useState('Romaji');
     const [visTheme, setVisTheme] = useState(false);
     const [visLang, setVisLang] = useState(false);
     const [visAbout, setVisAbout] = useState(false);
     const [isNSFW, setNSFW] = useState();
+    const [token, setToken] = useState(false);
     const { colors } = useTheme();
     const options = [
         {
@@ -33,13 +36,33 @@ const Settings = () => {
             title: 'About',
             icon: 'info',
         },
+        (typeof token === 'string') ? 
+        {
+            title: 'Logout',
+            icon: 'logout',
+        } : 
+        {
+            title: 'Login',
+            icon: 'login',
+        },
     ];
 
     useEffect(() => {
         getTheme();
         getLanguage();
         getNSFW();
-    }, []);
+    }, [token]);
+
+    const getLog = async() => {
+        const token = await getToken();
+        setToken(token);
+    }
+
+    useFocusEffect(
+        React.useCallback(() => {
+            getLog();
+        }, [])
+    );
 
     const storeNSFW = async() => {
         try {
@@ -64,6 +87,13 @@ const Settings = () => {
         }
     }
 
+    const logout = async() => {
+        await Keychain.resetGenericPassword();
+        await AsyncStorage.removeItem('@UserID');
+        setToken(false);
+        Linking.openURL('goraku://user/false');
+    }
+
     const toggleOption = (id) => {
         if (id === 0) {
             setVisTheme(!visTheme);
@@ -71,6 +101,12 @@ const Settings = () => {
             setVisLang(!visLang);
         } else if (id === 3) {
             setVisAbout(!visAbout);
+        } else if (id === 4) {
+            if (typeof token === 'string') {
+                logout();
+            } else {
+                Linking.openURL('https://anilist.co/api/v2/oauth/authorize?client_id=6419&response_type=token');
+            }
         }
     }
 
@@ -148,8 +184,8 @@ const Settings = () => {
     const ShowAbout = () => {
         return(
             <Overlay isVisible={visAbout} onBackdropPress={() => setVisAbout(false)}>
-                <Text h3>Work in Progress</Text>
-                <Text>Version: 0.03</Text>
+                <Text h3>Beta</Text>
+                <Text>Version: 1.0</Text>
             </Overlay>
         );
     }
@@ -158,7 +194,7 @@ const Settings = () => {
         <View style={{ flex: 1 }}>
             {
                 options.map((item, i) => (
-                    <ListItem key={i} onPress={() => toggleOption(i)} containerStyle={{backgroundColor:colors.card}}  bottomDivider>
+                     <ListItem key={i} onPress={() => toggleOption(i)} containerStyle={{backgroundColor:colors.card}} >
                         <Icon name={item.icon} type='material' color={colors.text}  />
                         <ListItem.Content>
                             <ListItem.Title style={{color:colors.text}}>{item.title}</ListItem.Title>
@@ -167,7 +203,7 @@ const Settings = () => {
                             : null}
                         </ListItem.Content>
                         {(i === 2) ? <Switch value={isNSFW} color={colors.primary} onValueChange={toggleNSFW} /> : null}
-                        <ListItem.Chevron />
+                        {(i === 2) ? null : <ListItem.Chevron />}
                     </ListItem>
                 ))
             }

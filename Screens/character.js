@@ -44,7 +44,7 @@ export const CharacterPage = ({route}) => {
                 <Image source={{ uri: item.image.large }} onPress={() => {navigation.push('VA', {id:item.id})}} style={{ resizeMode: 'cover', width: 150, height: 200, borderRadius: 8 }}
                 />
                 <View style={{ backgroundColor: 'rgba(0,0,0,.6)', justifyContent:'center', position: 'absolute', width: 150, height: 40, bottom:0, borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}>
-                    <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={1}>{(lang === 'Native') ? item.name.native : item.name.native}</Text>
+                    <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={1}>{(lang === 'Native') ? item.name.native : item.name.full}</Text>
                     <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={1}>{item.languageV2}</Text>
                 </View>
             </View>

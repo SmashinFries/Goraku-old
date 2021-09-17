@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, ActivityIndicator, Dimensions, RefreshControl } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
+import { useTheme } from '@react-navigation/native';
 import { cacheA, cacheM, cacheN } from '../Queries/query';
 import { HomeDisplay } from '../Components/home';
 import { getSeason, getNextSeason, getTrend, getPopular, getTop, getOverview } from '../api/getdata';
 import { InfoNav } from './infopage';
 import { getNSFW } from '../Components/storagehooks';
+import { getToken } from '../api/getstorage';
 
 const Tabs = createMaterialTopTabNavigator();
 const Stack = createStackNavigator();
@@ -15,16 +17,25 @@ let nsfw = false;
 const Animetab = () => {
     const [loading, setLoading] = useState(true);
     const [refresh, setRefresh] = useState(false);
+    const [isAuth, setAuth] = useState(false);
+    const { colors } = useTheme();
 
     const getAll = async(type) => {
         const isNsfw = await getNSFW();
+        const token = await fetchToken();
         nsfw = (isNsfw === 'enabled') ? undefined : false;
-        await getSeason(1, nsfw);
-        await getNextSeason(1, nsfw);
-        await getTrend(type, 1, undefined, nsfw);
-        await getPopular(type, 1, undefined, nsfw);
-        await getTop(type, 1, undefined, nsfw);
+        await getSeason(1, nsfw, token);
+        await getNextSeason(1, nsfw, token);
+        await getTrend(type, 1, undefined, nsfw, token);
+        await getPopular(type, 1, undefined, nsfw, token);
+        await getTop(type, 1, undefined, nsfw, token);
         setLoading(false);
+    }
+
+    const fetchToken = async() => {
+        const login = await getToken();
+        setAuth(login);
+        return login;
     }
 
     const onRefresh = async() => {
@@ -47,17 +58,17 @@ const Animetab = () => {
         getAll("ANIME");
     }, []);
 
-    if (loading) return <View style={{flex:1, justifyContent:'center'}}><ActivityIndicator size='large' color='#00ff00' /></View>
+    if (loading) return <View style={{flex:1, justifyContent:'center'}}><ActivityIndicator size='large' color={colors.primary} /></View>
 
     return(
         <View>
             <ScrollView showsVerticalScrollIndicator={false} refreshControl= {<RefreshControl refreshing={refresh} onRefresh={onRefresh} /> } >
                 <View style={{flex:1, justifyContent:'flex-start'}}>
-                    <HomeDisplay data={cacheA.Season.content} page={cacheA.Season.Page} type="ANIME" section='This Season' isAdult={nsfw} />
-                    <HomeDisplay data={cacheA.NextSeason.content} page={cacheA.NextSeason.Page} type="ANIME" section='Next Season' isAdult={nsfw} />
-                    <HomeDisplay data={cacheA.Trending.content} page={cacheA.Trending.Page} type="ANIME" section='Trending' isAdult={nsfw} />
-                    <HomeDisplay data={cacheA.Popular.content} page={cacheA.Popular.Page} type="ANIME" section='Popular' isAdult={nsfw} />
-                    <HomeDisplay data={cacheA.Top.content} page={cacheA.Top.Page} type="ANIME" section='Top Rated' isAdult={nsfw} />
+                    <HomeDisplay data={cacheA.Season.content} page={cacheA.Season.Page} type="ANIME" section='This Season' isAdult={nsfw} token={isAuth} />
+                    <HomeDisplay data={cacheA.NextSeason.content} page={cacheA.NextSeason.Page} type="ANIME" section='Next Season' isAdult={nsfw} token={isAuth} />
+                    <HomeDisplay data={cacheA.Trending.content} page={cacheA.Trending.Page} type="ANIME" section='Trending' isAdult={nsfw} token={isAuth} />
+                    <HomeDisplay data={cacheA.Popular.content} page={cacheA.Popular.Page} type="ANIME" section='Popular' isAdult={nsfw} token={isAuth} />
+                    <HomeDisplay data={cacheA.Top.content} page={cacheA.Top.Page} type="ANIME" section='Top Rated' isAdult={nsfw} token={isAuth} />
                 </View>
             </ScrollView>
         </View>
@@ -67,11 +78,20 @@ const Animetab = () => {
 const Mangatab = () => {
     const [loading, setLoading] = useState(true);
     const [refresh, setRefresh] = useState(false);
+    const [isAuth, setAuth] = useState(false);
+    const { colors } = useTheme();
+
+    const fetchToken = async() => {
+        const login = await getToken();
+        setAuth(login);
+        return login;
+    }
 
     const getAll = async(type) => {
-        await getTrend(type);
-        await getPopular(type);
-        await getTop(type);
+        const token = await fetchToken();
+        await getTrend(type, 1, 'MANGA', nsfw, token);
+        await getPopular(type, 1, 'MANGA', nsfw, token);
+        await getTop(type, 1, 'MANGA', nsfw, token);
         setLoading(false);
     }
 
@@ -91,15 +111,15 @@ const Mangatab = () => {
         getAll("MANGA");
     }, []);
 
-    if (loading) return <View style={{flex:1, justifyContent:'center'}}><ActivityIndicator size='large' color='#00ff00' /></View>
+    if (loading) return <View style={{flex:1, justifyContent:'center'}}><ActivityIndicator size='large' color={colors.primary} /></View>
 
     return(
         <View>
             <ScrollView showsVerticalScrollIndicator={false} refreshControl= {<RefreshControl refreshing={refresh} onRefresh={onRefresh} /> }>
                 <View style={{flex:1, justifyContent:'flex-start'}}>
-                    <HomeDisplay data={cacheM.Trending.content} page={cacheM.Trending.Page} type="MANGA" section='Trending' />
-                    <HomeDisplay data={cacheM.Popular.content} page={cacheM.Popular.Page} type="MANGA" section='Popular' />
-                    <HomeDisplay data={cacheM.Top.content} page={cacheM.Top.Page} type="MANGA" section='Top Rated' />
+                    <HomeDisplay data={cacheM.Trending.content} page={cacheM.Trending.Page} type="MANGA" section='Trending' token={isAuth} />
+                    <HomeDisplay data={cacheM.Popular.content} page={cacheM.Popular.Page} type="MANGA" section='Popular' token={isAuth} />
+                    <HomeDisplay data={cacheM.Top.content} page={cacheM.Top.Page} type="MANGA" section='Top Rated' token={isAuth} />
                 </View>
             </ScrollView>
         </View>
@@ -109,11 +129,20 @@ const Mangatab = () => {
 const Lntab = () => {
     const [loading, setLoading] = useState(true);
     const [refresh, setRefresh] = useState(false);
+    const [isAuth, setAuth] = useState(false);
+    const { colors } = useTheme();
+
+    const fetchToken = async() => {
+        const login = await getToken();
+        setAuth(login);
+        return login;
+    }
 
     const getAll = async(type) => {
-        await getTrend(type, 1, "NOVEL");
-        await getPopular(type, 1, "NOVEL");
-        await getTop(type, 1, "NOVEL");
+        const token = await fetchToken();
+        await getTrend(type, 1, "NOVEL", nsfw, token);
+        await getPopular(type, 1, "NOVEL", nsfw, token);
+        await getTop(type, 1, "NOVEL", nsfw, token);
         setLoading(false);
     }
 
@@ -133,16 +162,16 @@ const Lntab = () => {
         getAll("MANGA");
     }, []);
 
-    if (loading) return <View style={{flex:1, justifyContent:'center'}}><ActivityIndicator size='large' color='#00ff00' /></View>
+    if (loading) return <View style={{flex:1, justifyContent:'center'}}><ActivityIndicator size='large' color={colors.primary} /></View>
 
     return(
         <View>
             {(loading === false) ?
             <ScrollView showsVerticalScrollIndicator={false} refreshControl= {<RefreshControl refreshing={refresh} onRefresh={onRefresh} /> }>
                 <View style={{flex:1, justifyContent:'flex-start'}}>
-                    <HomeDisplay data={cacheN.Trending.content} page={cacheN.Trending.Page} type="MANGA" section='Trending' />
-                    <HomeDisplay data={cacheN.Popular.content} page={cacheN.Popular.Page} type="MANGA" section='Popular' />
-                    <HomeDisplay data={cacheN.Top.content} page={cacheN.Top.Page} type="MANGA" section='Top Rated' />
+                    <HomeDisplay data={cacheN.Trending.content} page={cacheN.Trending.Page} type="NOVEL" section='Trending' token={isAuth} />
+                    <HomeDisplay data={cacheN.Popular.content} page={cacheN.Popular.Page} type="NOVEL" section='Popular' token={isAuth} />
+                    <HomeDisplay data={cacheN.Top.content} page={cacheN.Top.Page} type="NOVEL" section='Top Rated' token={isAuth} />
                 </View>
             </ScrollView>
             : <Text style={{ textAlign: 'center' }}>RIP</Text>}
@@ -151,8 +180,9 @@ const Lntab = () => {
 }
 
 const TabScreen = () => {
+    const { colors } = useTheme();
     return(
-        <Tabs.Navigator initialRouteName='Anime'>
+        <Tabs.Navigator initialRouteName='Anime' screenOptions={{tabBarPressColor:colors.primary}}>
             <Tabs.Screen name='Anime' component={Animetab} />
             <Tabs.Screen name='Manga' component={Mangatab} />
             <Tabs.Screen name='LN' component={Lntab} />
@@ -163,7 +193,7 @@ const TabScreen = () => {
 export const HomeStack = () => {
     return(
         <Stack.Navigator initialRouteName='Home'>
-            <Stack.Screen name='Home' component={TabScreen} options={{headerTitle:'Explore'}} />
+            <Stack.Screen name='Home' component={TabScreen} options={{headerTitle:'Explore', headerStyle:{height:100}}} />
             <Stack.Screen name='InfoHome' component={InfoNav} options={{headerShown:false}}/>
         </Stack.Navigator>
     );

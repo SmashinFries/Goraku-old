@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, ScrollView, ActivityIndicator, useWindowDimensions, Pressable, FlatList, Linking } from 'react-native';
-import { Chip, Text, Avatar, Image, Icon, Button, Badge } from 'react-native-elements';
+import { View, ScrollView, ActivityIndicator, useWindowDimensions, Pressable, FlatList, Linking, StatusBar, ToastAndroid, Alert } from 'react-native';
+import { Chip, Text, Avatar, Image, Icon, Button, Badge, Overlay } from 'react-native-elements';
 import RenderHTML, {HTMLContentModel, HTMLElementModel} from 'react-native-render-html';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { createStackNavigator, HeaderStyleInterpolators } from '@react-navigation/stack';
@@ -9,9 +9,14 @@ import { getOverview, getReviews } from '../api/getdata';
 import { CharacterPage, copyText } from './character';
 import { VA_Page } from './voiceactor';
 import { getLanguage } from '../Components/storagehooks';
+import { getToken } from '../api/getstorage';
+import { updateFavorite, updateProgress, updateScore, updateStatus } from '../api/updatedata';
+import DoubleClick from 'react-native-double-tap';
 
 const TopTab = createMaterialTopTabNavigator();
 const Stack = createStackNavigator();
+const types = ['Current', 'Planning', 'Completed', 'Dropped', 'Paused'];
+const scoring = Array.from({ length: (10 - 0) / .1 + 1}, (_, i) => (i * .1).toFixed(1).replace(/\.0/g, '')).reverse();
 
 export const SectionInfo = ({header, info, style=null}) => {
     const { colors } = useTheme();
@@ -47,13 +52,20 @@ const ReviewPage = ({route}) => {
 }
 
 const InfoPage = ({route}) => {
-    const [data, setData] = useState({});
+    const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [review, setReviews] = useState();
     const [tags, setTags] = useState([]);
-    const [page, setPages] = useState();
     const [lang, setLang] = useState('Romaji');
+    const [statusVis, setStatusVis] = useState(false);
+    const [progressVis, setProgressVis] = useState(false);
+    const [scoreVis, setScoreVis] = useState(false);
+    const [auth, setAuth] = useState(false);
+    const [status, setStatus] = useState(false);
+    const [progress, setProgress] = useState(0);
+    const [score, setScore] = useState(0);
 
+    StatusBar.setBarStyle('light-content');
     const navigation  = useNavigation();
     const { colors } = useTheme();
     const { width, height } = useWindowDimensions();
@@ -68,14 +80,18 @@ const InfoPage = ({route}) => {
         let temp = [];
         await fetchLang();
         if (Object.keys(data).length === 0) {
-            const content = await getOverview(id);
+            const token = await getToken();
+            setAuth(token);
+            const content = await getOverview(id, token);
             const reviews = await getReviews(id);
             content.genres.forEach((genre, idx) => {temp = [...temp, {'name': genre}]});
-            content.tags.forEach((item, index) => {temp = [...temp, {'name': item.name, 'rank': item.rank}]}); 
-            await setTags(temp);
-            await setData(content);
-            await setReviews(reviews.reviews.edges);
-            await setPages(reviews.reviews.pageInfo);
+            content.tags.forEach((item, index) => {temp = [...temp, {'name': item.name, 'rank': item.rank, 'description': item.description}]}); 
+            setTags(temp);
+            (data.length === 0) ? setData(content) : null;
+            setProgress((content.mediaListEntry !== null) ? content.mediaListEntry.progress : '0');
+            setScore((content.mediaListEntry !== null) ? content.mediaListEntry.score : '0');
+            setStatus((content.mediaListEntry !== null) ? content.mediaListEntry.status : 'Not Added');
+            setReviews(reviews.reviews.edges);
             setLoading(false);
         }
     }
@@ -88,6 +104,63 @@ const InfoPage = ({route}) => {
 
     const OverView = () => {
         const source = {html: data.description};
+
+        const StatusOverlay = () => {
+            return(
+                <Overlay isVisible={statusVis} onBackdropPress={() => setStatusVis(false)} overlayStyle={{backgroundColor:colors.card, width:width/2}}>
+                    <View >
+                        {types.map((item, index) =>
+                            (item !== status) ? <Button key={index} title={item} titleStyle={{fontSize:20, color:colors.primary}} type='clear' onPress={() => { updateStatus(auth, id, item.toUpperCase()); setStatus(item); ToastAndroid.show(`Updated to ${item}!`, ToastAndroid.SHORT); setStatusVis(false); }} /> : null
+                        )}
+                    </View>
+                </Overlay>
+            );
+        }
+
+        const ProgressOverlay = () => {
+            const numbers = Array.from(new Array(data.type === 'ANIME' ? data.episodes + 1 : data.chapters + 1).keys());
+            const random = Array.from(new Array(500).keys());
+            const _renderProgress = ({item}) => {
+                return(
+                    <View style={{flex:1, justifyContent:'center', alignContent:'center', margin:5}}>
+                        <Button 
+                        title={(item !== 0) ? item : '0'} 
+                        onPress={() => {updateProgress(auth,id,item); setProgress(item); setProgressVis(false);}} 
+                        buttonStyle={{borderRadius:8, height:80, backgroundColor:colors.primary}} 
+                        />
+                    </View>
+                );
+            }
+
+            return(
+                <Overlay isVisible={progressVis} onBackdropPress={() => setProgressVis(false)} fullScreen={true} overlayStyle={{backgroundColor:colors.card}}>
+                    <Text h3 style={{color:colors.text}}>Progress</Text>
+                    <Button icon={{name:'close', type:'material', size:20}} onPress={() => setProgressVis(false)} titleStyle={{color:'#000'}} type='clear' containerStyle={{position:'absolute', top:0, right:0, padding:8, borderRadius:8}} />
+                    <FlatList style={{marginTop:25}} windowSize={3} data={(data.episodes === null && data.chapters === null) ? random : numbers} numColumns={3} renderItem={_renderProgress} keyExtractor={(item, index) => index.toString()} showsVerticalScrollIndicator={false} />
+                </Overlay>
+            );
+        }
+
+        const ScoreOverlay = () => {
+            return(
+                <Overlay isVisible={scoreVis} onBackdropPress={() => setScoreVis(false)} overlayStyle={{backgroundColor:colors.card, width:width/2, height:180}}>
+                    <FlatList data={scoring} renderItem={({item, index}) => <Button title={item} titleStyle={{color:colors.primary}} type='clear' buttonStyle={{borderRadius:width/2}} onPress={() => {updateScore(auth, id, Number(item)); setScore(item); setScoreVis(false);}} />} keyExtractor={(item, index) => index.toString()} showsVerticalScrollIndicator={false} />
+                </Overlay>
+            );
+        }
+
+        const _tagInfo = ({item}) => {
+            return(
+                <View style={{marginVertical:5}}>
+                    <Chip 
+                    title={`${item.name} ${item.rank !== undefined ? item.rank+'%' : '' }`} 
+                    buttonStyle={{backgroundColor:colors.primary}} 
+                    containerStyle={{ marginHorizontal: 2, marginVertical: 5, paddingTop: 5 }} 
+                    onLongPress={() => (typeof item.description === 'string') ? Alert.alert('What\'\s this?', item.description) : null}
+                    />
+                </View>
+            );
+        }
 
         const _relatedMedia = ({ item }) => {
             return(
@@ -117,26 +190,43 @@ const InfoPage = ({route}) => {
         }
 
         return(
-            <View style={{paddingRight:10, paddingLeft:10, paddingBottom:10}}>
+            <View style={{paddingRight:10, paddingLeft:10}}>
                 <ScrollView showsVerticalScrollIndicator={false}>
                     <Pressable onLongPress={() => {copyText(title.romaji)}}>
                         <Text style={{ fontSize: 30, fontWeight: 'bold', flexWrap: 'wrap', color: colors.text, textAlign: 'center' }}>{(lang === 'Native') ? title.native : title.romaji}</Text>
                     </Pressable>
+                    {(auth !== false) ? <ScrollView>
+                        <View style={{flex:1, flexDirection:'row', alignItems:'center', justifyContent:'space-between', marginTop:5, borderRadius:10, borderColor:colors.border, height:65}}>
+                            <View style={{flex:1, flexDirection:'column', marginHorizontal:5,}}>
+                                <Text style={{textAlign:'center', color:colors.text}}>Status</Text>
+                                <Button title={(status !== 'Not Added') ? status : 'Not Added'} onPress={() => setStatusVis(true)} titleStyle={{color:colors.text}} buttonStyle={{borderColor:colors.primary}} type='outline' />
+                            </View>
+                            <View style={{flex:1, flexDirection:'column', marginHorizontal:5,}}>
+                                <Text style={{textAlign:'center', color:colors.text}}>Progress</Text>
+                                <Button title={`${progress}/${(data.type === 'ANIME') ? ((data.episodes !== null) ? data.episodes : '?' ) : ((data.chapters !== null) ? data.chapters : '?' )}`} onPress={() => setProgressVis(true)} titleStyle={{color:colors.text}} buttonStyle={{borderColor:colors.primary}} type='outline' />
+                            </View>
+                            <View style={{flex:1, flexDirection:'column', marginHorizontal:5,}}>
+                                <Text style={{textAlign:'center', color:colors.text}}>Score</Text>
+                                <Button title={(score !== 0) ? score : '0'} titleStyle={{color:colors.text}} buttonStyle={{borderColor:colors.primary}} type='outline' onPress={() => setScoreVis(true)} />
+                            </View>
+                        </View>
+                    </ScrollView> : null}
                     <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
                         <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-evenly', borderWidth: 1, height: 60, marginTop: 5, borderColor: colors.border }}>
                             <SectionInfo header='FORMAT' info={data.format} style={{ textTransform: (data.format !== 'TV') ? 'capitalize' : 'none', textAlign: 'center', color: colors.text }} />
-                            <SectionInfo header='SCORE' info={`${data.meanScore}%`} style={{ textAlign: 'center', color: (data.meanScore >= 75) ? 'green' : (data.meanScore < 75 && data.meanScore >= 65) ? 'orange' : 'red' }} />
-                            {(data.status !== null) ? <SectionInfo header='STATUS' info={data.status} style={{ textTransform: 'capitalize', textAlign: 'center', color: colors.text }} /> : null}
+                            {(data.meanScore !== null) ? <SectionInfo header='SCORE' info={`${data.meanScore}%`} style={{ textAlign: 'center', color: (data.meanScore >= 75) ? 'green' : (data.meanScore < 75 && data.meanScore >= 65) ? 'orange' : 'red' }} /> : null}
+                            {(data.status !== null) ? <SectionInfo header='STATUS' info={(data.status === 'NOT_YET_RELEASED') ? data.status.replaceAll('_', ' ') : data.status} style={{ textTransform: 'capitalize', textAlign: 'center', color: colors.text }} /> : null}
                             {(data.nextAiringEpisode !== null) ?<SectionInfo header='NEXT EP' info={`${(data.nextAiringEpisode.timeUntilAiring / 86400).toFixed(1)} days`} /> : null}
                             {(data.type === 'MANGA') ? <SectionInfo header='VOLUMES' info={(data.volumes !== null) ? data.volumes : 'N/A'} /> : null}
                             {(data.type === 'MANGA') ? <SectionInfo header='CHAPTERS' info={(data.chapters !== null) ? data.chapters : 'N/A'} /> : null}
                             {(data.episodes !== null) ? <SectionInfo header='EPISODES' info={data.episodes} /> : null}
-                            <SectionInfo header='DATE' info={`${data.startDate.month}/${data.startDate.day}/${data.startDate.year} - ${`${(data.endDate.year !== null) ? `${data.endDate.month}/${data.endDate.day}/${data.endDate.year}` : 'Present'}`}`} />
+                            {(data.source !== null) ? <SectionInfo header='SOURCE' info={data.source.replaceAll('_', ' ').toLowerCase()} style={{ textTransform:'capitalize', textAlign: 'center', color: colors.text }} /> : null}
+                            <SectionInfo header='DATE' info={`${(data.startDate.month !== null) ? data.startDate.month : '?'}/${ (data.startDate.day !== null) ? data.startDate.day : '?'}/${(data.startDate.year !== null) ? data.startDate.year : '?'} - ${`${(data.endDate.year !== null) ? `${data.endDate.month}/${data.endDate.day}/${data.endDate.year}` : 'Present'}`}`} />
                             {(data.studios.edges.length > 0) ? <SectionInfo header='STUDIO' info={data.studios.edges[0].node.name} /> : null}
-                            <SectionInfo header='ENGLISH TITLE' info={title.english} />
+                            {(title.english !== null) ? <SectionInfo header='ENGLISH TITLE' info={title.english} /> : null}
                         </View>
                     </ScrollView>
-                    <FlatList data={tags} horizontal={true} keyExtractor={(item, index) => index.toString()} renderItem={({ item }) => <View style={{marginVertical:5}}><Chip title={`${item.name} ${item.rank !== undefined ? item.rank+'%' : '' }`} buttonStyle={{backgroundColor:colors.primary}} containerStyle={{ marginHorizontal: 2, marginVertical: 5, paddingTop: 5 }} /></View>} showsHorizontalScrollIndicator={false}/>
+                    <FlatList data={tags} horizontal={true} keyExtractor={(item, index) => index.toString()} renderItem={_tagInfo} showsHorizontalScrollIndicator={false}/>
                     <View>
                         <FlatList
                             data={data.relations.edges}
@@ -169,6 +259,9 @@ const InfoPage = ({route}) => {
                     {(data.description !== '') ? <Text h3 style={{ color: colors.text }}>Description</Text> : null}
                     <RenderHTML baseStyle={{color:colors.text}} contentWidth={width} source={source} />
                 </ScrollView>
+                <StatusOverlay />
+                <ProgressOverlay />
+                <ScoreOverlay />
             </View>
         );
     }
@@ -201,46 +294,96 @@ const InfoPage = ({route}) => {
         );
     }
 
-    const Characters = () => {
-        const _characterItem = ({ item }) => {
-            return (
-                <View style={{ margin:5 }}>
-                    <Image source={{ uri: item.node.image.large }} style={{ resizeMode: 'cover', width: 180, height: 230, borderRadius: 8 }}
-                        onPress={() => {navigation.navigate('Character', {id: item.node.id, actor: item.voiceActors})}} 
-                    >
+    const CharacterItem = ({ item }) => {
+        const [liked, setLiked] = useState(false);
+
+        useEffect(() => {
+            if (item.node.isFavourite === true) {
+                setLiked(true);
+            } else {
+                setLiked(false);
+            }
+        }, []);
+
+        const handleLike = async() => {
+            if (liked === true) {
+                updateFavorite(auth, item.node.id);
+                setLiked(false);
+            } else if (liked === false) {
+                updateFavorite(auth, item.node.id);
+                setLiked(true);
+            }
+        }
+
+        return (
+            <View style={{ margin:5 }}>
+                <DoubleClick delay={300} singleTap={() => {navigation.navigate('Character', {id: item.node.id, actor: item.voiceActors})}} doubleTap={handleLike} >
+                    <Image source={{ uri: item.node.image.large }} style={{ resizeMode: 'cover', width: 180, height: 230, borderRadius: 8 }}>
                         <View style={{ position:'absolute', backgroundColor: 'rgba(0,0,0,.5)', bottom:0, width: 180, height: 40, borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}>
                             <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={1}>{(lang === 'Native') ? item.node.name.native : item.node.name.full}</Text>
                             <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={1}>{item.role}</Text>
                         </View>
                     </Image>
-                </View>
-            )
-        };
+                </DoubleClick>
+                {(liked === true) ? <Icon name='favorite' color='red' type='material' size={26} containerStyle={{position:'absolute', top:0, right:0}} /> : null}
+            </View>
+        )
+    }
+
+    const Characters = () => {
+        const [characters, setCharacters] = useState(data.characters.edges);
+        const [page, setPage] = useState(data.characters.pageInfo);
+        const [refresh, setRefresh] = useState(false);
+        const moreCharacters = async() => {
+            if (page.hasNextPage === true) {
+                const content = await getOverview(id, auth, page.currentPage + 1);
+                setCharacters([...characters, ...content.characters.edges]);
+                setPage(content.characters.pageInfo);
+            }
+        }
+
+        const onRefresh = async() => {
+            setRefresh(true);
+            const content = await getOverview(id, auth, 1);
+            setCharacters(content.characters.edges);
+            setPage(content.characters.pageInfo);
+            setRefresh(false);
+        }
 
         return(
-            <View style={{ flex: 1 }}>
-                <FlatList
-                    data={data.characters.edges}
-                    numColumns={2}
-                    columnWrapperStyle={{paddingBottom:5}}
-                    windowSize={3}
-                    renderItem={_characterItem}
-                    style={{ flexGrow: 0, paddingBottom: 10, paddingTop: 10 }}
-                    keyExtractor={(item, index) => index.toString()}
-                    contentContainerStyle={{ alignSelf: 'center', paddingBottom:20 }}
-                    showsVerticalScrollIndicator={false}
-                />
-            </View>
+            <FlatList
+                data={characters}
+                numColumns={2}
+                columnWrapperStyle={{paddingBottom:5}}
+                windowSize={3}
+                renderItem={({item}) => (<CharacterItem item={item}/>) }
+                style={{ flexGrow: 0, paddingBottom: 10, paddingTop: 10 }}
+                keyExtractor={(item, index) => index.toString()}
+                contentContainerStyle={{ alignSelf: 'center', paddingBottom:20 }}
+                showsVerticalScrollIndicator={false}
+                onEndReached={moreCharacters}
+                onEndReachedThreshold={.2}
+                onRefresh={onRefresh}
+                refreshing={refresh}
+            />
         );
     }
 
     const Recommendation = () => {
+        const [refresh, setRefresh] = useState(false);
+        const [rec, setRec] = useState(data.recommendations.edges);
+
+        const onRefresh = async() => {
+            setRefresh(true);
+            const content = await getOverview(id, auth);
+            setRec(content.recommendations.edges);
+            setRefresh(false);
+        }
+
         const _recommendedItem = ({ item }) => {
             return (
-                <View style={{ margin:5 }}>
-                    <Image source={{ uri: item.node.mediaRecommendation.coverImage.extraLarge }} style={{ resizeMode: 'cover', width: 180, height: 230, borderRadius: 8 }}
-                        onPress={() => {navigation.push('Info', {id:item.node.mediaRecommendation.id, title:item.node.mediaRecommendation.title})}}
-                    >
+                <Pressable style={{ margin:5 }} onPress={() => {navigation.push('Info', {id:item.node.mediaRecommendation.id, title:item.node.mediaRecommendation.title})}}>
+                    <Image source={{ uri: item.node.mediaRecommendation.coverImage.extraLarge }} style={{ resizeMode: 'cover', width: 180, height: 230, borderRadius: 8 }}>
                         <View style={{ position:'absolute', backgroundColor: 'rgba(0,0,0,.7)', justifyContent:'center', bottom:0, width: 180, height: 40, borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}>
                             <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={2}>{(lang === 'Native') ? item.node.mediaRecommendation.title.native : item.node.mediaRecommendation.title.romaji}</Text>
                         </View>
@@ -252,16 +395,20 @@ const InfoPage = ({route}) => {
                             : (item.node.mediaRecommendation.meanScore < 75 && item.node.mediaRecommendation.meanScore >= 65) ? 'warning'
                                 : (item.node.mediaRecommendation.meanScore < 65) ? 'error' : undefined
                         }
-                        
                     />
-                </View>
+                    {(item.node.mediaRecommendation.mediaListEntry !== null) ? 
+                    <View style={{position:'absolute', top:0, left:0, borderRadius:8, backgroundColor:'rgba(0,0,0,.6)', justifyContent:'center', height:230, width:180}}>
+                        <Text style={{color:'#FFF', textAlign:'center', fontWeight:'bold', fontSize:16}}>{item.node.mediaRecommendation.mediaListEntry.status}</Text>
+                    </View> 
+                    : null}
+                </Pressable>
             )
         };
 
         return(
             <View style={{ flex: 1 }}>
                 <FlatList
-                    data={data.recommendations.edges}
+                    data={rec}
                     numColumns={2}
                     columnWrapperStyle={{paddingBottom:5}}
                     windowSize={3}
@@ -270,6 +417,8 @@ const InfoPage = ({route}) => {
                     keyExtractor={(item, index) => index.toString()}
                     contentContainerStyle={{ alignSelf: 'center', paddingBottom:20 }}
                     showsVerticalScrollIndicator={false}
+                    refreshing={refresh}
+                    onRefresh={onRefresh}
                 />
             </View>
         );
@@ -308,10 +457,9 @@ const InfoPage = ({route}) => {
 
     return(
         <View style={{ flex: 1 }}>
-            {(data.bannerImage != null) ? <Image source={{ uri: data.bannerImage }} style={{ resizeMode:'cover', width: 450, height: 200 }} /> : <Image source={{ uri: 'https://pbs.twimg.com/media/CpdHq3BXEAEFJL1.jpg:large' }} style={{ resizeMode:'cover', width: 450, height: 200 }} />}
-            
-            <TopTab.Navigator initialRouteName='Overview' style={{ paddingBottom: 10}} screenOptions={{
-                tabBarStyle: { backgroundColor: colors.background }, tabBarScrollEnabled: true }} >
+            {(data.bannerImage != null) ? <Image source={{ uri: data.bannerImage }} style={{ resizeMode:'cover', width: 450, height: 180 }} /> : <Image source={{ uri: 'https://pbs.twimg.com/media/CpdHq3BXEAEFJL1.jpg:large' }} style={{ resizeMode:'cover', width: 450, height: 200 }} />}
+            <TopTab.Navigator initialRouteName='Overview' screenOptions={{
+                tabBarStyle: { backgroundColor: colors.background }, tabBarScrollEnabled: true}} >
                 <TopTab.Screen name='Overview' component={OverView} />
                 {(data.type === 'ANIME' && data.streamingEpisodes.length > 0) ? <TopTab.Screen name='Watch' component={Watch} /> : null}
                 <TopTab.Screen name='Characters' component={Characters} />

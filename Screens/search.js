@@ -2,13 +2,14 @@ import React, { useEffect, useState, useRef } from 'react';
 import { View, ScrollView, ActivityIndicator, FlatList, StatusBar } from 'react-native';
 import { SearchBar, Chip, Text, Button, Divider, Overlay, ListItem, Icon, Tooltip, CheckBox } from 'react-native-elements';
 import { createStackNavigator } from '@react-navigation/stack';
-import { useTheme, useRoute } from '@react-navigation/native';
+import { useTheme, useRoute, useFocusEffect } from '@react-navigation/native';
 import { getFilters, getSearch } from '../api/getdata';
 import { height, width, _ContentTile } from '../Components/customtile';
 import { InfoNav } from './infopage';
 import { getNSFW } from '../Components/storagehooks';
 import { cacheFilter } from '../Queries/query';
 import { filterObj } from '../Queries/query';
+import { getToken } from '../api/getstorage';
 
 const Stack = createStackNavigator();
 const SORT_OPTIONS = ["Trending_DESC", "Popularity_DESC", "Score_DESC"]
@@ -74,10 +75,13 @@ const SearchPage = React.memo(() => {
     const [initLoad, setInitLoad] = useState(true);
     const [text, setText] = useState('');
     const [adult, setAdult] = useState(false);
+    const [token, setToken] = useState(false);
 
     const getInitial = async() => {
+        const login = await getToken();
+        setToken(login);
         const nsfw = await getNSFW();
-        const content = await getSearch(undefined, undefined, (nsfw === true) ? undefined : false);
+        const content = await getSearch((login !== false) ? login : undefined, undefined, undefined, (nsfw === true) ? undefined : false);
         const filtering = await getFilters();
         setAdult(nsfw);
         setFilter(filtering);
@@ -87,7 +91,12 @@ const SearchPage = React.memo(() => {
         setLoading(false);
     }
 
-    if (initLoad) {<View style={{flex:1, justifyContent:'center'}}><ActivityIndicator size='large' color='#00ff00' style={{justifyContent:'center'}} /></View>}
+    const fetchToken = async() => {
+        const login = await getToken();
+        setToken(login);
+    }
+
+    if (initLoad) {<View style={{flex:1, justifyContent:'center'}}><ActivityIndicator size='large' color={colors.primary} style={{justifyContent:'center'}} /></View>}
 
     const fetchSearch = async() => {
         setLoading(true);
@@ -95,6 +104,7 @@ const SearchPage = React.memo(() => {
             {const index = filterObj.format_not.indexOf("NOVEL"); if (index > -1) filterObj.format_not.splice(index, 1)};
             (filterObj.format_in.indexOf('NOVEL') === -1) ? filterObj.format_in = [...filterObj.format_in, "NOVEL"] : null;
             const content = await getSearch(
+                token,
                 (text.length > 0) ? text : undefined, 
                 filterObj.origin,
                 (adult === false) ? false : undefined,
@@ -114,6 +124,7 @@ const SearchPage = React.memo(() => {
             {const index = filterObj.format_in.indexOf("NOVEL"); if (index > -1) filterObj.format_in.splice(index, 1)};
             (filterObj.format_not.indexOf('NOVEL') === -1) ? filterObj.format_not = [...filterObj.format_not, "NOVEL"] : null;
             const content = await getSearch(
+                token,
                 (text.length > 0) ? text : undefined,
                 filterObj.origin,
                 (adult === false) ? false : undefined,
@@ -134,6 +145,7 @@ const SearchPage = React.memo(() => {
 
     const fetchMore = async() => {
         const content = await getSearch(
+            token,
             (text.length > 0) ? text : undefined,
             (filterObj.origin === 'All') ? undefined : filterObj.origin,
             (adult === false) ? false : undefined,
@@ -241,15 +253,21 @@ const SearchPage = React.memo(() => {
         setRefresh(false);
     }
 
+    useFocusEffect(
+        React.useCallback(() => {
+            fetchToken();
+        }, [])
+    );
+
     useEffect(() => {
         getInitial();
-    }, []);
+    }, [token]);
 
     return (
         <View style={{ flex: 1, justifyContent: 'flex-start' }}>
             <View style={{ flex: 1 }}>
                 <View style={{ paddingTop: StatusBar.currentHeight, backgroundColor: colors.background }}>
-                    <SearchBar containerStyle={{ backgroundColor: 'rgba(0,0,0,0)', borderBottomColor: 'rgba(0,0,0,0)', borderTopColor: 'rgba(0,0,0,0)' }}
+                    <SearchBar containerStyle={{ backgroundColor: 'rgba(0,0,0,0)', borderBottomColor: 'rgba(0,0,0,0)', borderTopColor: 'rgba(0,0,0,0)', marginTop:5 }}
                         round={true}
                         searchIcon={{ name: 'ramen-dining', type: 'material' }}
                         placeholder='Search the sauce...'
@@ -262,9 +280,9 @@ const SearchPage = React.memo(() => {
                         onSubmitEditing={fetchSearch}
                     />
                     <View style={{ flexDirection: 'row', justifyContent: 'space-around', paddingLeft: 10, paddingRight: 10, paddingBottom: 5, borderRadius: 12 }}>
-                        <Button title={filterObj.type} titleStyle={{ fontSize: 15, textTransform: 'capitalize' }} onPress={() => setToggleType(true)} type='clear' icon={{ name: 'play-arrow', type: 'material', color: colors.text }} raised={true} containerStyle={{ borderRadius: 12, flexGrow: 1 }} buttonStyle={{ borderRadius: 12 }} />
-                        <Button title={(filterObj.origin === undefined) ? 'All' : filterObj.origin} type='clear' icon={{ name: 'emoji-people', type: 'material', color: colors.text }} onPress={() => setToggleOrigin(true)} raised={true} containerStyle={{borderRadius: 12, flexGrow:1}} buttonStyle={{ borderRadius: 12 }} />
-                        <Button title={filterObj.sort.slice(0, -5)} titleStyle={{ textTransform: 'capitalize' }} type='clear' icon={{ name: 'sort', type: 'material', color: colors.text }} onPress={() => setToggleSort(true)} raised={true} containerStyle={{ borderRadius: 12, flexGrow: 1 }} buttonStyle={{ borderRadius: 12 }} />
+                        <Button title={filterObj.type} titleStyle={{ fontSize: 15, textTransform: 'capitalize', color:colors.primary }} onPress={() => setToggleType(true)} type='clear' icon={{ name: 'play-arrow', type: 'material', color: colors.text }} raised={true} containerStyle={{ borderRadius: 12, flexGrow: 1 }} buttonStyle={{ borderRadius: 12 }} />
+                        <Button title={(filterObj.origin === undefined) ? 'All' : filterObj.origin} titleStyle={{color:colors.primary}} type='clear' icon={{ name: 'emoji-people', type: 'material', color: colors.text }} onPress={() => setToggleOrigin(true)} raised={true} containerStyle={{borderRadius: 12, flexGrow:1}} buttonStyle={{ borderRadius: 12 }} />
+                        <Button title={filterObj.sort.slice(0, -5)} titleStyle={{ textTransform: 'capitalize', color:colors.primary }} type='clear' icon={{ name: 'sort', type: 'material', color: colors.text }} onPress={() => setToggleSort(true)} raised={true} containerStyle={{ borderRadius: 12, flexGrow: 1 }} buttonStyle={{ borderRadius: 12 }} />
                         <Button type='clear' icon={{ name: 'filter-list', type: 'material', color: colors.text }} onPress={() => setToggleFilter(true)} raised={true} containerStyle={{ borderRadius: 12, flexGrow: 1 }} buttonStyle={{ borderRadius: 12 }} />
                     </View>
                     <TypeModal />
@@ -277,7 +295,7 @@ const SearchPage = React.memo(() => {
                         (data.length > 0) ?
                             <FlatList
                                 data={data}
-                                renderItem={({ item }) => <_ContentTile item={item} routeName={routeName} />}
+                                renderItem={({ item }) => <_ContentTile item={item} routeName={routeName} token={token} />}
                                 windowSize={3}
                                 numColumns={2}
                                 columnWrapperStyle={{ paddingTop: 15, paddingBottom: 20, justifyContent: 'center' }}
@@ -290,7 +308,7 @@ const SearchPage = React.memo(() => {
                             />
                             : <View>
                                 <Text h3 style={{ color: colors.text, textAlign: 'center' }}>{`No results!${'\n'}┏༼ ◉ ╭╮ ◉༽┓`}</Text>
-                            </View>
+                        </View>
                     }
                 </View>
             </View>
