@@ -190,7 +190,7 @@ const InfoPage = ({route}) => {
         }
 
         return(
-            <View style={{paddingRight:10, paddingLeft:10}}>
+            <View>
                 <ScrollView showsVerticalScrollIndicator={false}>
                     <Pressable onLongPress={() => {copyText(title.romaji)}}>
                         <Text style={{ fontSize: 30, fontWeight: 'bold', flexWrap: 'wrap', color: colors.text, textAlign: 'center' }}>{(lang === 'Native') ? title.native : title.romaji}</Text>
@@ -211,8 +211,8 @@ const InfoPage = ({route}) => {
                             </View>
                         </View>
                     </ScrollView> : null}
-                    <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-                        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-evenly', borderWidth: 1, height: 60, marginTop: 5, borderColor: colors.border }}>
+                    <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={{marginHorizontal:5, borderWidth:1, borderColor: colors.border, marginTop:5}}>
+                        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-evenly', height: 60 }}>
                             <SectionInfo header='FORMAT' info={data.format} style={{ textTransform: (data.format !== 'TV') ? 'capitalize' : 'none', textAlign: 'center', color: colors.text }} />
                             {(data.meanScore !== null) ? <SectionInfo header='SCORE' info={`${data.meanScore}%`} style={{ textAlign: 'center', color: (data.meanScore >= 75) ? 'green' : (data.meanScore < 75 && data.meanScore >= 65) ? 'orange' : 'red' }} /> : null}
                             {(data.status !== null) ? <SectionInfo header='STATUS' info={(data.status === 'NOT_YET_RELEASED') ? data.status.replaceAll('_', ' ') : data.status} style={{ textTransform: 'capitalize', textAlign: 'center', color: colors.text }} /> : null}
@@ -226,7 +226,7 @@ const InfoPage = ({route}) => {
                             {(title.english !== null) ? <SectionInfo header='ENGLISH TITLE' info={title.english} /> : null}
                         </View>
                     </ScrollView>
-                    <FlatList data={tags} horizontal={true} keyExtractor={(item, index) => index.toString()} renderItem={_tagInfo} showsHorizontalScrollIndicator={false}/>
+                    <FlatList data={tags} horizontal={true} keyExtractor={(item, index) => index.toString()} renderItem={_tagInfo} showsHorizontalScrollIndicator={false} contentContainerStyle={{marginLeft:5}}/>
                     <View>
                         <FlatList
                             data={data.relations.edges}
@@ -236,28 +236,28 @@ const InfoPage = ({route}) => {
                             renderItem={_relatedMedia}
                             style={{ flexGrow: 0, paddingBottom: 10, paddingTop: 5 }}
                             keyExtractor={(item, index) => index.toString()}
-                            contentContainerStyle={{ alignSelf: 'center' }}
+                            contentContainerStyle={{ alignSelf: 'center', marginLeft:5 }}
                             showsHorizontalScrollIndicator={false}
                         />
                     </View>
                     <View>
-                        <Text h3 style={{ color: colors.text }}>Staff</Text>
-                        <FlatList data={data.staff.edges} horizontal={true} showsHorizontalScrollIndicator={false} renderItem={_staff} /> 
+                        <Text h3 style={{ color: colors.text, paddingLeft:5 }}>Staff</Text>
+                        <FlatList data={data.staff.edges} horizontal={true} showsHorizontalScrollIndicator={false} renderItem={_staff} contentContainerStyle={{marginLeft:5}} /> 
                     </View>
                     {(data.trailer !== null) ?
                     <View>
-                        <Text h3 style={{ color: colors.text }}>Trailer</Text>
+                        <Text h3 style={{ color: colors.text, paddingLeft:5 }}>Trailer</Text>
                         <View>
                             <Image source={{uri:data.trailer.thumbnail}} resizeMode='cover' style={{height:250, width:width}} />
                             <Icon name='play-circle-filled' color='rgba(0,0,0,.7)' onPress={() => {(data.trailer.site === 'youtube') ? Linking.openURL(`vnd.youtube://${data.trailer.id}`) : Linking.openURL(`https://www.dailymotion.com/video/${data.trailer.id}`)}} type='material' size={70} containerStyle={{position:'absolute', alignSelf:'center', bottom:250/2 -40}}/>
                         </View>
                     </View> : null}
-                    {(data.externalLinks.length > 0) ? <Text h3 style={{ color: colors.text }}>External Sites</Text> : null}
+                    {(data.externalLinks.length > 0) ? <Text h3 style={{ color: colors.text, paddingLeft:5 }}>External Sites</Text> : null}
                     <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
                         {data.externalLinks.map((elem) => <Button key={elem.id} title={elem.site} containerStyle={{margin:4, borderRadius:8}} buttonStyle={{backgroundColor:'#E50914'}} onPress={() => {Linking.openURL(elem.url)}} />)}
                     </ScrollView>
-                    {(data.description !== '') ? <Text h3 style={{ color: colors.text }}>Description</Text> : null}
-                    <RenderHTML baseStyle={{color:colors.text}} contentWidth={width} source={source} />
+                    {(data.description !== '') ? <Text h3 style={{ color: colors.text, paddingLeft:5 }}>Description</Text> : null}
+                    <RenderHTML baseStyle={{color:colors.text, paddingLeft:5}} contentWidth={width} source={source} />
                 </ScrollView>
                 <StatusOverlay />
                 <ProgressOverlay />
