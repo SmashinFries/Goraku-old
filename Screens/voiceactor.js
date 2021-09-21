@@ -73,7 +73,7 @@ export const VA_Page = ({route}) => {
         );
     }
 
-    if (loading || data === undefined) return <ActivityIndicator size='large' color='#00ff00' />
+    if (loading || data === undefined) return <View style={{flex:1, justifyContent:'center'}}><ActivityIndicator size='large' color={colors.primary} /></View>
 
     return(
         <View style={{flex:1}}>
