@@ -1,36 +1,18 @@
 import 'react-native-gesture-handler';
 import React, { useState, useEffect } from "react";
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from "react-native";
 import { Icon } from 'react-native-elements';
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
-import { DefaultTheme, DarkTheme, NavigationContainer, useTheme } from '@react-navigation/native';
+import { NavigationContainer, useTheme } from '@react-navigation/native';
 import { HomeStack } from "./Screens/hmtabs";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SearchNav } from './Screens/search';
 import { SettingsPage, ThemeContext } from './Screens/settings';
 import { UserPage } from './Screens/userinfo';
 import { ListPage } from './Screens/lists';
+import { DimTheme, LightTheme } from './Themes/themes';
 
 const BTab = createMaterialBottomTabNavigator();
-
-const MyTheme = {
-  ...DarkTheme,
-  colors: {
-    ...DarkTheme.colors,
-    primary: '#28c922',
-    inactive: '#d1d1d1',
-  }
-};
-
-const LightTheme = {
-  ...DefaultTheme,
-  colors: {
-    ...DefaultTheme.colors,
-    primary: '#28c922',
-    inactive: '#000',
-  }
-};
 
 const config = {
   screens: {
@@ -112,12 +94,10 @@ const App = () => {
 
   return(
     <ThemeContext.Provider value={value} >
-      <SafeAreaProvider>
-        <NavigationContainer linking={linking} theme={(theme === 'Light') ? LightTheme : MyTheme}>
-          <StatusBar translucent={true} backgroundColor='rgba(0,0,0,0)' barStyle={((theme === 'Light')) ? 'dark-content' : 'light-content'} />
-          <BottomNav />
-        </NavigationContainer>
-      </SafeAreaProvider>
+      <NavigationContainer linking={linking} theme={(theme === 'Light') ? LightTheme : DimTheme}>
+        <StatusBar translucent={true} backgroundColor='rgba(0,0,0,0)' barStyle={((theme === 'Light')) ? 'dark-content' : 'light-content'} />
+        <BottomNav />
+      </NavigationContainer>
     </ThemeContext.Provider>
   );
 }
