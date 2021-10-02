@@ -4,8 +4,12 @@ import { Text, Image, Divider } from 'react-native-elements';
 import RenderHTML from 'react-native-render-html';
 import { useTheme, useNavigation } from '@react-navigation/native';
 import { getVA } from '../api/getdata';
-import { copyText } from './character';
+import { CharacterPage, copyText } from './character';
 import { getLanguage } from '../Components/storagehooks';
+import { InfoNav } from './infopage';
+import { createStackNavigator } from '@react-navigation/stack';
+
+const Stack = createStackNavigator();
 
 export const VA_Page = ({route}) => {
     const [data, setData] = useState({});
@@ -13,7 +17,7 @@ export const VA_Page = ({route}) => {
     const [lang, setLang] = useState('Romaji');
     const { colors } = useTheme();
     const navigation  = useNavigation();
-    const {id, role} = route.params;
+    const {id, role, routeName} = route.params;
     const {width, height} = useWindowDimensions();
 
     const fetchLang = async () => {
@@ -36,7 +40,7 @@ export const VA_Page = ({route}) => {
         return (
             <View style={{ margin:5 }}>
                 <Image source={{ uri: item.node.image.large }} style={{ resizeMode: 'cover', width: 125, height: 180, borderRadius: 8 }}
-                    onPress={() => {navigation.push('Character', {id: item.node.id, actor: [data]})}} 
+                    onPress={() => {navigation.push((routeName === 'Info') ? 'Character' : (routeName === 'UserPage') ? 'UserFavorite' : 'SearchCharacter' ,{id: item.node.id, routeName: routeName})}} 
                 >
                     <View style={{ position:'absolute', justifyContent:'center', backgroundColor: 'rgba(0,0,0,.5)', bottom:0, width: 125, height: 40, borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}>
                         <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={1}>{(lang === 'Native') ? item.node.name.native : item.node.name.full}</Text>
@@ -51,7 +55,7 @@ export const VA_Page = ({route}) => {
         return (
             <View style={{ margin:5 }}>
                 <Image source={{ uri: item.node.coverImage.extraLarge }} style={{ resizeMode: 'cover', width: 125, height: 180, borderRadius: 8 }}
-                    onPress={() => {navigation.push('Info', {id:item.node.id, title:item.node.title})}}
+                    onPress={() => {navigation.push((routeName === 'Info') ? 'Info' : (routeName === 'UserPage') ? 'UserContent' : 'InfoSearch',{id:item.node.id, title:item.node.title})}}
                 >
                     <View style={{ position:'absolute', justifyContent:'center', backgroundColor: 'rgba(0,0,0,.5)', bottom:0, width: 125, height: 40, borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}>
                         <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={2}>{item.staffRole}</Text>
