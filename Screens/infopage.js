@@ -6,7 +6,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import { createStackNavigator, HeaderStyleInterpolators } from '@react-navigation/stack';
 import { useTheme, useNavigation, useRoute } from '@react-navigation/native';
 import { getOverview, getReviews } from '../api/getdata';
-import { CharacterPage, copyText } from './character';
+import { Character, copyText } from './character';
 import { VA_Page } from './voiceactor';
 import { getLanguage } from '../Components/storagehooks';
 import { getToken } from '../api/getstorage';
@@ -68,6 +68,7 @@ const InfoPage = ({route}) => {
     StatusBar.setBarStyle('light-content');
     const navigation  = useNavigation();
     const { colors } = useTheme();
+    const routeName = useRoute();
     const { width, height } = useWindowDimensions();
     const {id, title} = route.params;
 
@@ -104,6 +105,8 @@ const InfoPage = ({route}) => {
 
     const OverView = () => {
         const source = {html: data.description};
+        const syn = data.synonyms;
+        syn.toString();
 
         const StatusOverlay = () => {
             return(
@@ -126,7 +129,7 @@ const InfoPage = ({route}) => {
                         <Button 
                         title={(item !== 0) ? item : '0'} 
                         onPress={() => {updateProgress(auth,id,item); setProgress(item); setProgressVis(false);}} 
-                        buttonStyle={{borderRadius:8, height:80, backgroundColor:colors.primary}} 
+                        buttonStyle={{borderRadius:8, height:80, backgroundColor:(progress >= item) ? colors.primary : 'blue'}} 
                         />
                     </View>
                 );
@@ -135,7 +138,7 @@ const InfoPage = ({route}) => {
             return(
                 <Overlay isVisible={progressVis} onBackdropPress={() => setProgressVis(false)} fullScreen={true} overlayStyle={{backgroundColor:colors.card}}>
                     <Text h3 style={{color:colors.text}}>Progress</Text>
-                    <Button icon={{name:'close', type:'material', size:20}} onPress={() => setProgressVis(false)} titleStyle={{color:'#000'}} type='clear' containerStyle={{position:'absolute', top:0, right:0, padding:8, borderRadius:8}} />
+                    <Button icon={{name:'close', type:'material', size:20, color:colors.text}} onPress={() => setProgressVis(false)} titleStyle={{color:'#000'}} type='clear' containerStyle={{position:'absolute', top:0, right:0, padding:8, borderRadius:8}} />
                     <FlatList style={{marginTop:25}} windowSize={3} data={(data.episodes === null && data.chapters === null) ? random : numbers} numColumns={3} renderItem={_renderProgress} keyExtractor={(item, index) => index.toString()} showsVerticalScrollIndicator={false} />
                 </Overlay>
             );
@@ -179,7 +182,7 @@ const InfoPage = ({route}) => {
             return(
                 <View style={{ paddingTop: 5, paddingBottom: 5, paddingRight: 10}}>
                     <Image source={{ uri: item.node.image.large }} style={{ resizeMode: 'cover', width: 125, height: 180, borderRadius: 8 }}
-                        onPress={() => {navigation.push('VA', {id:item.node.id, role:item.role})}}
+                        onPress={() => {navigation.push('VA', {id:item.node.id, role:item.role, routeName:routeName.name})}}
                     />
                     <View style={{ backgroundColor: 'rgba(0,0,0,.6)', position: 'absolute', width: 125, height: 40, top: 145, borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}>
                         <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={1}>{(lang === 'Native') ? item.node.name.native : item.node.name.full}</Text>
@@ -220,13 +223,14 @@ const InfoPage = ({route}) => {
                             {(data.type === 'MANGA') ? <SectionInfo header='VOLUMES' info={(data.volumes !== null) ? data.volumes : 'N/A'} /> : null}
                             {(data.type === 'MANGA') ? <SectionInfo header='CHAPTERS' info={(data.chapters !== null) ? data.chapters : 'N/A'} /> : null}
                             {(data.episodes !== null) ? <SectionInfo header='EPISODES' info={data.episodes} /> : null}
+                            {(data.duration !== null) ? <SectionInfo header='LENGTH' info={(data.duration < 60) ? `${data.duration} min` : `${(data.duration / 60).toFixed(1)} hrs`} /> : null}
                             {(data.source !== null) ? <SectionInfo header='SOURCE' info={data.source.replaceAll('_', ' ').toLowerCase()} style={{ textTransform:'capitalize', textAlign: 'center', color: colors.text }} /> : null}
                             <SectionInfo header='DATE' info={`${(data.startDate.month !== null) ? data.startDate.month : '?'}/${ (data.startDate.day !== null) ? data.startDate.day : '?'}/${(data.startDate.year !== null) ? data.startDate.year : '?'} - ${`${(data.endDate.year !== null) ? `${data.endDate.month}/${data.endDate.day}/${data.endDate.year}` : 'Present'}`}`} />
                             {(data.studios.edges.length > 0) ? <SectionInfo header='STUDIO' info={data.studios.edges[0].node.name} /> : null}
-                            {(title.english !== null) ? <SectionInfo header='ENGLISH TITLE' info={title.english} /> : null}
+                            {(title.english !== null) ? <SectionInfo header='ENGLISH TITLE' info={title.english} /> : <SectionInfo header='SYNONYMS' info={syn} />}
                         </View>
                     </ScrollView>
-                    <FlatList data={tags} horizontal={true} keyExtractor={(item, index) => index.toString()} renderItem={_tagInfo} showsHorizontalScrollIndicator={false} contentContainerStyle={{marginLeft:5}}/>
+                    <FlatList data={tags} horizontal={true} keyExtractor={(item, index) => index.toString()} renderItem={_tagInfo} showsHorizontalScrollIndicator={false} contentContainerStyle={{marginHorizontal:5}}/>
                     <View>
                         <FlatList
                             data={data.relations.edges}
@@ -257,7 +261,7 @@ const InfoPage = ({route}) => {
                         {data.externalLinks.map((elem) => <Button key={elem.id} title={elem.site} containerStyle={{margin:4, borderRadius:8}} buttonStyle={{backgroundColor:'#E50914'}} onPress={() => {Linking.openURL(elem.url)}} />)}
                     </ScrollView>
                     {(data.description !== '') ? <Text h3 style={{ color: colors.text, paddingLeft:5 }}>Description</Text> : null}
-                    <RenderHTML baseStyle={{color:colors.text, paddingLeft:5}} contentWidth={width} source={source} />
+                    <RenderHTML baseStyle={{color:colors.text, marginHorizontal:5}} contentWidth={width} source={source} />
                 </ScrollView>
                 <StatusOverlay />
                 <ProgressOverlay />
@@ -317,7 +321,7 @@ const InfoPage = ({route}) => {
 
         return (
             <View style={{ margin:5 }}>
-                <DoubleClick delay={300} singleTap={() => {navigation.navigate('Character', {id: item.node.id, actor: item.voiceActors})}} doubleTap={handleLike} >
+                <DoubleClick delay={300} singleTap={() => {navigation.push('Character', {id: item.node.id, routeName:routeName.name})}} doubleTap={handleLike} >
                     <Image source={{ uri: item.node.image.large }} style={{ resizeMode: 'cover', width: 180, height: 230, borderRadius: 8 }}>
                         <View style={{ position:'absolute', backgroundColor: 'rgba(0,0,0,.5)', bottom:0, width: 180, height: 40, borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}>
                             <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={1}>{(lang === 'Native') ? item.node.name.native : item.node.name.full}</Text>
@@ -382,9 +386,9 @@ const InfoPage = ({route}) => {
 
         const _recommendedItem = ({ item }) => {
             return (
-                <Pressable style={{ margin:5 }} onPress={() => {navigation.push('Info', {id:item.node.mediaRecommendation.id, title:item.node.mediaRecommendation.title})}}>
-                    <Image source={{ uri: item.node.mediaRecommendation.coverImage.extraLarge }} style={{ resizeMode: 'cover', width: 180, height: 230, borderRadius: 8 }}>
-                        <View style={{ position:'absolute', backgroundColor: 'rgba(0,0,0,.7)', justifyContent:'center', bottom:0, width: 180, height: 40, borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}>
+                (item.node.mediaRecommendation !== null) ? <Pressable style={{ margin:5 }} onPress={() => {navigation.push('Info', {id:item.node.mediaRecommendation.id, title:item.node.mediaRecommendation.title})}}>
+                    <Image source={{ uri: item.node.mediaRecommendation.coverImage.extraLarge }} style={{ resizeMode: 'cover', width: 170, height: 240, borderRadius: 8 }}>
+                        <View style={{ position:'absolute', backgroundColor: 'rgba(0,0,0,.7)', justifyContent:'center', bottom:0, width: 170, height: 40, borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}>
                             <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={2}>{(lang === 'Native') ? item.node.mediaRecommendation.title.native : item.node.mediaRecommendation.title.romaji}</Text>
                         </View>
                     </Image>
@@ -397,11 +401,11 @@ const InfoPage = ({route}) => {
                         }
                     />
                     {(item.node.mediaRecommendation.mediaListEntry !== null) ? 
-                    <View style={{position:'absolute', top:0, left:0, borderRadius:8, backgroundColor:'rgba(0,0,0,.6)', justifyContent:'center', height:230, width:180}}>
+                    <View style={{position:'absolute', top:0, left:0, borderRadius:8, backgroundColor:'rgba(0,0,0,.6)', justifyContent:'center', height:240, width:170}}>
                         <Text style={{color:'#FFF', textAlign:'center', fontWeight:'bold', fontSize:16}}>{item.node.mediaRecommendation.mediaListEntry.status}</Text>
                     </View> 
                     : null}
-                </Pressable>
+                </Pressable> : null
             )
         };
 
@@ -475,8 +479,8 @@ export const InfoNav = () => {
         <Stack.Navigator screenOptions={{animationTypeForReplace:'pop', headerStyleInterpolator:HeaderStyleInterpolators.forFade}}>
             <Stack.Screen name='Info' component={InfoPage} options={{headerTransparent:true, headerMode:'float', headerTintColor:'#FFF', headerBackgroundContainerStyle:{backgroundColor:'rgba(0,0,0,.5)'}}}/>
             <Stack.Screen name='Review' component={ReviewPage} />
-            <Stack.Screen name='Character' component={CharacterPage} />
-            <Stack.Screen name='VA' component={VA_Page} options={{headerTitle:'Staff'}} />
+            <Stack.Screen name='Character' component={Character} options={{title:'Character'}} />
+            <Stack.Screen name='VA' component={VA_Page} options={{title:'Staff'}}/>
         </Stack.Navigator>
     );
 }

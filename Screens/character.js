@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, ScrollView, ActivityIndicator, useWindowDimensions, FlatList, Linking, Vibration, ToastAndroid } from 'react-native';
 import { Text, Image, Divider } from 'react-native-elements';
 import RenderHTML from 'react-native-render-html';
-import { useTheme, useNavigation } from '@react-navigation/native';
+import { useTheme, useNavigation, useRoute } from '@react-navigation/native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { getCharacter } from '../api/getdata';
 import { getLanguage } from '../Components/storagehooks';
@@ -13,13 +13,13 @@ export const copyText = async(text) => {
     Vibration.vibrate(20);
 }
 
-export const CharacterPage = ({route}) => {
+export const Character = ({route}) => {
     const [data, setData] = useState({});
     const [loading, setLoading] = useState(true);
     const [lang, setLang] = useState('Romaji');
     const { colors } = useTheme();
     const navigation  = useNavigation();
-    const {id, actor} = route.params;
+    const {id, routeName} = route.params;
     const {width, height} = useWindowDimensions();
 
     const fetchLang = async () => {
@@ -41,7 +41,7 @@ export const CharacterPage = ({route}) => {
     const _voiceActor = ({ item }) => {
         return(
             <View style={{ paddingTop: 5, paddingRight: 10}}>
-                <Image source={{ uri: item.image.large }} onPress={() => {navigation.push('VA', {id:item.id})}} style={{ resizeMode: 'cover', width: 150, height: 200, borderRadius: 8 }}
+                <Image source={{ uri: item.image.large }} onPress={() => {navigation.push((routeName === 'Info') ? 'VA' : (routeName === 'UserPage') ? 'UserVA' : 'SearchStaff', {id:item.id, role:undefined, routeName:routeName})}} style={{ resizeMode: 'cover', width: 150, height: 200, borderRadius: 8 }}
                 />
                 <View style={{ backgroundColor: 'rgba(0,0,0,.6)', justifyContent:'center', position: 'absolute', width: 150, height: 40, bottom:0, borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}>
                     <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={1}>{(lang === 'Native') ? item.name.native : item.name.full}</Text>
@@ -55,9 +55,12 @@ export const CharacterPage = ({route}) => {
         return(
             <View style={{ paddingTop: 5, paddingRight: 10}}>
                 <Image source={{ uri: item.node.coverImage.extraLarge }} style={{ resizeMode: 'cover', width: 125, height: 180, borderRadius: 8 }}
-                    onPress={() => {navigation.push('Info', {id:item.node.id, title:item.node.title})}}
+                    onPress={() => {
+                        navigation.push(
+                            (routeName === 'Info') ? 'Info' : (routeName === 'UserPage') ? 'UserContent' : 'InfoSearch', 
+                            (routeName === 'UserPage' || routeName === 'SearchPage') ? {screen:'Info', params: {id:item.node.id, title:item.node.title}} : {id:item.node.id, title:item.node.title})}}
                 />
-                <View style={{ backgroundColor: 'rgba(0,0,0,.6)', justifyContent:'center', position: 'absolute', width: 125, height: 30, bottom:0, borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}>
+                <View style={{ backgroundColor: 'rgba(0,0,0,.6)', justifyContent:'center', position: 'absolute', width: 125, height: 30, bottom:-1, borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}>
                     <Text style={{ color: '#FFF', textAlign: 'center'}} numberOfLines={1}>{item.node.format}</Text>
                 </View>
             </View>
@@ -73,7 +76,7 @@ export const CharacterPage = ({route}) => {
         );
     }
 
-    if (loading || actor === undefined) return <ActivityIndicator size='large' color='#00ff00' />
+    if (loading) return <View style={{flex:1, justifyContent:'center'}}><ActivityIndicator size='large' color={colors.primary} /></View>
 
     return(
         <View style={{flex:1}}>
@@ -101,9 +104,9 @@ export const CharacterPage = ({route}) => {
                         </View>
                     </ScrollView>
                 </View>
-                {(actor.length > 0) ? <Text h4 style={{paddingLeft:5, color:colors.text}}>Voiced By</Text> : null}
-                <FlatList
-                    data={actor}
+                {(data.media.edges[0].voiceActors.length > 0) ? <Text h4 style={{paddingLeft:5, color:colors.text}}>Voiced By</Text> : null}
+                {(data.media.edges[0].voiceActors.length > 0) ? <FlatList
+                    data={data.media.edges[0].voiceActors}
                     windowSize={3}
                     horizontal={true}
                     maxToRenderPerBatch={3}
@@ -112,7 +115,7 @@ export const CharacterPage = ({route}) => {
                     keyExtractor={(item) => item.id.toString()}
                     contentContainerStyle={{ alignSelf: 'center' }}
                     showsHorizontalScrollIndicator={false}
-                />
+                /> : null}
                 <Text h4 style={{paddingLeft:5, color:colors.text}}>Featured In</Text>
                 <FlatList
                     data={data.media.edges}
