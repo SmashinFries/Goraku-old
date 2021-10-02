@@ -38,3 +38,12 @@ export const checkUserID = async(userID) => {
         console.log('Asyncstorage ERROR:', e);
     };
 }
+
+export const getUserID = async() => {
+    try {
+        const id = await AsyncStorage.getItem('@UserID');
+        return id;
+    } catch (error) {
+        console.log('Asyncstorage ERROR:', e);
+    }
+}
