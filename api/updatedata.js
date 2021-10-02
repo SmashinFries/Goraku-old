@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { DELETE_MEDIA_ENTRY, FAVORITE_MODIFY, PROGRESS_UPDATE, SCORE_UPDATE, STATUS_UPDATE } from '../Queries/mutations';
+import { DELETE_MEDIA_ENTRY, FAVORITE_MODIFY, PROGRESS_UPDATE, SCORE_UPDATE, STATUS_UPDATE, TOGGLE_FOLLOW } from '../Queries/mutations';
 
 const url = 'https://graphql.anilist.co';
 
@@ -41,6 +41,17 @@ export const updateFavorite = async(token, characterId) => {
         const data = await axios.post(url, {query: FAVORITE_MODIFY, variables:{characterId: characterId}},
             {headers: {'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Accept': 'application/json'}});
         const updatedInfo = await data.data.data.ToggleFavourite;
+        return updatedInfo;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+export const updateFollow = async(token, userId) => {
+    try {
+        const data = await axios.post(url, {query: TOGGLE_FOLLOW, variables:{userId: userId}},
+            {headers: {'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Accept': 'application/json'}});
+        const updatedInfo = await data.data.data.ToggleFollow.isFollowing;
         return updatedInfo;
     } catch (error) {
         console.error(error);
