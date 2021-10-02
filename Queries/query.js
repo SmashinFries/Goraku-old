@@ -7,35 +7,50 @@ export const cacheFilter = [{title: 'Genres', data: []}];
 export const filterObj = {type: "ANIME", origin:undefined, format_in:[], format_not:[], filter_in: [], filter_not: [], tags_in: [], tags_not: [], genre_in: [], genre_not: [], sort:"POPULARITY_DESC"};
 export const activeList = [];
 
+const PAGE_FRAG = `
+currentPage
+lastPage
+hasNextPage
+perPage
+`;
+
+const BASICS_FRAG = `
+id
+meanScore
+type
+format
+isFavourite
+episodes
+chapters
+status(version:2)
+coverImage {
+  extraLarge
+}
+title {
+  romaji
+  english
+  native
+  userPreferred
+}
+`;
+
+const LIST_FRAG = `
+mediaListEntry{
+  id
+  status
+  progress
+}
+`;
+
 export const HPQUERY = `
-query ($id: Int, $origin: CountryCode, $isAdult: Boolean, $page: Int, $perPage: Int, $format: MediaFormat, $sort: [MediaSort], $search: String, $format_in: [MediaFormat], $format_not_in: [MediaFormat], $tag_in: [String], $tag_not_in: [String], $genre_in: [String], $genre_not_in: [String], $season: MediaSeason, $seasonYear: Int, $type: MediaType) {
+query ($id: Int, $origin: CountryCode, $onList: Boolean, $isAdult: Boolean, $page: Int, $perPage: Int, $format: MediaFormat, $sort: [MediaSort], $search: String, $format_in: [MediaFormat], $format_not_in: [MediaFormat], $tag_in: [String], $tag_not_in: [String], $genre_in: [String], $genre_not_in: [String], $season: MediaSeason, $seasonYear: Int, $type: MediaType) {
   Page (page: $page, perPage: $perPage) {
     pageInfo {
-      currentPage
-      lastPage
-      hasNextPage
-      perPage
+      ${PAGE_FRAG}
     }
-    media (id: $id, sort: $sort, countryOfOrigin:$origin, isAdult: $isAdult, search:$search, format:$format, format_in: $format_in, format_not_in: $format_not_in, tag_in: $tag_in, tag_not_in: $tag_not_in, genre_in: $genre_in, genre_not_in: $genre_not_in, season:$season, seasonYear:$seasonYear, type: $type) {
-      id
-      meanScore
-      type
-      format
-      isFavourite
-      episodes
-      chapters
-      title {
-        romaji
-        english
-        native
-      }
-      coverImage {
-        extraLarge
-      }
-      mediaListEntry{
-        id
-        status
-      }
+    media (onList: $onList, id: $id, sort: $sort, countryOfOrigin:$origin, isAdult: $isAdult, search:$search, format:$format, format_in: $format_in, format_not_in: $format_not_in, tag_in: $tag_in, tag_not_in: $tag_not_in, genre_in: $genre_in, genre_not_in: $genre_not_in, season:$season, seasonYear:$seasonYear, type: $type) {
+      ${BASICS_FRAG}
+      ${LIST_FRAG}
     }
   }
 }`;
@@ -43,18 +58,13 @@ query ($id: Int, $origin: CountryCode, $isAdult: Boolean, $page: Int, $perPage: 
 export const ITEMQUERY = `
 query ($id: Int, $page: Int, $perPage: Int) {
   Media (id:$id) {
-    format
+    ${BASICS_FRAG}
     synonyms
-    meanScore
-    type
     bannerImage
     genres
-    isFavourite
+    duration
     description(asHtml: true)
-    status
     volumes
-    chapters
-    episodes
     source(version:3)
     mediaListEntry{
       id
@@ -66,20 +76,17 @@ query ($id: Int, $page: Int, $perPage: Int) {
       edges {
         node {
           mediaRecommendation {
-            id
-            meanScore
+            coverImage{
+              extraLarge
+            }
             title {
               romaji
               english
               native
+              userPreferred
             }
-            coverImage {
-              extraLarge
-            }
-            mediaListEntry {
-              status
-              progress
-            }
+            meanScore
+            ${LIST_FRAG}
           }
         }
       }
@@ -147,15 +154,7 @@ query ($id: Int, $page: Int, $perPage: Int) {
       edges{
         relationType (version:2)
         node {
-          id
-          type
-          title {
-            romaji
-            native
-          }
-          coverImage{
-            extraLarge
-          }
+          ${BASICS_FRAG}
         }
       }
     }
@@ -198,19 +197,13 @@ export const LISTS = `
 query ($userId:Int, $page:Int, $perPage:Int, $status:MediaListStatus, $type:MediaType, $sort:[MediaListSort]) {
   Page (page:$page, perPage:$perPage) {
     pageInfo {
-      currentPage
-      hasNextPage
+      ${PAGE_FRAG}
     }
     mediaList (userId:$userId, status:$status, type:$type, sort:$sort) {
       progress
       score
       media {
-        id
-        type
-        meanScore
-        status
-        episodes
-        chapters
+        ${BASICS_FRAG}
         startDate {
           month
           year
@@ -233,8 +226,7 @@ export const ACTIVITY = `
 query ($page:Int, $perPage:Int, $userId:Int) {
   Page (page:$page, perPage:$perPage) {
     pageInfo {
-      currentPage
-      hasNextPage
+      ${PAGE_FRAG}
     }
     activities (userId:$userId, sort:ID_DESC) {
       __typename
@@ -352,9 +344,19 @@ query ($id: Int!) {
     }
     favourites
     description(asHtml:true)
-    media {
+    media (sort:[FORMAT,TITLE_ROMAJI]) {
       edges {
         id
+        voiceActors {
+          id
+          name {
+            full
+          }
+          image {
+            large
+          }
+          languageV2
+        }
         node {
           id
           title {
@@ -444,7 +446,7 @@ query ($id: Int, $page: Int, $perPage: Int, $sort: [CharacterSort]) {
 
 // Other users
 export const USER_QUERY = `
-query ($name: String) {
+query ($name: String, $page: Int, $perPage: Int) {
   User (name:$name) {
     id
     name
@@ -453,6 +455,38 @@ query ($name: String) {
     }
     bannerImage
     about
+    isFollowing
+    isFollower
+    favourites {
+      characters(page: $page, perPage: $perPage) {
+        pageInfo {
+          currentPage
+          hasNextPage
+        }
+        edges {
+          voiceActors {
+            id
+            languageV2
+            name {
+              full
+              native
+            }
+            image {
+              large
+            }
+          }
+          node {
+            id
+            name {
+              userPreferred
+            }
+            image {
+              large
+            }
+          }
+        }
+      }
+    }
     statistics {
       anime {
         count
@@ -502,6 +536,25 @@ query ($name: String) {
 }
 `;
 
+export const USER_SEARCH = `
+query ($search: String!, $page: Int, $perPage: Int) {
+  Page (page:$page, perPage:$perPage) {
+    pageInfo {
+      ${PAGE_FRAG}
+    }
+    users (search:$search, sort:SEARCH_MATCH) {
+      id
+      name
+      isFollowing
+      isFollower
+      avatar {
+        large
+      }
+    }
+  }
+}
+`;
+
 export const AUTH_USER_QUERY = `
 query ($page: Int, $perPage: Int) {
   Viewer {
@@ -525,7 +578,7 @@ query ($page: Int, $perPage: Int) {
           node {
             id
             name {
-              full
+              userPreferred
             }
             image {
               large
@@ -598,8 +651,7 @@ export const FOLLOWING_QUERY = `
 query ($userId: Int!, $page: Int, $perPage: Int) {
   Page (page:$page, perPage:$perPage) {
     pageInfo {
-      currentPage
-      hasNextPage
+      ${PAGE_FRAG}
     }
     following (userId:$userId) {
       id
@@ -607,6 +659,8 @@ query ($userId: Int!, $page: Int, $perPage: Int) {
       avatar {
         large
       }
+      isFollowing
+      isFollower
     }
   }
 }
