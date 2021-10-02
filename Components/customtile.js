@@ -8,7 +8,7 @@ import { deleteEntry, updateStatus } from "../api/updatedata";
 export const width = Dimensions.get('window').width;
 export const height = Dimensions.get('window').height;
 
-export const _ContentTile = ({ item, routeName, token }) => {
+export const _ContentTile = ({ item, routeName, token, isSearch }) => {
     const [lang, setLang] = useState('Romaji');
     const [isVisible, setVisible] = useState(false);
     const [status, setStatus] = useState((item.mediaListEntry !== null) ? item.mediaListEntry.status : null);
@@ -48,12 +48,13 @@ export const _ContentTile = ({ item, routeName, token }) => {
                 title: 'Completed',
                 onPress: () => {updateItem('COMPLETED'); ToastAndroid.show(`Updated!`, ToastAndroid.SHORT); setVisible(false);},
             },
+            (isSearch === true) ?
             {
                 title: 'Delete',
                 onPress: () => {deleteItem(); ToastAndroid.show(`Updated!`, ToastAndroid.SHORT); setVisible(false);},
                 containerStyle:{backgroundColor:'red', justifyContent:'center'},
                 titleStyle:{color:'#FFF'},
-            },
+            } : undefined,
             {
                 title: 'Go Back',
                 onPress: () => setVisible(false),
@@ -63,13 +64,13 @@ export const _ContentTile = ({ item, routeName, token }) => {
         ];
         return (
             <BottomSheet isVisible={isVisible} containerStyle={{backgroundColor:'rgba(0,0,0,0)'}} >
-                {list.map((l, i) => (
+                {list.map((l, i) => ( (l !== undefined) ?
                     <ListItem key={i} onPress={l.onPress} containerStyle={l.containerStyle}>
                         <ListItem.Content>
                             <ListItem.Title style={l.titleStyle}>{l.title}</ListItem.Title>
                         </ListItem.Content>
                     </ListItem>
-                ))}
+                : null))}
             </BottomSheet>
         );
     }
