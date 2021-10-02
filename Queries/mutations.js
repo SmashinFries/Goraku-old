@@ -37,6 +37,14 @@ mutation ($characterId: Int) {
 }
 `;
 
+export const TOGGLE_FOLLOW = `
+mutation ($userId: Int) {
+  ToggleFollow (userId: $userId) {
+    isFollowing
+  }
+}
+`;
+
 export const DELETE_MEDIA_ENTRY = `
 mutation ($id: Int) {
     DeleteMediaListEntry (id:$id) {
