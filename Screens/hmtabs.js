@@ -24,11 +24,11 @@ const Animetab = () => {
         const isNsfw = await getNSFW();
         const token = await fetchToken();
         nsfw = (isNsfw === 'enabled') ? undefined : false;
-        await getSeason(1, nsfw, token);
-        await getNextSeason(1, nsfw, token);
-        await getTrend(type, 1, undefined, nsfw, token);
-        await getPopular(type, 1, undefined, nsfw, token);
-        await getTop(type, 1, undefined, nsfw, token);
+        await getSeason(1, nsfw, token, false);
+        await getNextSeason(1, nsfw, token, false);
+        await getTrend(type, 1, undefined, nsfw, token, false);
+        await getPopular(type, 1, undefined, nsfw, token, false);
+        await getTop(type, 1, undefined, nsfw, token, false);
         setLoading(false);
     }
 
@@ -58,7 +58,7 @@ const Animetab = () => {
         getAll("ANIME");
     }, []);
 
-    if (loading) return <View style={{flex:1, justifyContent:'center'}}><ActivityIndicator size='large' color={colors.primary} /></View>
+    // if (loading) return <View style={{flex:1, justifyContent:'center'}}><ActivityIndicator size='large' color={colors.primary} /></View>
 
     return(
         <View>
@@ -89,9 +89,9 @@ const Mangatab = () => {
 
     const getAll = async(type) => {
         const token = await fetchToken();
-        await getTrend(type, 1, 'MANGA', nsfw, token);
-        await getPopular(type, 1, 'MANGA', nsfw, token);
-        await getTop(type, 1, 'MANGA', nsfw, token);
+        await getTrend(type, 1, 'MANGA', nsfw, token, false);
+        await getPopular(type, 1, 'MANGA', nsfw, token, false);
+        await getTop(type, 1, 'MANGA', nsfw, token, false);
         setLoading(false);
     }
 
@@ -140,9 +140,9 @@ const Lntab = () => {
 
     const getAll = async(type) => {
         const token = await fetchToken();
-        await getTrend(type, 1, "NOVEL", nsfw, token);
-        await getPopular(type, 1, "NOVEL", nsfw, token);
-        await getTop(type, 1, "NOVEL", nsfw, token);
+        await getTrend(type, 1, "NOVEL", nsfw, token, false);
+        await getPopular(type, 1, "NOVEL", nsfw, token, false);
+        await getTop(type, 1, "NOVEL", nsfw, token, false);
         setLoading(false);
     }
 
@@ -182,7 +182,7 @@ const Lntab = () => {
 const TabScreen = () => {
     const { colors } = useTheme();
     return(
-        <Tabs.Navigator initialRouteName='Anime' screenOptions={{tabBarPressColor:colors.primary}}>
+        <Tabs.Navigator initialRouteName='Anime' screenOptions={{tabBarPressColor:colors.primary, swipeEnabled:false}} >
             <Tabs.Screen name='Anime' component={Animetab} />
             <Tabs.Screen name='Manga' component={Mangatab} />
             <Tabs.Screen name='LN' component={Lntab} />
