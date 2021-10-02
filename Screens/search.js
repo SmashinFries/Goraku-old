@@ -1,20 +1,24 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { View, ScrollView, ActivityIndicator, FlatList, StatusBar } from 'react-native';
-import { SearchBar, Chip, Text, Button, Divider, Overlay, ListItem, Icon, Tooltip, CheckBox } from 'react-native-elements';
+import { SearchBar, Chip, Text, Button, Image, Overlay, ListItem, Icon, Tooltip, CheckBox } from 'react-native-elements';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useTheme, useRoute, useFocusEffect } from '@react-navigation/native';
-import { getFilters, getSearch } from '../api/getdata';
+import { getFilters, getSearch, getUserSearch } from '../api/getdata';
 import { height, width, _ContentTile } from '../Components/customtile';
 import { InfoNav } from './infopage';
 import { getNSFW } from '../Components/storagehooks';
-import { cacheFilter } from '../Queries/query';
-import { filterObj } from '../Queries/query';
+import { cacheFilter, filterObj } from '../Queries/query';
 import { getToken } from '../api/getstorage';
+import { RenderFollowing, _renderFollowing } from './userinfo';
+import { OtherUser } from './otheruser';
+import { Character } from './character';
+import { VA_Page } from './voiceactor';
 
 const Stack = createStackNavigator();
 const SORT_OPTIONS = ["Trending_DESC", "Popularity_DESC", "Score_DESC"]
-const TYPE_OPTIONS = ["Anime", "Manga", "Novel"];
+const TYPE_OPTIONS = ["Anime", "Manga", "Novel", "Users"];
 const ORIGIN = ["All", "Japanese", "Korean", "Chinese"];
+const LISTHIDE = {hide: false};
 
 const FilterList = ({id, tag}) => {
     const [color, setColor] = useState((filterObj.genre_in.indexOf(tag.tag) > -1 || filterObj.tags_in.indexOf(tag.tag) > -1) ? 'green' : (filterObj.genre_not.indexOf(tag.tag) > -1 || filterObj.tags_not.indexOf(tag.tag) > -1) ? 'red' : 'blue');
@@ -60,6 +64,14 @@ const FilterList = ({id, tag}) => {
     );
 }
 
+const HideList = () => {
+    const { colors } = useTheme();
+    const [checked, setChecked] = useState(LISTHIDE.hide);
+    return(
+        <CheckBox title='Hide your list' checked={checked} textStyle={{color:colors.primary}} containerStyle={{backgroundColor:colors.card, borderWidth:0}} onIconPress={() => {setChecked(!checked); LISTHIDE.hide = !checked;}} iconType='material' checkedIcon='check-box' uncheckedIcon='check-box-outline-blank' checkedColor='green'/>
+    );
+}
+
 const SearchPage = React.memo(() => {
     const { colors } = useTheme();
     const routeName = useRoute();
@@ -81,12 +93,12 @@ const SearchPage = React.memo(() => {
         const login = await getToken();
         setToken(login);
         const nsfw = await getNSFW();
-        const content = await getSearch((login !== false) ? login : undefined, undefined, undefined, (nsfw === true) ? undefined : false);
+        const content = (filterObj.type !== 'Users') ? await getSearch((login !== false) ? login : undefined, (LISTHIDE.hide === true) ? false : undefined, undefined, undefined, (nsfw === true) ? undefined : false) : await getUserSearch(text, token);
         const filtering = await getFilters();
         setAdult(nsfw);
         setFilter(filtering);
-        setData(content.media);
-        setPage(content.pageInfo.currentPage);
+        setData((filterObj.type !== 'Users') ? content.media : content.users);
+        setPage(content.pageInfo);
         setInitLoad(false);
         setLoading(false);
     }
@@ -105,6 +117,7 @@ const SearchPage = React.memo(() => {
             (filterObj.format_in.indexOf('NOVEL') === -1) ? filterObj.format_in = [...filterObj.format_in, "NOVEL"] : null;
             const content = await getSearch(
                 token,
+                (LISTHIDE.hide === true) ? false : undefined,
                 (text.length > 0) ? text : undefined, 
                 filterObj.origin,
                 (adult === false) ? false : undefined,
@@ -118,13 +131,15 @@ const SearchPage = React.memo(() => {
                 (filterObj.tags_in.length > 0) ? filterObj.tags_in : undefined,
                 (filterObj.tags_not.length > 0) ? filterObj.tags_not : undefined,
                 );
-            await setData(content.media);
+            setData(content.media);
+            setPage(content.pageInfo);
             setLoading(false);
-        } else {
+        } else if (filterObj.type.toUpperCase() === 'ANIME' || filterObj.type.toUpperCase() === 'MANGA') {
             {const index = filterObj.format_in.indexOf("NOVEL"); if (index > -1) filterObj.format_in.splice(index, 1)};
             (filterObj.format_not.indexOf('NOVEL') === -1) ? filterObj.format_not = [...filterObj.format_not, "NOVEL"] : null;
             const content = await getSearch(
                 token,
+                (LISTHIDE.hide === true) ? false : undefined,
                 (text.length > 0) ? text : undefined,
                 filterObj.origin,
                 (adult === false) ? false : undefined,
@@ -138,35 +153,44 @@ const SearchPage = React.memo(() => {
                 (filterObj.tags_in.length > 0) ? filterObj.tags_in : undefined,
                 (filterObj.tags_not.length > 0) ? filterObj.tags_not : undefined,
                 );
-            await setData(content.media);
+            setData(content.media);
+            setPage(content.pageInfo);
+            setLoading(false);
+        } else if (filterObj.type === 'Users') {
+            const content = await getUserSearch(text, token, 1);
+            setData(content.users);
+            setPage(content.pageInfo);
             setLoading(false);
         }
     }
 
     const fetchMore = async() => {
-        const content = await getSearch(
-            token,
-            (text.length > 0) ? text : undefined,
-            (filterObj.origin === 'All') ? undefined : filterObj.origin,
-            (adult === false) ? false : undefined,
-            page+1, 
-            (filterObj.type !== 'Novel') ? filterObj.type.toUpperCase() : "MANGA", 
-            filterObj.sort.toUpperCase(), 
-            (filterObj.format_in.length > 0) ? filterObj.format_in : undefined,
-            (filterObj.format_not.length > 0) ? filterObj.format_not : undefined,
-            (filterObj.genre_in.length > 0) ? filterObj.genre_in : undefined,
-            (filterObj.genre_not.length > 0) ? filterObj.genre_not : undefined,
-            (filterObj.tags_in.length > 0) ? filterObj.tags_in : undefined,
-            (filterObj.tags_not.length > 0) ? filterObj.tags_not : undefined,
-            );
-        await setData([...data, ...content.media]);
-        await setPage(content.pageInfo.currentPage);
+        if (page.hasNextPage === true) {
+            const content = (filterObj.type !== 'Users') ? await getSearch(
+                token,
+                (LISTHIDE.hide === true) ? false : undefined,
+                (text.length > 0) ? text : undefined,
+                (filterObj.origin === 'All') ? undefined : filterObj.origin,
+                (adult === false) ? false : undefined,
+                page.currentPage + 1,
+                (filterObj.type !== 'Novel') ? filterObj.type.toUpperCase() : "MANGA",
+                filterObj.sort.toUpperCase(),
+                (filterObj.format_in.length > 0) ? filterObj.format_in : undefined,
+                (filterObj.format_not.length > 0) ? filterObj.format_not : undefined,
+                (filterObj.genre_in.length > 0) ? filterObj.genre_in : undefined,
+                (filterObj.genre_not.length > 0) ? filterObj.genre_not : undefined,
+                (filterObj.tags_in.length > 0) ? filterObj.tags_in : undefined,
+                (filterObj.tags_not.length > 0) ? filterObj.tags_not : undefined,
+            ) : await getUserSearch(text, token, page.currentPage + 1);
+            setData((filterObj.type !== 'Users') ? [...data, ...content.media] : [...data, ...content.users]);
+            setPage(content.pageInfo);
+        }
     }
 
     const TypeModal = () => {
         return(
             <Overlay isVisible={toggleType} onBackdropPress={() => setToggleType(false)} overlayStyle={{backgroundColor:colors.card}} >
-                <Text h4 style={{color:colors.text}}>Select a format</Text>
+                <Text h4 style={{color:colors.text}}>Select Type</Text>
                 {
                     TYPE_OPTIONS.map((item, i) => (
                         <ListItem key={i} containerStyle={{width:200, backgroundColor:colors.card}} onPress={() => { filterObj['type'] = item; setToggleType(false); setPage(1); fetchSearch();}}>
@@ -226,6 +250,7 @@ const SearchPage = React.memo(() => {
             <Overlay animationType='fade' isVisible={toggleFilter} onBackdropPress={() => setToggleFilter(false)} overlayStyle={{backgroundColor:colors.card, width:width - 50, height:height-65}}>
                 <Text h2 style={{color:colors.text}}>Filters</Text>
                 <ScrollView showsVerticalScrollIndicator={false}>
+                    {(typeof token === 'string') ? <HideList /> : null}
                     {filter.map((elem, index) => { return(
                         <View key={index}>
                             <Text h3 style={{color:colors.text}}>{elem.title}</Text>
@@ -248,8 +273,7 @@ const SearchPage = React.memo(() => {
         setAdult(nsfw);
         setFilter(filtering);
         setData([]);
-        setPage(1);
-        await fetchSearch();
+        fetchSearch();
         setRefresh(false);
     }
 
@@ -261,7 +285,7 @@ const SearchPage = React.memo(() => {
 
     useEffect(() => {
         getInitial();
-    }, [token]);
+    }, []);
 
     return (
         <View style={{ flex: 1, justifyContent: 'flex-start' }}>
@@ -295,19 +319,21 @@ const SearchPage = React.memo(() => {
                         (data.length > 0) ?
                             <FlatList
                                 data={data}
-                                renderItem={({ item }) => <_ContentTile item={item} routeName={routeName} token={token} />}
+                                renderItem={({ item }) => (filterObj.type !== 'Users') ? <_ContentTile item={item} routeName={routeName} token={token} isSearch={true} /> : <RenderFollowing item={item} routeName={routeName.name} isAuth={(token !== false) ? true : false} />  }
                                 windowSize={3}
                                 numColumns={2}
                                 columnWrapperStyle={{ paddingTop: 15, paddingBottom: 20, justifyContent: 'center' }}
                                 keyExtractor={(item, index) => index.toString()}
+                                contentContainerStyle={{marginBottom:5}}
                                 onEndReached={fetchMore}
                                 onEndReachedThreshold={.4}
                                 showsVerticalScrollIndicator={false}
                                 refreshing={refresh}
                                 onRefresh={onRefresh}
                             />
-                            : <View>
-                                <Text h3 style={{ color: colors.text, textAlign: 'center' }}>{`No results!${'\n'}┏༼ ◉ ╭╮ ◉༽┓`}</Text>
+                        : 
+                        <View style={{flex:1, justifyContent:'center'}}>
+                            <Text h3 style={{ color: colors.text, textAlign: 'center' }}>{`No results!${'\n'}┏༼ ◉ ╭╮ ◉༽┓`}</Text>
                         </View>
                     }
                 </View>
@@ -321,6 +347,9 @@ export const SearchNav = () => {
         <Stack.Navigator>
             <Stack.Screen name='SearchPage' component={SearchPage} options={{headerShown:false}}/>
             <Stack.Screen name='InfoSearch' component={InfoNav} options={{headerShown:false}} />
+            <Stack.Screen name='UserSearch' component={OtherUser} options={({ route }) => ({ title: route.params.name, headerRight: () => (<Image source={{uri: route.params.avatar}} style={{height:50, width:50, resizeMode:'cover', marginRight:10}} />) })} />
+            <Stack.Screen name='SearchCharacter' component={Character} options={{title: 'Character'}} />
+            <Stack.Screen name='SearchStaff' component={VA_Page} options={{title: 'Staff'}} />
         </Stack.Navigator>
     );
 }
