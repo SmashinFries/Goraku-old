@@ -9,9 +9,6 @@ Goraku is a Japanese media discovery app for android utilizing the Anilist API.
 - Find tons of information about each media, character, and staff (more coming soon).
 - Curious about a character's / VA's kanji? Long press the kanji to find out what they mean!
 
-## To-do
-- Reorganize and eliminate repeated code
-
 ## About
 I started this project as a way to learn JS and React Native. There are still many features to be added so stay tuned.
 
