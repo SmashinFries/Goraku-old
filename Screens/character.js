@@ -1,11 +1,16 @@
+// React
 import React, { useEffect, useState } from 'react';
 import { View, ScrollView, ActivityIndicator, useWindowDimensions, FlatList, Linking, Vibration, ToastAndroid } from 'react-native';
+// UI
 import { Text, Image, Divider } from 'react-native-elements';
-import RenderHTML from 'react-native-render-html';
-import { useTheme, useNavigation, useRoute } from '@react-navigation/native';
+// Navigation
+import { useTheme, useNavigation } from '@react-navigation/native';
+// Data
+import Markdown from 'react-native-markdown-display';
 import Clipboard from '@react-native-clipboard/clipboard';
-import { getCharacter } from '../api/getdata';
-import { getLanguage } from '../Components/storagehooks';
+import { getCharacter } from '../Data Handler/getdata';
+import { getLanguage } from '../Storages/storagehooks';
+import { md, rules } from '../Utils/markdown';
 
 export const copyText = async(text) => {
     await Clipboard.setString(text);
@@ -24,27 +29,39 @@ export const Character = ({route}) => {
 
     const fetchLang = async () => {
         const language = await getLanguage();
-        setLang(language);
+        return language;
     }
 
     const getData = async() => {
         await fetchLang();
         const info = await getCharacter(id);
-        setData(info);
-        setLoading(false);
+        return info;
     }
 
     useEffect(() => {
-        getData();
+        let mounted = true;
+        fetchLang().then((language) => {
+            if (mounted) {
+                setLang(language);
+            }
+        });
+        getData().then((info) => {
+            if(mounted) {
+                setData(info);
+                setLoading(false);
+            }
+        });
+        return () => {mounted = false};
     }, []);
 
     const _voiceActor = ({ item }) => {
+        const language = (lang === 'Native' && item.name.native !== null) ? item.name.native : item.name.userPreferred;
         return(
             <View style={{ paddingTop: 5, paddingRight: 10}}>
                 <Image source={{ uri: item.image.large }} onPress={() => {navigation.push((routeName === 'Info') ? 'VA' : (routeName === 'UserPage') ? 'UserVA' : 'SearchStaff', {id:item.id, role:undefined, routeName:routeName})}} style={{ resizeMode: 'cover', width: 150, height: 200, borderRadius: 8 }}
                 />
                 <View style={{ backgroundColor: 'rgba(0,0,0,.6)', justifyContent:'center', position: 'absolute', width: 150, height: 40, bottom:0, borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}>
-                    <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={1}>{(lang === 'Native') ? item.name.native : item.name.full}</Text>
+                    <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={1}>{language}</Text>
                     <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={1}>{item.languageV2}</Text>
                 </View>
             </View>
@@ -128,8 +145,8 @@ export const Character = ({route}) => {
                     contentContainerStyle={{ alignSelf: 'center' }}
                     showsHorizontalScrollIndicator={false}
                 />
-                <Text h4 style={{paddingLeft:5, color:colors.text}}>Description</Text>
-                <RenderHTML source={{html: data.description}} contentWidth={width} baseStyle={{paddingHorizontal:5, color:colors.text}}/>
+                {(typeof data.description === 'string') ? <Text h4 style={{paddingLeft:5, color:colors.text}}>Description</Text> : null}
+                {(typeof data.description === 'string') ? <Markdown rules={rules} style={{body: {color:colors.text, marginHorizontal:5}}}>{md(data.description)}</Markdown> : null}
             </ScrollView>
         </View>
     );

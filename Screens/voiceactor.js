@@ -1,15 +1,16 @@
+// React
 import React, { useEffect, useState } from 'react';
 import { View, ScrollView, ActivityIndicator, useWindowDimensions, FlatList, Linking } from 'react-native';
+// UI
 import { Text, Image, Divider } from 'react-native-elements';
-import RenderHTML from 'react-native-render-html';
+// Navigation
 import { useTheme, useNavigation } from '@react-navigation/native';
-import { getVA } from '../api/getdata';
-import { CharacterPage, copyText } from './character';
-import { getLanguage } from '../Components/storagehooks';
-import { InfoNav } from './infopage';
-import { createStackNavigator } from '@react-navigation/stack';
-
-const Stack = createStackNavigator();
+// Data
+import { getVA } from '../Data Handler/getdata';
+import { copyText } from './character';
+import { getLanguage } from '../Storages/storagehooks';
+import Markdown from 'react-native-markdown-display';
+import { md, rules } from '../Utils/markdown';
 
 export const VA_Page = ({route}) => {
     const [data, setData] = useState({});
@@ -22,28 +23,51 @@ export const VA_Page = ({route}) => {
 
     const fetchLang = async () => {
         const language = await getLanguage();
-        setLang(language);
+        return(language);
     }
 
     const getData = async() => {
         await fetchLang();
         const info = await getVA(id);
-        setData(info);
-        setLoading(false);
+        return(info);
+        
     }
 
     useEffect(() => {
-        getData();
+        let mounted = true;
+        fetchLang().then((language) => {
+            if (mounted) {
+                setLang(language);
+            }
+        });
+        getData().then((info) => {
+            if (mounted) {
+                setData(info);
+                setLoading(false);
+            }
+        });
+        return () => mounted = false;
     }, []);
 
+    const grabGPS = (item) => {
+        if (routeName === 'Info') {
+            navigation.push('Info',{id:item.node.id});
+        } else if ((routeName === 'UserPage')) {
+            navigation.push('UserContent',{screen: 'Info', params:{id:item.node.id}}); 
+        } else {
+            navigation.push('InfoSearch',{screen: 'Info', params:{id:item.node.id}});
+        }
+    }
+
     const _characterItem = ({ item }) => {
+        const language = (lang === 'Native' && typeof item.node.native === 'string') ? item.node.name.native : item.node.name.userPreferred;
         return (
             <View style={{ margin:5 }}>
                 <Image source={{ uri: item.node.image.large }} style={{ resizeMode: 'cover', width: 125, height: 180, borderRadius: 8 }}
                     onPress={() => {navigation.push((routeName === 'Info') ? 'Character' : (routeName === 'UserPage') ? 'UserFavorite' : 'SearchCharacter' ,{id: item.node.id, routeName: routeName})}} 
                 >
                     <View style={{ position:'absolute', justifyContent:'center', backgroundColor: 'rgba(0,0,0,.5)', bottom:0, width: 125, height: 40, borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}>
-                        <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={1}>{(lang === 'Native') ? item.node.name.native : item.node.name.full}</Text>
+                        <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={1}>{language}</Text>
                         <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={1}>{item.role}</Text>
                     </View>
                 </Image>
@@ -55,7 +79,7 @@ export const VA_Page = ({route}) => {
         return (
             <View style={{ margin:5 }}>
                 <Image source={{ uri: item.node.coverImage.extraLarge }} style={{ resizeMode: 'cover', width: 125, height: 180, borderRadius: 8 }}
-                    onPress={() => {navigation.push((routeName === 'Info') ? 'Info' : (routeName === 'UserPage') ? 'UserContent' : 'InfoSearch',{id:item.node.id, title:item.node.title})}}
+                    onPress={() => grabGPS(item)}
                 >
                     <View style={{ position:'absolute', justifyContent:'center', backgroundColor: 'rgba(0,0,0,.5)', bottom:0, width: 125, height: 40, borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}>
                         <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={2}>{item.staffRole}</Text>
@@ -113,20 +137,36 @@ export const VA_Page = ({route}) => {
                         </View>
                     </ScrollView>
                 </View>
-                <Text h4 style={{paddingLeft:5, color:colors.text}}>{(role === undefined) ? 'Characters' : 'Roles'}</Text>
+                {(data.characters.edges.length > 0 ) ? <View style={{flex:1}}>
+                <Text h4 style={{paddingLeft:5, color:colors.text}}>{(data.characters.edges.length > 0) ? 'Characters' : 'Roles'}</Text>
                 <FlatList
-                    data={(role === undefined) ? data.characters.edges : data.staffMedia.edges }
+                    data={data.characters.edges}
                     windowSize={3}
                     horizontal={true}
                     maxToRenderPerBatch={3}
-                    renderItem={(role === undefined) ? _characterItem : _relatedMedia}
-                    style={{ flexGrow: 0, paddingBottom: 10, paddingTop: 5, paddingLeft:5 }}
+                    renderItem={_characterItem}
+                    style={{ paddingBottom: 10, paddingTop: 5, paddingLeft:5 }}
                     keyExtractor={(item) => item.id.toString()}
                     contentContainerStyle={{ alignSelf: 'center' }}
                     showsHorizontalScrollIndicator={false}
-                />
-                <Text h4 style={{paddingLeft:5, color:colors.text}}>Description</Text>
-                <RenderHTML source={{html: data.description}} contentWidth={width} baseStyle={{paddingHorizontal:5, color:colors.text}} />
+                /></View> : null}
+                {(data.staffMedia.edges.length > 0 ) ? <View style={{flex:1}}>
+                <Text h4 style={{paddingLeft:5, color:colors.text}}>Roles</Text>
+                <FlatList
+                    data={data.staffMedia.edges}
+                    windowSize={3}
+                    horizontal={true}
+                    maxToRenderPerBatch={3}
+                    renderItem={_relatedMedia}
+                    style={{ paddingBottom: 10, paddingTop: 5, paddingLeft:5 }}
+                    keyExtractor={(item) => item.id.toString()}
+                    contentContainerStyle={{ alignSelf: 'center' }}
+                    showsHorizontalScrollIndicator={false}
+                /></View> : null}
+                {(data.description !== null) ? <View style={{flex:1}}>
+                    <Text h4 style={{paddingLeft:5, color:colors.text}}>Description</Text>
+                    <Markdown rules={rules} style={{body: {color:colors.text, paddingHorizontal:5}}}>{md(data.description)}</Markdown>
+                </View> : null}
             </ScrollView>
         </View>
     );

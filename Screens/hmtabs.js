@@ -1,14 +1,18 @@
+// React
 import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, ActivityIndicator, Dimensions, RefreshControl } from 'react-native';
+import { View, Text, ScrollView, ActivityIndicator, RefreshControl } from 'react-native';
+// Navigation
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useTheme } from '@react-navigation/native';
+// Data
 import { cacheA, cacheM, cacheN } from '../Queries/query';
+import { getSeason, getNextSeason, getTrend, getPopular, getTop } from '../Data Handler/getdata';
+import { getNSFW } from '../Storages/storagehooks';
+import { getToken } from '../Storages/getstorage';
+// Components
 import { HomeDisplay } from '../Components/home';
-import { getSeason, getNextSeason, getTrend, getPopular, getTop, getOverview } from '../api/getdata';
 import { InfoNav } from './infopage';
-import { getNSFW } from '../Components/storagehooks';
-import { getToken } from '../api/getstorage';
 
 const Tabs = createMaterialTopTabNavigator();
 const Stack = createStackNavigator();
@@ -62,8 +66,8 @@ const Animetab = () => {
 
     return(
         <View>
-            <ScrollView showsVerticalScrollIndicator={false} refreshControl= {<RefreshControl refreshing={refresh} onRefresh={onRefresh} /> } >
-                <View style={{flex:1, justifyContent:'flex-start'}}>
+            <ScrollView showsVerticalScrollIndicator={false} refreshControl={<RefreshControl refreshing={refresh} onRefresh={onRefresh} />} >
+                <View style={{ flex: 1, justifyContent: 'flex-start' }}>
                     <HomeDisplay data={cacheA.Season.content} page={cacheA.Season.Page} type="ANIME" section='This Season' isAdult={nsfw} token={isAuth} />
                     <HomeDisplay data={cacheA.NextSeason.content} page={cacheA.NextSeason.Page} type="ANIME" section='Next Season' isAdult={nsfw} token={isAuth} />
                     <HomeDisplay data={cacheA.Trending.content} page={cacheA.Trending.Page} type="ANIME" section='Trending' isAdult={nsfw} token={isAuth} />
@@ -115,8 +119,8 @@ const Mangatab = () => {
 
     return(
         <View>
-            <ScrollView showsVerticalScrollIndicator={false} refreshControl= {<RefreshControl refreshing={refresh} onRefresh={onRefresh} /> }>
-                <View style={{flex:1, justifyContent:'flex-start'}}>
+            <ScrollView showsVerticalScrollIndicator={false} refreshControl={<RefreshControl refreshing={refresh} onRefresh={onRefresh} />}>
+                <View style={{ flex: 1, justifyContent: 'flex-start' }}>
                     <HomeDisplay data={cacheM.Trending.content} page={cacheM.Trending.Page} type="MANGA" section='Trending' token={isAuth} />
                     <HomeDisplay data={cacheM.Popular.content} page={cacheM.Popular.Page} type="MANGA" section='Popular' token={isAuth} />
                     <HomeDisplay data={cacheM.Top.content} page={cacheM.Top.Page} type="MANGA" section='Top Rated' token={isAuth} />
@@ -182,7 +186,7 @@ const Lntab = () => {
 const TabScreen = () => {
     const { colors } = useTheme();
     return(
-        <Tabs.Navigator initialRouteName='Anime' screenOptions={{tabBarPressColor:colors.primary, swipeEnabled:false}} >
+        <Tabs.Navigator initialRouteName='Anime' screenOptions={{tabBarPressColor:colors.primary, swipeEnabled:true}} >
             <Tabs.Screen name='Anime' component={Animetab} />
             <Tabs.Screen name='Manga' component={Mangatab} />
             <Tabs.Screen name='LN' component={Lntab} />
@@ -193,7 +197,7 @@ const TabScreen = () => {
 export const HomeStack = () => {
     return(
         <Stack.Navigator initialRouteName='Home'>
-            <Stack.Screen name='Home' component={TabScreen} options={{headerTitle:'Explore', headerStyle:{height:100}}} />
+            <Stack.Screen name='Home' component={TabScreen} options={{headerTitle:'Explore', headerStyle:{height:60}}} />
             <Stack.Screen name='InfoHome' component={InfoNav} options={{headerShown:false}}/>
         </Stack.Navigator>
     );
