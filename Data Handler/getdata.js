@@ -1,10 +1,11 @@
 import axios from 'axios';
-import { ACTIVITY, AUTH_USER_QUERY, CHARACTERS, FILTER_QUERY, FOLLOWING_QUERY, HPQUERY, ITEMQUERY, LISTS, REVIEWS, USER_QUERY, USER_SEARCH, VA_QUERY } from '../Queries/query';
+import { ACTIVITY, AIRING_NOTIFICATION, AUTH_USER_QUERY, CHARACTERS, CLEAR_NOTIFICATIONS, FILTER_QUERY, FOLLOWING_QUERY, HPQUERY, ITEMQUERY, LISTS, NOTIFICATION_Q, REVIEWS, USER_NOTIF_CHECK, USER_QUERY, USER_SEARCH, VA_QUERY } from '../Queries/query';
 import { cacheA, cacheM, cacheN, cacheS, cacheFilter } from '../Queries/query';
-import { getNSFW } from '../Components/storagehooks';
+import { getNSFW } from '../Storages/storagehooks';
+import { filterContent } from './updatedata';
 
 const url = 'https://graphql.anilist.co';
-const perPage = 8;
+const perPage = 12;
 
 const date = new Date();
 export const time = date.getTime();
@@ -32,14 +33,11 @@ if (month <= 3 ) {
 }
 
 export const getDateDiff = (createdAt) => {
-    const dateNew = new Date();
+    let dateNew = new Date();
     let timeDifference = dateNew.getTime() - createdAt;
     const daysDif = Math.floor(timeDifference/1000/60/60/24);
-
     const hoursDif = Math.floor(timeDifference/1000/60/60);
-
     const minutesDif = Math.floor(timeDifference/1000/60);
-
     const secondsDif = Math.floor(timeDifference/1000);
     return{daysDif, hoursDif, minutesDif, secondsDif};
 }
@@ -51,7 +49,8 @@ export const getSeason = async (page=1, isAdult=undefined, token=undefined, onLi
                 (typeof token !== 'string') ? {headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}} : {headers: {'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Accept': 'application/json'}} );
             const media = await data.data.data.Page.media;
             const pages = await data.data.data.Page.pageInfo;
-            cacheA.Season.content = await [...cacheA.Season.content, ...media]; 
+            const newContent = await filterContent(media, cacheA.Season.content, 'ANIME');
+            cacheA.Season.content = await [...cacheA.Season.content, ...newContent]; 
             cacheA.Season.Page = await pages;
             return cacheA.Season.content;
         }
@@ -67,7 +66,8 @@ export const getNextSeason = async (page=1, isAdult=undefined, token=undefined, 
             (typeof token !== 'string') ? {headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}} : {headers: {'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Accept': 'application/json'}});
             const media = await data.data.data.Page.media;
             const pages = await data.data.data.Page.pageInfo;
-            cacheA.NextSeason.content = await [...cacheA.NextSeason.content, ...media];
+            const newContent = await filterContent(media, cacheA.NextSeason.content, 'ANIME');
+            cacheA.NextSeason.content = await [...cacheA.NextSeason.content, ...newContent];
             cacheA.NextSeason.Page = await pages;
             return cacheA.NextSeason.content;
         }
@@ -85,9 +85,18 @@ export const getTrend = async (type, page=1, format=undefined, isAdult=undefined
             (typeof token !== 'string') ? {headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}} : {headers: {'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Accept': 'application/json'}});
             const media = await data.data.data.Page.media;
             const pages = await data.data.data.Page.pageInfo;
-            if (type === "ANIME") {cacheA.Trending.content = [...cacheA.Trending.content, ...media]; cacheA.Trending.Page = pages; return cacheA.Trending.content;}
-            if (type === "MANGA" && format !== "NOVEL") {cacheM.Trending.content = [...cacheM.Trending.content, ...media]; cacheM.Trending.Page = pages; return cacheM.Trending.content;}
-            if (format === "NOVEL") {cacheN.Trending.content = [...cacheN.Trending.content, ...media]; cacheN.Trending.Page = pages; return cacheN.Trending.content;}
+            if (type === "ANIME") {
+                const newContent = await filterContent(media, cacheA.Trending.content, type);
+                cacheA.Trending.content = [...cacheA.Trending.content, ...newContent]; cacheA.Trending.Page = pages; return cacheA.Trending.content;
+            }
+            if (type === "MANGA" && format !== "NOVEL") {
+                const newContent = await filterContent(media, cacheM.Trending.content, type);
+                cacheM.Trending.content = [...cacheM.Trending.content, ...newContent]; cacheM.Trending.Page = pages; return cacheM.Trending.content;
+            }
+            if (format === "NOVEL") {
+                const newContent = await filterContent(media, cacheN.Trending.content, 'NOVEL');
+                cacheN.Trending.content = [...cacheN.Trending.content, ...newContent]; cacheN.Trending.Page = pages; return cacheN.Trending.content;
+            }
         }
     } catch (error) {
         console.error(error);
@@ -103,9 +112,18 @@ export const getPopular = async (type, page=1, format=undefined, isAdult=undefin
             (typeof token !== 'string') ? {headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}} : {headers: {'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Accept': 'application/json'}});
             const media = await data.data.data.Page.media;
             const pages = await data.data.data.Page.pageInfo;
-            if (type === "ANIME") {cacheA.Popular.content = [...cacheA.Popular.content, ...media]; cacheA.Popular.Page = pages; return cacheA.Popular.content;}
-            if (type === "MANGA" && format !== "NOVEL") {cacheM.Popular.content = [...cacheM.Popular.content, ...media]; cacheM.Popular.Page = pages; return cacheM.Popular.content;}
-            if (format === "NOVEL") {cacheN.Popular.content = [...cacheN.Popular.content, ...media]; cacheN.Popular.Page = pages; return cacheN.Popular.content;}
+            if (type === "ANIME") {
+                const newContent = await filterContent(media, cacheA.Popular.content, type);
+                cacheA.Popular.content = [...cacheA.Popular.content, ...newContent]; cacheA.Popular.Page = pages; return cacheA.Popular.content;
+            }
+            if (type === "MANGA" && format !== "NOVEL") {
+                const newContent = await filterContent(media, cacheM.Popular.content, type);
+                cacheM.Popular.content = [...cacheM.Popular.content, ...newContent]; cacheM.Popular.Page = pages; return cacheM.Popular.content;
+            }
+            if (format === "NOVEL") {
+                const newContent = await filterContent(media, cacheN.Popular.content, 'NOVEL');
+                cacheN.Popular.content = [...cacheN.Popular.content, ...newContent]; cacheN.Popular.Page = pages; return cacheN.Popular.content;
+            }
         }
     } catch (error) {
         console.error(error);
@@ -121,9 +139,18 @@ export const getTop = async(type, page=1, format=undefined, isAdult=undefined, t
             (typeof token !== 'string') ? {headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}} : {headers: {'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Accept': 'application/json'}});
             const media = await data.data.data.Page.media;
             const pages = await data.data.data.Page.pageInfo;
-            if (type === "ANIME") {cacheA.Top.content = [...cacheA.Top.content, ...media]; cacheA.Top.Page = pages; return cacheA.Top.content;}
-            if (type === "MANGA" && format !== "NOVEL") {cacheM.Top.content = [...cacheM.Top.content, ...media]; cacheM.Top.Page = pages; return cacheM.Top.content;}
-            if (format === "NOVEL") {cacheN.Top.content = [...cacheN.Top.content, ...media]; cacheN.Top.Page = pages; return cacheN.Top.content;}
+            if (type === "ANIME") {
+                const newContent = await filterContent(media, cacheA.Top.content, type);
+                cacheA.Top.content = [...cacheA.Top.content, ...newContent]; cacheA.Top.Page = pages; return cacheA.Top.content;
+            }
+            if (type === "MANGA" && format !== "NOVEL") {
+                const newContent = await filterContent(media, cacheM.Top.content, type);
+                cacheM.Top.content = [...cacheM.Top.content, ...newContent]; cacheM.Top.Page = pages; return cacheM.Top.content;
+            }
+            if (format === "NOVEL") {
+                const newContent = await filterContent(media, cacheN.Top.content, 'NOVEL');
+                cacheN.Top.content = [...cacheN.Top.content, ...newContent]; cacheN.Top.Page = pages; return cacheN.Top.content;
+            }
         }
     } catch (error) {
         console.error(error);
@@ -166,7 +193,7 @@ export const getCharacter = async(id) => {
 
 export const getVA = async(id, page=1) => {
     try {
-        const data = await axios.post(url, {query: VA_QUERY, variables:{id:id, page:page, perPage:perPage, sort:"ROLE"}},
+        const data = await axios.post(url, {query: VA_QUERY, variables:{id:id, page:page, perPage:perPage, sort:"FAVOURITES_DESC"}},
             {headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}});
         const media = await data.data.data.Staff;
         return media;
@@ -178,7 +205,7 @@ export const getVA = async(id, page=1) => {
 export const getSearch = async(token=undefined, onList=undefined, search=undefined, origin=undefined, isAdult=undefined, page=1, type=undefined, sort='POPULARITY_DESC', format_in=undefined, format_not_in=undefined, genre_in=undefined, genre_not_in=undefined, tag_in=undefined, tag_not_in=undefined) => {
     try {
         const data = await axios.post(url, {query: HPQUERY, variables:{
-            page: page, perPage:10, onList: onList, search: search, origin:origin, type:type, isAdult:isAdult, sort:sort, format_in:format_in, format_not_in:format_not_in, genre_in:genre_in, genre_not_in:genre_not_in, tag_in:tag_in, tag_not_in:tag_not_in
+            page: page, perPage:18, onList: onList, search: search, origin:origin, type:type, isAdult:isAdult, sort:sort, format_in:format_in, format_not_in:format_not_in, genre_in:genre_in, genre_not_in:genre_not_in, tag_in:tag_in, tag_not_in:tag_not_in
         }},
         (typeof token !== 'string') ? {headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}} : {headers: {'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Accept': 'application/json'}});
         const media = await data.data.data.Page;
@@ -215,11 +242,10 @@ export const getUserSearch = async(search, token=undefined, page=1, perPage=12) 
     }
 }
 
-export const getActivity = async(userId, page=1, perPage=10 ) => {
+export const getActivity = async(userId, page=1, perPage=15, token=null) => {
     try {
         const data = await axios.post(url, {query: ACTIVITY, variables:{userId:userId, page:page, perPage:perPage }},
-            {headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}});
-        const media = await data.data.data.Page;
+            (typeof token !== 'string') ? {headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}} : {headers: {'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Accept': 'application/json'}});        const media = await data.data.data.Page;
         //console.log(data.headers["x-ratelimit-remaining"]);
         return media;
     } catch (error) {
@@ -227,7 +253,7 @@ export const getActivity = async(userId, page=1, perPage=10 ) => {
     }
 }
 
-export const getLists = async(userId, page=1, status, type, sort='UPDATED_TIME_DESC', perPage=12) => {
+export const getLists = async(userId, page=1, status, type, sort, perPage=40) => {
     try {
         const data = await axios.post(url, {query: LISTS, variables:{userId:userId, page:page, perPage:perPage, status:status, type:type, sort:sort }},
             {headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}});
@@ -293,6 +319,28 @@ export const getFollowing = async(userId, token=undefined, page=1, perPage=10) =
             (typeof token !== 'string') ? {headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}} : {headers: {'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Accept': 'application/json'}});
         const media = await data.data.data.Page;
         return media;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+export const fetchAiringNotification = async(token=undefined, type=undefined, perPage=5, page=1) => {
+    try {
+        const data = await axios.post(url, {query: AIRING_NOTIFICATION, variables:{type:type, page:page, perPage:perPage}},
+            (typeof token !== 'string') ? {headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}} : {headers: {'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Accept': 'application/json'}});
+        const media = await data.data.data;
+        return media;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+export const clearNotifications = async(token) => {
+    try {
+        const data = await axios.post(url, {query: CLEAR_NOTIFICATIONS, variables:{reset:true}},
+            (typeof token !== 'string') ? {headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}} : {headers: {'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Accept': 'application/json'}});
+        const media = await data.data.data;
+        return (typeof media.Notification['__typename'] === 'string') ? true : false;
     } catch (error) {
         console.error(error);
     }

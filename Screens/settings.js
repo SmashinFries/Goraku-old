@@ -1,20 +1,28 @@
+// React
 import React, { useContext, useEffect, useState } from 'react';
-import { View, ToastAndroid, Linking, Vibration, useWindowDimensions } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ListItem, Icon, Overlay, Switch, Text } from 'react-native-elements';
+import { View, ToastAndroid, Linking, Vibration, useWindowDimensions, ScrollView, ActivityIndicator } from 'react-native';
+// UI
+import { ListItem, Icon, Overlay, Switch, Text, Divider, Button } from 'react-native-elements';
+// Navigation
 import { createStackNavigator } from '@react-navigation/stack';
 import { useTheme, useFocusEffect } from '@react-navigation/native';
+// Data
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import { getToken } from '../api/getstorage';
+import { getToken } from '../Storages/getstorage';
 import * as Keychain from 'react-native-keychain';
 import RNFetchBlob from 'rn-fetch-blob';
-import { Button } from 'react-native-elements/dist/buttons/Button';
+import Markdown from 'react-native-markdown-display';
+import { LightTheme, themes } from '../Utils/themes';
+import { FocusAwareStatusBar } from '../Utils/dataprocess';
+
+
 
 const Stack = createStackNavigator();
-export const ThemeContext = React.createContext({theme: 'Light', setTheme: () => {}});
+export const ThemeContext = React.createContext({theme: {theme: 'Light', object:LightTheme, title:'Default'}, setTheme: () => {}});
 const android = RNFetchBlob.android;
 let dirs = RNFetchBlob.fs.dirs
-export const VERSION = 'v1.1-beta';
+export const VERSION = 'v1.2-beta';
 
 export const downloadUpdate = (link) => {
     Vibration.vibrate(100);
@@ -44,7 +52,7 @@ const Settings = () => {
     const [visAbout, setVisAbout] = useState(false);
     const [isNSFW, setNSFW] = useState();
     const [token, setToken] = useState(false);
-    const { colors } = useTheme();
+    const { colors, dark } = useTheme();
     const { width, height } = useWindowDimensions();
     const options = [
         {
@@ -186,42 +194,73 @@ const Settings = () => {
         } catch (e) {
             console.log('Asyncstorage ERROR:', e);
         };
-        setTheme(item.theme);
+        setTheme({theme: item.theme, object:item.object, title:item.title});
         setVisTheme(false);
     }
     const getTheme = async () => {
         try {
             const themeSet = await AsyncStorage.getItem('@Theme');
-            setTheme((themeSet !== null) ? themeSet : 'Light');
+            let temp = {theme:'', object:{}, title:''}
+            for (let thm in themes) {
+                if (themes[thm].theme === themeSet) {
+                    temp.theme = themes[thm].theme;
+                    temp.object = themes[thm].object;
+                    temp.title = themes[thm].title;
+                    break;
+                }
+            }
+            setTheme((typeof themeSet === 'string' && temp.theme.length > 0) ? temp : themes[0]);
         } catch (e) {
             console.log(e);
         }
     }
     const ShowTheme = () => {
-        const themes = [{ theme: 'Light' }, { theme: 'Dark' }];
         return (
-            <Overlay isVisible={visTheme} onBackdropPress={toggleTheme} overlayStyle={{ borderRadius: 8, backgroundColor:colors.card }}  >
-                {
-                    themes.map((item, i) => (
-                        <ListItem key={i} containerStyle={{ width: 200, backgroundColor:colors.card }} onPress={() => storeTheme(item)}>
-                            <ListItem.Content>
-                                <ListItem.Title style={{color:colors.text}}>{item.theme}</ListItem.Title>
-                            </ListItem.Content>
-                        </ListItem>
-                    ))
-                }
+            <Overlay fullScreen={true} isVisible={visTheme} onBackdropPress={toggleTheme} overlayStyle={{ backgroundColor:colors.card }}  >
+                <View>
+                    <Text h1 style={{color:colors.text}}>Themes</Text>
+                    <Divider color={colors.border} style={{width:width, marginBottom:5}} orientation='horizontal' width={1} />
+                    <ScrollView showsVerticalScrollIndicator={false}>
+                        <Text h3 style={{color:colors.text}}>Light</Text>
+                        <Divider color={colors.text} style={{width:width-180, marginBottom:5}} orientation='horizontal' width={1} />
+                        {
+                            themes.map((item, i) => ( (item.object.dark === false) ?
+                                <ListItem key={i} containerStyle={{backgroundColor:colors.card}} onPress={() => storeTheme(item)}>
+                                    <ListItem.Content>
+                                        <ListItem.Title style={{color:colors.text}}>{item.title}</ListItem.Title>
+                                    </ListItem.Content>
+                                </ListItem>
+                            : null))
+                        }
+                        <Text h3 style={{color:colors.text}}>Dark</Text>
+                        <Divider color={colors.text} style={{width:width-180, marginBottom:5}} orientation='horizontal' width={1} />
+                        {
+                            themes.map((item, i) => ( (item.object.dark === true) ?
+                                <ListItem key={i} containerStyle={{backgroundColor:colors.card}} onPress={() => storeTheme(item)}>
+                                    <ListItem.Content>
+                                        <ListItem.Title style={{color:colors.text}}>{item.title}</ListItem.Title>
+                                    </ListItem.Content>
+                                </ListItem>
+                            : null))
+                        }
+                    </ScrollView>
+                    <Button icon={{name:'close', type:'material', color:colors.text, size:25}} onPress={toggleTheme} containerStyle={{position:'absolute', top:15, right:15, borderRadius:100}} buttonStyle={{backgroundColor:'rgba(0,0,0,0)'}} />
+                </View>
             </Overlay>
         );
     }
 
     const ShowChangelog = () => {
         const [changelog, setChangeLog] = useState('');
+        const [load, setLoad] = useState(false);
         const [tag, setTag] = useState('');
         getChanges = async() => {
             try {
+                setLoad(true);
                 const update = await axios.request(`https://api.github.com/repos/smashinfries/goraku/releases/tags/${VERSION}`);
                 setChangeLog(update.data.body);
                 setTag(update.data.tag_name);
+                setLoad(false);
             } catch (error) {
                 console.error(error);
             }
@@ -232,11 +271,17 @@ const Settings = () => {
         },[]);
 
         return(
-            <Overlay isVisible={visAbout} onBackdropPress={() => setVisAbout(false)} overlayStyle={{backgroundColor:colors.card, width:width/1.15}}>
-                <Text h2 style={{color:colors.text}}>Changelog</Text>
-                <Text h3 style={{color:colors.text}}>{tag}</Text>
-                <Text style={{color:colors.text}}>{changelog}</Text>
-                <Button icon={{name:'close', type:'material', size:20, color:colors.text}} onPress={() => setVisAbout(false)} titleStyle={{color:'#000'}} type='clear' containerStyle={{position:'absolute', top:0, right:0, padding:8, borderRadius:8}} />
+            <Overlay isVisible={visAbout} onBackdropPress={() => setVisAbout(false)} overlayStyle={{ backgroundColor: colors.card, width: width / 1.15, minHeight:50 }}>
+                {(load !== true) ? 
+                <View>
+                    <Text h2 style={{ color: colors.text }}>{tag}</Text>
+                    <Divider />
+                    <ScrollView showsVerticalScrollIndicator={false}>
+                        <Markdown style={{ body: { color: colors.text } }}>{changelog}</Markdown>
+                    </ScrollView>
+                    <Button icon={{ name: 'close', type: 'material', size: 20, color: colors.text }} onPress={() => setVisAbout(false)} titleStyle={{ color: '#000' }} type='clear' containerStyle={{ position: 'absolute', top: 0, right: 0, padding: 8, borderRadius: 8 }} />
+                </View>
+                    : <View style={{ flex: 1, justifyContent: 'center', height:50 }}><ActivityIndicator size='large' color={colors.primary} /></View>}
             </Overlay>
         );
     }
@@ -253,13 +298,14 @@ const Settings = () => {
 
     return(
         <View style={{ flex: 1 }}>
+            <FocusAwareStatusBar barStyle={(dark === true) ? 'light-content' : 'dark-content' } translucent={true} />
             {
                 options.map((item, i) => (
                      <ListItem key={i} onPress={() => toggleOption(i)} containerStyle={{backgroundColor:colors.card}} >
                         <Icon name={item.icon} type='material' color={colors.primary}  />
                         <ListItem.Content>
                             <ListItem.Title style={{color:colors.text}}>{item.title}</ListItem.Title>
-                            {(i == 0) ? <ListItem.Subtitle style={{color:colors.text}}>{theme}</ListItem.Subtitle> 
+                            {(i == 0) ? <ListItem.Subtitle style={{color:colors.text}}>{theme.title}</ListItem.Subtitle> 
                             : (i == 1) ? <ListItem.Subtitle style={{color:colors.text}}>{language}</ListItem.Subtitle>
                             : null}
                         </ListItem.Content>
