@@ -17,6 +17,7 @@ perPage
 const BASICS_FRAG = `
 id
 meanScore
+averageScore
 type
 format
 isFavourite
@@ -39,6 +40,94 @@ mediaListEntry{
   id
   status
   progress
+  score
+}
+`;
+
+const STAT_FRAG = `
+statistics {
+  anime {
+    count
+    minutesWatched
+    episodesWatched
+    statuses (sort:PROGRESS_DESC){
+      status
+      count
+    }
+    tags (limit:10, sort:COUNT_DESC){
+      count
+      tag {
+        id
+        description
+        name
+      }
+      minutesWatched
+    }
+    staff(limit:5, sort:COUNT_DESC) {
+      count
+      minutesWatched
+      staff {
+        id
+        primaryOccupations
+        name {
+          full
+          userPreferred
+        }
+        image{
+          large
+        }
+      }
+    }
+    voiceActors(limit:5, sort:COUNT_DESC) {
+      count
+      minutesWatched
+      voiceActor {
+        id
+        primaryOccupations
+        name {
+          full
+          userPreferred
+        }
+        image{
+          large
+        }
+      }
+    }
+  }
+  manga {
+    count
+    chaptersRead
+    volumesRead
+    statuses (sort:PROGRESS_DESC) {
+      status
+      count
+      chaptersRead
+    }
+    tags (limit:10, sort:COUNT_DESC) {
+      count
+      tag {
+        id
+        description
+        name
+      }
+      chaptersRead
+    }
+    staff(limit:5, sort:COUNT_DESC) {
+      count
+      chaptersRead
+      staff{
+        id
+        primaryOccupations
+        name {
+          full
+          userPreferred
+        }
+        image {
+          large
+        }
+      }
+    }
+  }
 }
 `;
 
@@ -63,19 +152,15 @@ query ($id: Int, $page: Int, $perPage: Int) {
     bannerImage
     genres
     duration
-    description(asHtml: true)
+    description(asHtml: false)
     volumes
     source(version:3)
-    mediaListEntry{
-      id
-      status
-      progress
-      score
-    }
+    ${LIST_FRAG}
     recommendations {
       edges {
         node {
           mediaRecommendation {
+            id
             coverImage{
               extraLarge
             }
@@ -200,10 +285,24 @@ query ($userId:Int, $page:Int, $perPage:Int, $status:MediaListStatus, $type:Medi
       ${PAGE_FRAG}
     }
     mediaList (userId:$userId, status:$status, type:$type, sort:$sort) {
+      id
       progress
       score
+      updatedAt
+      createdAt
+      startedAt {
+        year
+        month
+        day
+      }
       media {
         ${BASICS_FRAG}
+        rankings {
+          rank
+          type
+          season
+          allTime
+        }
         startDate {
           month
           year
@@ -222,6 +321,23 @@ query ($userId:Int, $page:Int, $perPage:Int, $status:MediaListStatus, $type:Medi
 }
 `;
 
+const REPLY_FRAG = `
+replies {
+  id
+  text
+  likeCount
+  isLiked
+  createdAt
+  user {
+    id
+    name
+    avatar {
+      large
+    }
+  }
+}
+`;
+
 export const ACTIVITY = `
 query ($page:Int, $perPage:Int, $userId:Int) {
   Page (page:$page, perPage:$perPage) {
@@ -232,12 +348,14 @@ query ($page:Int, $perPage:Int, $userId:Int) {
       __typename
       ... on ListActivity{
         id
+        type
         isLiked
         status
         progress
         createdAt
         likeCount
         replyCount
+        ${REPLY_FRAG}
         media {
           id
           meanScore
@@ -248,38 +366,39 @@ query ($page:Int, $perPage:Int, $userId:Int) {
             romaji
             english
             native
+            userPreferred
           }
         }
       }
       ... on TextActivity{
         id
+        type
         isLiked
         replyCount
-        text(asHtml:true)
+        text
         likeCount
         createdAt
-        replies {
+        ${REPLY_FRAG}
+        user {
           id
+          name
+          avatar {
+            large
+          }
         }
       }
       ... on MessageActivity{
         id
         isLiked
+        type
         replyCount
-        message(asHtml:true)
+        message(asHtml: false)
         likeCount
         createdAt
-        replies {
-          id
-        }
+        ${REPLY_FRAG}
         replyCount
-        recipient{
-          name
-          avatar{
-            large
-          }
-        }
         messenger{
+          id
           name
           avatar{
             large
@@ -291,6 +410,7 @@ query ($page:Int, $perPage:Int, $userId:Int) {
 }
 `;
 
+
 export const REVIEWS = `
 query ($id: Int) {
   Media (id:$id) {
@@ -299,7 +419,7 @@ query ($id: Int) {
         node {
           id
           summary
-          body (asHtml: true)
+          body (asHtml: false)
           ratingAmount
           score
           rating
@@ -343,7 +463,7 @@ query ($id: Int!) {
       large
     }
     favourites
-    description(asHtml:true)
+    description(asHtml:false)
     media (sort:[FORMAT,TITLE_ROMAJI]) {
       edges {
         id
@@ -351,6 +471,8 @@ query ($id: Int!) {
           id
           name {
             full
+            userPreferred
+            native
           }
           image {
             large
@@ -379,6 +501,7 @@ query ($id: Int, $page: Int, $perPage: Int, $sort: [CharacterSort]) {
     id
     name{
       full
+      userPreferred
       native
     }
     image {
@@ -400,6 +523,7 @@ query ($id: Int, $page: Int, $perPage: Int, $sort: [CharacterSort]) {
           id
           name {
             full
+            userPreferred
             native
           }
           image {
@@ -408,7 +532,7 @@ query ($id: Int, $page: Int, $perPage: Int, $sort: [CharacterSort]) {
         }
       }
     }
-    staffMedia {
+    staffMedia (sort:POPULARITY_DESC) {
       edges {
         id
         staffRole
@@ -417,6 +541,7 @@ query ($id: Int, $page: Int, $perPage: Int, $sort: [CharacterSort]) {
           title {
             romaji
             native
+            userPreferred
           }
           coverImage {
             extraLarge
@@ -426,7 +551,7 @@ query ($id: Int, $page: Int, $perPage: Int, $sort: [CharacterSort]) {
     }
     bloodType
     favourites
-    description (asHtml:true)
+    description (asHtml:false)
     dateOfBirth{
       month
       day
@@ -487,51 +612,7 @@ query ($name: String, $page: Int, $perPage: Int) {
         }
       }
     }
-    statistics {
-      anime {
-        count
-        minutesWatched
-        episodesWatched
-        statuses (sort:PROGRESS_DESC){
-          status
-          minutesWatched
-        }
-        staff(limit:3, sort:COUNT_DESC) {
-          count
-          minutesWatched
-          staff {
-            name {
-              full
-            }
-            image{
-              large
-            }
-          }
-        }
-      }
-      manga {
-        count
-        chaptersRead
-        volumesRead
-        statuses (sort:PROGRESS_DESC) {
-          status
-          count
-          chaptersRead
-        }
-        staff(limit:3, sort:COUNT_DESC) {
-          count
-          chaptersRead
-          staff{
-            name {
-              full
-            }
-            image {
-              large
-            }
-          }
-        }
-      }
-    }
+    ${STAT_FRAG}
   }
 }
 `;
@@ -565,6 +646,7 @@ query ($page: Int, $perPage: Int) {
     }
     bannerImage
     about
+    unreadNotificationCount
     mediaListOptions {
       scoreFormat
     }
@@ -598,51 +680,7 @@ query ($page: Int, $perPage: Int) {
         }
       }
     }
-    statistics {
-      anime {
-        count
-        minutesWatched
-        episodesWatched
-        statuses (sort:PROGRESS_DESC){
-          status
-          minutesWatched
-        }
-        staff(limit:3, sort:COUNT_DESC) {
-          count
-          minutesWatched
-          staff {
-            name {
-              full
-            }
-            image{
-              large
-            }
-          }
-        }
-      }
-      manga {
-        count
-        chaptersRead
-        volumesRead
-        statuses (sort:PROGRESS_DESC) {
-          status
-          count
-          chaptersRead
-        }
-        staff(limit:3, sort:COUNT_DESC) {
-          count
-          chaptersRead
-          staff{
-            name {
-              full
-            }
-            image {
-              large
-            }
-          }
-        }
-      }
-    }
+    ${STAT_FRAG}
   }
 }
 `;
@@ -676,5 +714,177 @@ query {
     isAdult
   }
   GenreCollection
+}
+`;
+
+const NOTIF_FRAG1 = `
+id
+type
+context
+createdAt
+media {
+  id
+  meanScore
+  coverImage {
+    extraLarge
+  }
+  title {
+    romaji
+    english
+    native
+    userPreferred
+  }
+}
+`;
+
+const NOTIF_FRAG2 = `
+id
+activityId
+type
+context
+createdAt
+user {
+  id
+  name
+  avatar {
+    large
+  }
+}
+`;
+
+export const AIRING_NOTIFICATION = `
+query ($page:Int, $perPage:Int, $type:NotificationType) {
+  Page (page:$page, perPage:$perPage) {
+    pageInfo {
+      ${PAGE_FRAG}
+    }
+    notifications (type:$type) {
+      __typename
+      ... on AiringNotification {
+        id
+        contexts
+        createdAt
+        episode
+        media {
+          id
+          meanScore
+          mediaListEntry {
+            status
+          }
+          title {
+            english
+            native
+            romaji
+            userPreferred
+          }
+          coverImage {
+            extraLarge
+          }
+        }
+      }
+      ... on FollowingNotification {
+        id
+        type
+        context
+        createdAt
+        user {
+          id
+          name
+          avatar {
+            large
+          }
+        }
+      }
+      ... on RelatedMediaAdditionNotification {
+        ${NOTIF_FRAG1}
+      }
+      ... on ActivityLikeNotification {
+        ${NOTIF_FRAG2}
+        activity {
+          ... on TextActivity {
+            id
+            text
+          }
+          ... on ListActivity {
+            id
+            media {
+              title {
+                userPreferred
+              }
+            }
+          }
+          ... on MessageActivity {
+            id
+            message
+          }
+        }
+      }
+      ... on ActivityMessageNotification {
+        ${NOTIF_FRAG2}
+        message {
+          id
+          message
+        }
+      }
+      ... on ActivityMentionNotification {
+        ${NOTIF_FRAG2}
+      }
+      ... on ActivityReplyNotification {
+        ${NOTIF_FRAG2}
+      }
+      ... on ActivityReplySubscribedNotification {
+        ${NOTIF_FRAG2}
+      }
+      ... on ActivityReplyLikeNotification {
+        ${NOTIF_FRAG2}
+      }
+      ... on MediaDataChangeNotification {
+        ${NOTIF_FRAG1}
+        reason
+      }
+      ... on MediaMergeNotification {
+        id
+        type
+        context
+        reason
+        createdAt
+        deletedMediaTitles
+      }
+      ... on MediaDeletionNotification {
+        id
+        type
+        context
+        reason
+        createdAt
+        deletedMediaTitle
+      }
+      ... on ThreadCommentMentionNotification {
+        id
+      }
+      ... on ThreadCommentReplyNotification {
+        id
+      }
+      ... on ThreadCommentSubscribedNotification {
+        id
+      }
+      ... on ThreadCommentLikeNotification {
+        id
+      }
+      ... on ThreadLikeNotification {
+        id
+      }
+    }
+  }
+  Viewer {
+    unreadNotificationCount
+  }
+}
+`;
+
+export const CLEAR_NOTIFICATIONS = `
+query ($reset: Boolean) {
+  Notification (resetNotificationCount:$reset) {
+    __typename
+  }
 }
 `;
