@@ -1,16 +1,22 @@
-import 'react-native-gesture-handler';
+// React
 import React, { useState, useEffect } from "react";
 import { StatusBar } from "react-native";
+// UI
 import { Icon } from 'react-native-elements';
+// Navigation
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
-import { NavigationContainer, useTheme } from '@react-navigation/native';
-import { HomeStack } from "./Screens/hmtabs";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { NavigationContainer, useTheme, useNavigation } from '@react-navigation/native';
+// Components
 import { SearchNav } from './Screens/search';
 import { SettingsPage, ThemeContext } from './Screens/settings';
+import { HomeStack } from "./Screens/hmtabs";
 import { UserPage } from './Screens/userinfo';
 import { ListPage } from './Screens/lists';
-import { DimTheme, LightTheme } from './Themes/themes';
+// Data
+import BackgroundFetch from 'react-native-background-fetch';
+import { getTheme, LightTheme } from './Utils/themes';
+
+
 
 const BTab = createMaterialBottomTabNavigator();
 
@@ -19,6 +25,7 @@ const config = {
     Explore: 'explore/',
     Find: 'search/',
     Setting: 'settings/',
+    Lists: 'list/',
     UserTab: {
       screens: {
         UserPage: {
@@ -39,9 +46,20 @@ const linking = {
 
 const BottomNav = () => {
   const { colors } = useTheme();
+  const navigation = useNavigation();
+  useEffect(() => {
+    if (global.NotifNav === true) {
+      navigation.navigate('UserTab', {
+        screen: 'UserPage',
+        params: {
+          screen: 'Notifications'
+        }
+      });
+    }
+  },[]);
 
   return(
-    <BTab.Navigator initialRouteName='Explore' activeColor={colors.primary} inactiveColor={colors.inactive} shifting={true} barStyle={{height:50, backgroundColor:colors.background}} >
+    <BTab.Navigator initialRouteName='Explore' activeColor={colors.primary} inactiveColor={colors.inactive} labeled={false} shifting={true} barStyle={{height:50, backgroundColor:colors.background}} >
       <BTab.Screen name='Explore' component={HomeStack} 
         options={{
           tabBarIcon: ({color}) => <Icon name='explore' type='material' color={color} size={22} />
@@ -76,26 +94,34 @@ const BottomNav = () => {
 }
 
 const App = () => {
-  const [theme, setTheme] = useState();
+  const [theme, setTheme] = useState({theme:'Light', object:LightTheme});
   const value = { theme, setTheme };
 
-  const getTheme = async () => {
-    try {
-      const themeSet = await AsyncStorage.getItem('@Theme');
-      setTheme((themeSet !== null) ? themeSet : 'Light');
-    } catch (e) {
-      console.error(e);
-    }
-  }
-
   useEffect(() => {
-    getTheme();
+    getTheme().then(themes => {
+      setTheme({theme:themes.theme, object:themes.object});
+    });
+    BackgroundFetch.configure(
+      {
+        minimumFetchInterval: 60,
+        startOnBoot: true,
+        requiredNetworkType: BackgroundFetch.NETWORK_TYPE_ANY,
+        stopOnTerminate:false,
+        enableHeadless:true,
+      },
+      async (taskId) => {
+        BackgroundFetch.finish(taskId);
+      },
+      (error) => {
+        console.error('Background fetch failed:', error);
+      }
+    );
   }, []);
 
   return(
     <ThemeContext.Provider value={value} >
-      <NavigationContainer linking={linking} theme={(theme === 'Light') ? LightTheme : DimTheme}>
-        <StatusBar translucent={true} backgroundColor='rgba(0,0,0,0)' barStyle={((theme === 'Light')) ? 'dark-content' : 'light-content'} />
+      <NavigationContainer linking={linking} theme={theme.object}>
+        <StatusBar translucent={true} backgroundColor='rgba(0,0,0,0)' barStyle={((theme.object.dark === false)) ? 'dark-content' : 'light-content'} />
         <BottomNav />
       </NavigationContainer>
     </ThemeContext.Provider>
