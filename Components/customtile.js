@@ -109,6 +109,12 @@ export const _ContentTile = ({ item, routeName, token, isSearch, isNode=false, s
         );
     }
 
+    const getLocation = () => {
+        (routeName.name !== 'Info') ?
+            navigation.push((routeName.name === 'SearchPage') ? 'InfoSearch' : 'InfoHome', { screen: 'Info', params: { id: entry.id, title: { romaji: entry.title.romaji, native: entry.title.native, english: entry.title.english } }, })
+        : navigation.push('Info', { id: entry.id, title: { romaji: entry.title.romaji, native: entry.title.native, english: entry.title.english } });
+    }
+
     useEffect(() => {
         let mounted = true;
         fetchLang().then((lang) => {
@@ -122,33 +128,29 @@ export const _ContentTile = ({ item, routeName, token, isSearch, isNode=false, s
     return (
         <View style={{ flex: 1, backgroundColor: colors.background, paddingHorizontal: 10, maxHeight: size[1] + 50, maxWidth: size[0], borderRadius: 8 }}>
             <Pressable style={{ height: size[1], width: size[0] - 20, borderRadius: 8 }}
-                onPress={() => {
-                    (routeName.name !== 'Info') ?
-                        navigation.push((routeName.name === 'SearchPage') ? 'InfoSearch' : 'InfoHome', { screen: 'Info', params: { id: entry.id, title: { romaji: entry.title.romaji, native: entry.title.native, english: entry.title.english } }, })
-                        : navigation.push('Info', { id: entry.id, title: { romaji: entry.title.romaji, native: entry.title.native, english: entry.title.english } });
-                }}
+                onPress={getLocation}
                 onLongPress={() => (typeof token === 'string') ? setVisible(true) : null}
             >
                 <Image source={{ uri: entry.coverImage.extraLarge }} resizeMode='cover' style={{ borderRadius: 8, height: size[1], width: size[0] - 20 }} blurRadius={(status !== null) ? 3 : 0} />
             </Pressable>
             <Text style={{ color: colors.text, fontSize: 16, textAlign: 'center' }} numberOfLines={2}>{(lang !== 'Native') ? entry.title.romaji : entry.title.native}</Text>
-                {((status !== null) && typeof token === 'string') ? 
-                    <Pressable 
-                        onLongPress={() => setVisible(true)} 
-                        onPress={() => { navigation.push((routeName.name === 'SearchPage') ? 'InfoSearch' : 'InfoHome', { screen: 'Info', params: { id: entry.id, title: { romaji: entry.title.romaji, native: entry.title.native, english: entry.title.english } }, }); }} 
-                        style={{ position: 'absolute', top: 0, left: 10, height: size[1], width: size[0] -20, borderRadius: 8, backgroundColor: (status !== null) ? 'rgba(0,0,0,.6)' : 'rgba(0,0,0,0)', justifyContent: 'center'}}
-                    >
-                        <Text style={{ color: '#FFF', textAlign: 'center', fontWeight: 'bold', fontSize: 16 }}>{status}</Text>
-                    </Pressable>
+            {((status !== null) && typeof token === 'string') ?
+                <Pressable
+                    onLongPress={() => setVisible(true)}
+                    onPress={getLocation}
+                    style={{ position: 'absolute', top: 0, left: 10, height: size[1], width: size[0] - 20, borderRadius: 8, backgroundColor: (status !== null) ? 'rgba(0,0,0,.6)' : 'rgba(0,0,0,0)', justifyContent: 'center' }}
+                >
+                    <Text style={{ color: '#FFF', textAlign: 'center', fontWeight: 'bold', fontSize: 16 }}>{status}</Text>
+                </Pressable>
                 : null}
-                {(typeof score === 'number') ? <Badge value={`${score}%`}
-                    containerStyle={{ alignSelf: 'flex-end', position: 'absolute', elevation: 25, top: -5, right: 4 }}
-                    badgeStyle={{ borderColor: 'rgba(0,0,0,0)', transform: [{ scale: 1.20 }] }}
-                    status={(score >= 75) ? 'success'
-                        : (score < 75 && score >= 65) ? 'warning'
-                            : (score < 65) ? 'error' : undefined
-                    }
-                /> : null}
+            {(typeof score === 'number') ? <Badge value={`${score}%`}
+                containerStyle={{ alignSelf: 'flex-end', position: 'absolute', elevation: 25, top: -5, right: 4 }}
+                badgeStyle={{ borderColor: 'rgba(0,0,0,0)', transform: [{ scale: 1.20 }] }}
+                status={(score >= 75) ? 'success'
+                    : (score < 75 && score >= 65) ? 'warning'
+                        : (score < 65) ? 'error' : undefined
+                }
+            /> : null}
             <Action />
         </View>
     );
