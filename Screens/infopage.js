@@ -11,7 +11,7 @@ import { useTheme, useRoute } from '@react-navigation/native';
 import { Character } from './character';
 import { VA_Page } from './voiceactor';
 import { _ContentTile } from '../Components/customtile';
-import { OverView, Watch, Characters, Recommendation, Reviews, ReviewPage } from '../Components/contentcomp';
+import { OverView, Watch, Characters, Recommendation, Reviews, ReviewPage, Studio } from '../Components/contentcomp';
 import { OtherUser } from './otheruser';
 import { FocusAwareStatusBar } from '../Utils/dataprocess';
 // Data
@@ -98,6 +98,7 @@ export const InfoNav = () => {
             <Stack.Screen name='Review' component={ReviewPage} />
             <Stack.Screen name='Character' component={Character} options={{title:'Character'}} />
             <Stack.Screen name='VA' component={VA_Page} options={{title:'Staff'}}/>
+            <Stack.Screen name='Studio' component={Studio} options={({ route }) => ({ title: route.params.name })}/>
             <Stack.Screen name='UserRev' component={OtherUser} options={{title:'User'}} />
         </Stack.Navigator>
     );
