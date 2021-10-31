@@ -1,6 +1,6 @@
 // React
 import React, { useEffect, useState } from 'react';
-import { View, ScrollView, useWindowDimensions, Pressable, FlatList, Linking, ToastAndroid, Alert, ImageBackground } from 'react-native';
+import { View, ScrollView, useWindowDimensions, Pressable, FlatList, Linking, ToastAndroid, Alert, ActivityIndicator } from 'react-native';
 // UI
 import { Chip, Text, Avatar, Image, Icon, Button, Overlay } from 'react-native-elements';
 // Navigation
@@ -12,7 +12,7 @@ import Video from 'react-native-video';
 import YoutubeIframe from 'react-native-youtube-iframe';
 import FastImage from 'react-native-fast-image';
 // Data
-import { getOverview } from '../Data Handler/getdata';
+import { getOverview, getStudio } from '../Data Handler/getdata';
 import { copyText } from '../Screens/character';
 import { updateFavorite, updateProgress, updateScore, updateStatus } from '../Data Handler/updatedata';
 import Markdown from 'react-native-markdown-display';
@@ -29,6 +29,62 @@ export const SectionInfo = ({header, info, style=null}) => {
             <Text style={{ textAlign: 'center', fontWeight: 'bold', color:colors.text}}>{header}</Text>
             <Text style={(style === null) ? { textAlign: 'center', color:colors.text} : style}>{displayText}</Text>
         </Pressable>
+    );
+}
+
+export const Studio = ({route}) => {
+    const { id, token, routeName, name } = route.params;
+    const [data, setData] = useState([]);
+    const [page, setPage] = useState({});
+    const [refresh, setRefresh] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const { colors } = useTheme();
+    
+    useEffect(() => {
+        let mounted = true;
+        getStudio(id, token, 1).then(studio => {
+            if(mounted) {
+                setData(studio.media.nodes);
+                setPage(studio.media.pageInfo);
+                setLoading(false);
+            }
+        });
+        return () => {mounted = false};
+    },[]);
+
+    const onRefresh = async() => {
+        setRefresh(true);
+        const studio = await getStudio(id, token, 1);
+        setData(studio.media.nodes);
+        setPage(studio.media.pageInfo);
+        setRefresh(false);
+    }
+
+    const fetchMore = async() => {
+        if (page.hasNextPage === true) {
+            const newData = await getStudio(id, token, page.currentPage + 1);
+            setData([...data, ...newData.media.nodes]);
+            setPage(newData.media.pageInfo);
+        }
+    }
+
+    if (loading) return <View style={{flex:1, justifyContent:'center'}}><ActivityIndicator size='large' color={colors.primary} /></View>
+
+    return(
+        <View style={{flex:1}}>
+            <FlatList
+                data={data}
+                renderItem={({item}) => <_ContentTile item={item} routeName={routeName} token={token} isSearch={true} />}
+                keyExtractor={(item, index) => index.toString()}
+                onEndReached={fetchMore}
+                onEndReachedThreshold={0.4}
+                refreshing={refresh}
+                onRefresh={onRefresh}
+                numColumns={2}
+                columnWrapperStyle={{marginVertical:5}}
+                contentContainerStyle={{paddingVertical:10}}
+            />
+        </View>
     );
 }
 
@@ -138,6 +194,10 @@ export const OverView = ({route}) => {
         );
     }
 
+    const navStudio = () => {
+        navigation.push('Studio', {id:data.studios.nodes[0].id, token:auth, routeName:routeName, name:data.studios.nodes[0].name});
+    }
+
     return(
         <View>
             <ScrollView showsVerticalScrollIndicator={false}>
@@ -172,7 +232,6 @@ export const OverView = ({route}) => {
                         {(data.duration !== null) ? <SectionInfo header='LENGTH' info={(data.duration < 60) ? `${data.duration} min` : `${(data.duration / 60).toFixed(1)} hrs`} /> : null}
                         {(data.source !== null) ? <SectionInfo header='SOURCE' info={data.source.replaceAll('_', ' ').toLowerCase()} style={{ textTransform:'capitalize', textAlign: 'center', color: colors.text }} /> : null}
                         <SectionInfo header='DATE' info={`${(data.startDate.month !== null) ? data.startDate.month : '?'}/${ (data.startDate.day !== null) ? data.startDate.day : '?'}/${(data.startDate.year !== null) ? data.startDate.year : '?'} - ${`${(data.endDate.year !== null) ? `${data.endDate.month}/${data.endDate.day}/${data.endDate.year}` : 'Present'}`}`} />
-                        {(data.studios.edges.length > 0) ? <SectionInfo header='STUDIO' info={data.studios.edges[0].node.name} /> : null}
                         {(data.title.english !== null) ? <SectionInfo header='ENGLISH TITLE' info={data.title.english} /> : (data.title.english === null && syn.length > 0) ? <SectionInfo header='SYNONYMS' info={syn} /> : null}
                     </View>
                 </ScrollView>
@@ -193,6 +252,8 @@ export const OverView = ({route}) => {
                     <Text h3 style={{ color: colors.text, paddingLeft:5 }}>Staff</Text>
                     <FlatList data={data.staff.edges} horizontal={true} showsHorizontalScrollIndicator={false} renderItem={_staff} contentContainerStyle={{marginLeft:5}} /> 
                 </View>
+                {(data.studios.nodes.length > 0) ? <Text h3 style={{ color: colors.text, paddingLeft:5 }}>Studio</Text> : null}
+                {(data.studios.nodes.length > 0) ? <Button title={data.studios.nodes[0].name} onPress={navStudio} titleStyle={{fontWeight:'bold'}} buttonStyle={{borderRadius:8, backgroundColor:colors.primary}} containerStyle={{marginHorizontal:5}} /> : null}
                 {(data.trailer !== null) ?
                 <View>
                     <Text h3 style={{ color: colors.text, paddingLeft:5 }}>Trailer</Text>
@@ -212,7 +273,7 @@ export const OverView = ({route}) => {
     );
 }
 
-export const CharacterItem = ({ item, lang, routeName }) => {
+export const CharacterItem = ({ item, auth, lang, routeName }) => {
     const [liked, setLiked] = useState(false);
     const navigation = useNavigation();
 
@@ -228,10 +289,10 @@ export const CharacterItem = ({ item, lang, routeName }) => {
     }, []);
 
     const handleLike = async() => {
-        if (liked === true) {
+        if (liked === true && typeof auth === 'string') {
             updateFavorite(auth, item.node.id);
             setLiked(false);
-        } else if (liked === false) {
+        } else if (liked === false && typeof auth === 'string') {
             updateFavorite(auth, item.node.id);
             setLiked(true);
         }
@@ -283,7 +344,7 @@ export const Characters = ({route}) => {
             numColumns={2}
             columnWrapperStyle={{paddingBottom:5}}
             windowSize={3}
-            renderItem={({item}) => (<CharacterItem item={item} lang={lang} routeName={routeName}/>) }
+            renderItem={({item}) => (<CharacterItem item={item} auth={auth} lang={lang} routeName={routeName}/>) }
             style={{flex:1, paddingBottom: 10, paddingTop: 10 }}
             keyExtractor={(item, index) => index.toString()}
             contentContainerStyle={{ alignSelf: 'center', paddingBottom:20 }}
