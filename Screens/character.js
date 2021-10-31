@@ -58,9 +58,9 @@ export const Character = ({route}) => {
         const language = (lang === 'Native' && item.name.native !== null) ? item.name.native : item.name.userPreferred;
         return(
             <View style={{ paddingTop: 5, paddingRight: 10}}>
-                <Image source={{ uri: item.image.large }} onPress={() => {navigation.push((routeName === 'Info') ? 'VA' : (routeName === 'UserPage') ? 'UserVA' : 'SearchStaff', {id:item.id, role:undefined, routeName:routeName})}} style={{ resizeMode: 'cover', width: 150, height: 200, borderRadius: 8 }}
+                <Image source={{ uri: item.image.large }} onPress={() => {navigation.push((routeName === 'Info') ? 'VA' : (routeName === 'UserPage') ? 'UserVA' : 'SearchStaff', {id:item.id, role:undefined, routeName:routeName})}} style={{ resizeMode: 'cover', width: 125, height: 190, borderRadius: 8 }}
                 />
-                <View style={{ backgroundColor: 'rgba(0,0,0,.6)', justifyContent:'center', position: 'absolute', width: 150, height: 40, bottom:0, borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}>
+                <View style={{ backgroundColor: 'rgba(0,0,0,.6)', justifyContent:'center', position: 'absolute', width: 125, height: 40, bottom:0, borderBottomLeftRadius: 8, borderBottomRightRadius: 8 }}>
                     <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={1}>{language}</Text>
                     <Text style={{ color: '#FFF', textAlign: 'center' }} numberOfLines={1}>{item.languageV2}</Text>
                 </View>
