@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ACTIVITY, AIRING_NOTIFICATION, AUTH_USER_QUERY, CHARACTERS, CLEAR_NOTIFICATIONS, FILTER_QUERY, FOLLOWING_QUERY, HPQUERY, ITEMQUERY, LISTS, NOTIFICATION_Q, REVIEWS, USER_NOTIF_CHECK, USER_QUERY, USER_SEARCH, VA_QUERY } from '../Queries/query';
+import { ACTIVITY, AIRING_NOTIFICATION, AUTH_USER_QUERY, CHARACTERS, CLEAR_NOTIFICATIONS, FILTER_QUERY, FOLLOWING_QUERY, HPQUERY, ITEMQUERY, LISTS, NOTIFICATION_Q, REVIEWS, STUDIO, USER_NOTIF_CHECK, USER_QUERY, USER_SEARCH, VA_QUERY } from '../Queries/query';
 import { cacheA, cacheM, cacheN, cacheS, cacheFilter } from '../Queries/query';
 import { getNSFW } from '../Storages/storagehooks';
 import { filterContent } from './updatedata';
@@ -319,6 +319,17 @@ export const getFollowing = async(userId, token=undefined, page=1, perPage=10) =
             (typeof token !== 'string') ? {headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}} : {headers: {'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Accept': 'application/json'}});
         const media = await data.data.data.Page;
         return media;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+export const getStudio = async(id, token, page=1, perPage=20) => {
+    try {
+        const data = await axios.post(url, {query: STUDIO, variables:{id:id, page:page, perPage:perPage}},
+            (typeof token !== 'string') ? {headers: {'Content-Type': 'application/json', 'Accept': 'application/json'}} : {headers: {'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Accept': 'application/json'}});
+        const studio = await data.data.data.Studio;
+        return studio;
     } catch (error) {
         console.error(error);
     }
