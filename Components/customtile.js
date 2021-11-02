@@ -82,7 +82,7 @@ export const _ContentTile = ({ item, routeName, token, isSearch, isNode=false, s
                 containerStyle: normalContainer,
                 titleStyle: normalText,
             },
-            (isSearch === true) ?
+            (isSearch === true && stat !== null) ?
             {
                 title: 'Delete',
                 onPress: () => {deleteItem();},
