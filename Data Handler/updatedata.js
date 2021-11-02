@@ -117,7 +117,7 @@ export const deleteActivity = async(token, id) => {
     }
 }
 
-export const filterContent = async(data, currentData, type, isList=false) => {
+export const filterContent = async(data, type, currentData=null, isList=false) => {
     let count = 0;
     let newData = [];
 
@@ -129,9 +129,10 @@ export const filterContent = async(data, currentData, type, isList=false) => {
                 newData.push(data[i]);
             }
         }
-        const uniqueNovels = newData.filter(i => currentData.every(j => ((isList === true) ? i.media.id : i.id) !== ((isList === true) ? j.media.id : j.id)));
+        const uniqueNovels = (currentData !== null) ? newData.filter(i => currentData.every(j => ((isList === true) ? i.media.id : i.id) !== ((isList === true) ? j.media.id : j.id))) : newData;
         newData = uniqueNovels;
     }
+
     filterFun();
     return(newData);
 }
