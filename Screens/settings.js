@@ -22,7 +22,7 @@ const Stack = createStackNavigator();
 export const ThemeContext = React.createContext({theme: {theme: 'Light', object:LightTheme, title:'Default'}, setTheme: () => {}});
 const android = RNFetchBlob.android;
 let dirs = RNFetchBlob.fs.dirs
-export const VERSION = 'v1.2-beta';
+export const VERSION = 'v1.2.5-beta';
 
 export const downloadUpdate = (link) => {
     Vibration.vibrate(100);
@@ -222,23 +222,25 @@ const Settings = () => {
                     <Divider color={colors.border} style={{width:width, marginBottom:5}} orientation='horizontal' width={1} />
                     <ScrollView showsVerticalScrollIndicator={false}>
                         <Text h3 style={{color:colors.text}}>Light</Text>
-                        <Divider color={colors.text} style={{width:width-180, marginBottom:5}} orientation='horizontal' width={1} />
+                        <Divider color={colors.primary} style={{width:width-180, marginBottom:5}} orientation='horizontal' width={1} />
                         {
                             themes.map((item, i) => ( (item.object.dark === false) ?
                                 <ListItem key={i} containerStyle={{backgroundColor:colors.card}} onPress={() => storeTheme(item)}>
-                                    <ListItem.Content>
-                                        <ListItem.Title style={{color:colors.text}}>{item.title}</ListItem.Title>
+                                    <ListItem.Content style={{flex:1, flexDirection:'row', justifyContent:'flex-start', alignItems:'flex-start'}}>
+                                        <ListItem.Title style={{color:colors.text, justifyContent:'flex-start'}}>{item.title}</ListItem.Title>
+                                        {(item.title === theme.title && theme.object.dark === false) ? <Icon name='check' color={colors.primary} size={25} containerStyle={{marginHorizontal:5}} /> : null}
                                     </ListItem.Content>
                                 </ListItem>
                             : null))
                         }
                         <Text h3 style={{color:colors.text}}>Dark</Text>
-                        <Divider color={colors.text} style={{width:width-180, marginBottom:5}} orientation='horizontal' width={1} />
+                        <Divider color={colors.primary} style={{width:width-180, marginBottom:5}} orientation='horizontal' width={1} />
                         {
                             themes.map((item, i) => ( (item.object.dark === true) ?
                                 <ListItem key={i} containerStyle={{backgroundColor:colors.card}} onPress={() => storeTheme(item)}>
-                                    <ListItem.Content>
+                                    <ListItem.Content style={{flex:1, flexDirection:'row', justifyContent:'flex-start', alignItems:'flex-start'}}>
                                         <ListItem.Title style={{color:colors.text}}>{item.title}</ListItem.Title>
+                                        {(item.title === theme.title && theme.object.dark === true) ? <Icon name='check' color={colors.primary} size={25} containerStyle={{marginHorizontal:5}} /> : null}
                                     </ListItem.Content>
                                 </ListItem>
                             : null))
@@ -314,6 +316,7 @@ const Settings = () => {
                     </ListItem>
                 ))
             }
+            <Text style={{textAlign:'left', color:colors.border, paddingLeft:10}}>Created by smashinfries</Text>
             {(visTheme === true) ? <ShowTheme /> : null}
             {(visLang === true) ? <ShowLang /> : null}
             {(visAbout === true) ? <ShowChangelog /> : null}

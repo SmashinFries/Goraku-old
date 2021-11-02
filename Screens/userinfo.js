@@ -20,6 +20,7 @@ import { ActivityPage, Favorites, Following, Statistics } from '../Components/us
 import { getToken, storeToken } from '../Storages/getstorage';
 import { checkUserID } from '../Storages/storagehooks';
 import { textDecider, FocusAwareStatusBar } from '../Utils/dataprocess';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import PushNotification from 'react-native-push-notification';
 
 const Tabs = createMaterialTopTabNavigator();
@@ -68,6 +69,7 @@ const NotificationsTab = ({route}) => {
     const cleanseNotif = async() => {
         try {
             if (unread > 0) {
+                await AsyncStorage.setItem('@LASTNOTIF', `${notifData[0].id}`);
                 const clear = await clearNotifications(login);
                 navigation.setOptions({tabBarBadge: null})
                 return clear;

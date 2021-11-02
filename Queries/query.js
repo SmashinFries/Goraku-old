@@ -58,6 +58,7 @@ statistics {
       count
       tag {
         id
+        category
         description
         name
       }
@@ -106,6 +107,7 @@ statistics {
     tags (limit:10, sort:COUNT_DESC) {
       count
       tag {
+        category
         id
         description
         name
@@ -156,6 +158,12 @@ query ($id: Int, $page: Int, $perPage: Int) {
     volumes
     source(version:3)
     ${LIST_FRAG}
+    studios (isMain:true) {
+      nodes {
+        id
+        name
+      }
+    }
     recommendations {
       edges {
         node {
@@ -199,14 +207,6 @@ query ($id: Int, $page: Int, $perPage: Int) {
       id
       site
       url
-    }
-    studios (isMain: true) {
-      edges {
-        node {
-          id
-          name
-        }
-      }
     }
     trailer {
       thumbnail
@@ -272,6 +272,25 @@ query ($id: Int, $page: Int, $perPage: Int) {
             large
           }
         }
+      }
+    }
+  }
+}
+`;
+
+export const STUDIO = `
+query ($id: Int, $page: Int, $perPage: Int) {
+  Studio (id:$id) {
+    id
+    name
+    isAnimationStudio
+    media (page:$page, perPage:$perPage, sort:POPULARITY_DESC) {
+      pageInfo {
+        ${PAGE_FRAG}
+      }
+      nodes {
+        ${BASICS_FRAG}
+        ${LIST_FRAG}
       }
     }
   }

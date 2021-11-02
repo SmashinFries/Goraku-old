@@ -163,7 +163,7 @@ export const Statistics = ({route}) => {
     const ShowTagStats = ({data}) => {
         const colorCut = colors.primary.slice(0, -2);
         return(
-            data.tags.map((tags, index) => 
+            data.tags.map((tags, index) => (index <= 10) ? 
             <View key={index} style={{flex:1, alignItems:'center'}}>
                 {(index === 0) ? <Icon name='crown' containerStyle={{position:'absolute', elevation:5, top:-27, right:0, transform:[{ rotate:'25deg'}]}} size={40} type='foundation' color='#ffd500' /> : null}
                 {(index === 0) ? <View style={{flex:1, width:width-100, height:70, alignItems:'center', marginBottom:10, borderRadius:200, backgroundColor:`${colorCut}.5)`}}>
@@ -171,7 +171,7 @@ export const Statistics = ({route}) => {
                 </View> : null}
                 {(index !== 0) ? <NumberDisplay key={index} title={tags.tag.name} number={`${tags.count}`} /> : null}
             </View>
-            )
+            : null)
         );
     }
 
@@ -250,7 +250,7 @@ export const Statistics = ({route}) => {
                 <NumberDisplay title='Volumes Read' number={data.volumesRead} />
                 <Text h3 style={{color:colors.text}}>Statuses</Text>
                 <PieChart data={statuses} absolute={true} backgroundColor={colors.background} chartConfig={chartConfig} width={width} height={200} accessor={'count'} />
-                <Text h3 style={{color:colors.text}}>Top Ten Tags</Text>
+                <Text h3 style={{color:colors.text}}>Top 10 Tags</Text>
                 <ShowTagStats data={data} />
                 {/* {data.tags.map((tags, index) => <NumberDisplay key={index} title={tags.tag.name} number={`${tags.count}`} />)} */}
                 <Text h3 style={{color:colors.text, marginTop:10}}>Top 5 Staff</Text>
