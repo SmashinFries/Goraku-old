@@ -27,7 +27,7 @@ const setNotifs = async(unreadNum, data, latest) => {
         });
     }
     await PushNotification.getDeliveredNotifications((notifs) => {
-        if (notifs.length <= unreadNum) {
+        if (notifs.length <= unreadNum && notifs.length > 1) {
             PushNotification.localNotification({
                 channelId:'UserNotification',
                 group:'Notif',
@@ -49,8 +49,7 @@ const sendNotification = async() => {
             const unreadNum = Number(notifData.Viewer.unreadNotificationCount);
             const latest = notifData.Page.notifications[0].id;
             if (typeof lastNotif === 'string') {
-                console.log(lastNotif);
-                if (unreadNum > 0 && latest !== Number(lastNotif)) {
+                if (unreadNum === 0 && latest === Number(lastNotif)) {
                     await setNotifs(unreadNum, notifData.Page.notifications, latest);
                 } else if (unreadNum === 0 && latest !== Number(lastNotif)) {
                     await AsyncStorage.setItem('@LASTNOTIF', `${latest}`)
