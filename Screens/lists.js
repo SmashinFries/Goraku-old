@@ -20,7 +20,7 @@ import { getToken } from '../Storages/getstorage';
 
 const Stack = createStackNavigator();
 const LISTS = ['Current', 'Planning', 'Completed', 'Repeating', 'Dropped', 'Paused'];
-const TYPES = ["Anime", "Manga", "Novel"];
+const TYPES = [{name: "Anime", icon:'movie'}, {name: "Manga", icon:'photo-album'}, {name: "Novel", icon:'book'}];
 const SORTS = ['Updated', 'Score', 'Progress', 'Started', 'Added', 'Title', 'Popularity'];
 const elevation = 8;
 
@@ -177,7 +177,7 @@ export const UserList = ({userID=null, isSearch=false}) => {
     const [isSortVisible, setSortVisible] = useState(false);
     const [userId, setUserId] = useState(userID);
     const [list, setList] = useState(LISTS[0]);
-    const [type, setType] = useState(TYPES[0]);
+    const [type, setType] = useState(TYPES[0].name);
     const [sort, setSort] = useState(SORTS[0]);
     const [loading, setLoading] = useState(true);
     const [token, setToken] = useState(false);
@@ -195,7 +195,12 @@ export const UserList = ({userID=null, isSearch=false}) => {
         const id = (userId !== 0) ? userId : await AsyncStorage.getItem('@UserID');
         if (typeof token === 'string' || userID !== null) {
             const info = await getLists(Number(id), page, list.toUpperCase(), typeFixed, sortFixed);
-            return({id:Number(id), data:info.mediaList, page:info.pageInfo});
+            if (typeM.toUpperCase() === 'NOVEL') {
+                const filterData = await filterContent(info.mediaList, 'NOVEL', null, true);
+                return({id:Number(id), data:filterData, page:info.pageInfo});
+            } else {
+                return({id:Number(id), data:info.mediaList, page:info.pageInfo});
+            }
         } else {
             return({id:Number(id), data:false});
         }
@@ -251,7 +256,7 @@ export const UserList = ({userID=null, isSearch=false}) => {
         return(
             <Overlay isVisible={isListVisible} onBackdropPress={() => setListVisible(false)} overlayStyle={{backgroundColor:colors.card, width:width/2, borderRadius:8}} backdropStyle={{backgroundColor:'rgba(0,0,0,.3)'}} >
                 {LISTS.map((item, index) => 
-                    (item !== list) ? <Button key={index} title={item} titleStyle={{color:colors.primary, fontSize:20, fontWeight:'bold'}} type='clear' onPress={() => onPress(item)} /> : null
+                    (item !== list) ? <Button key={index} title={item} titleStyle={{color:colors.primary, fontSize:20}} type='clear' onPress={() => onPress(item)} /> : null
                 )}
             </Overlay>
         );
@@ -275,7 +280,7 @@ export const UserList = ({userID=null, isSearch=false}) => {
         return(
             <Overlay isVisible={isTypeVisible} onBackdropPress={() => setTypeVisible(false)} overlayStyle={{backgroundColor:colors.card, borderRadius:8, width:width/2}} backdropStyle={{backgroundColor:'rgba(0,0,0,.3)'}} >
                 {TYPES.map((item, index) => 
-                    (item !== list) ? <Button key={index} title={item} titleStyle={{color:colors.primary, fontSize:20, fontWeight:'bold'}} type='clear' onPress={() => onPress(item)} /> : null
+                    (item.name !== list) ? <Button key={index} buttonStyle={{height:50}} icon={{name:item.icon, type:'material', color:colors.primary, containerStyle:{justifyContent:'flex-start'}}} title={item.name} titleStyle={{color:colors.primary, fontSize:20 }} type='clear' onPress={() => onPress(item.name)} /> : null
                 )}
             </Overlay>
         );
@@ -299,7 +304,7 @@ export const UserList = ({userID=null, isSearch=false}) => {
         return(
             <Overlay isVisible={isSortVisible} onBackdropPress={() => setSortVisible(false)} overlayStyle={{backgroundColor:colors.card, borderRadius:8, width:width/2}} backdropStyle={{backgroundColor:'rgba(0,0,0,.3)'}} >
                 {SORTS.map((item, index) => 
-                    (item !== list) ? <Button key={index} title={item} titleStyle={{color:colors.primary, fontSize:20, fontWeight:'bold'}} type='clear' onPress={() => onPress(item)} /> : null
+                    (item !== list) ? <Button key={index} title={item} titleStyle={{color:colors.primary, fontSize:20 }} type='clear' onPress={() => onPress(item)} /> : null
                 )}
             </Overlay>
         );
@@ -324,11 +329,11 @@ export const UserList = ({userID=null, isSearch=false}) => {
         if (typeof token === 'string' || userID !== null) {
             const info = await getLists(Number(id), 1, list.toUpperCase(), typeFixed, sortFixed);
             if (typeM.toUpperCase() === 'NOVEL') {
-                const novelData = await filterContent(info.mediaList, data, 'NOVEL');
+                const novelData = await filterContent(info.mediaList, 'NOVEL', null, true);
                 setData(novelData);
                 setPage(info.pageInfo);
             } else if (typeM.toUpperCase() === 'MANGA') {
-                const mangaData = await filterContent(info.mediaList, data, 'MANGA');
+                const mangaData = await filterContent(info.mediaList, 'MANGA', null, true);
                 setData(mangaData);
                 setPage(info.pageInfo);
             } else {
@@ -349,8 +354,8 @@ export const UserList = ({userID=null, isSearch=false}) => {
         if (page.hasNextPage === true) {
             const sortFixed = fixSort(sort);
             const typeFixed = (type === 'Novel' || type === 'NOVEL') ? 'MANGA' : type.toUpperCase();
-            const info = await getLists(userId, page.currentPage + 1, list.toUpperCase(), typeFixed, sortFixed, 25);
-            const newData = await filterContent(info.mediaList, data, type.toUpperCase());
+            const info = await getLists(userId, page.currentPage + 1, list.toUpperCase(), typeFixed, sortFixed, 30);
+            const newData = await filterContent(info.mediaList, type.toUpperCase(), data, true);
             setData([...data, ...newData]);
             setPage(info.pageInfo);
         }
@@ -364,10 +369,11 @@ export const UserList = ({userID=null, isSearch=false}) => {
             <View style={{flex:1}}>
                 <FlatList 
                 data={data} 
-                renderItem={({item}) => <RenderItem item={item} status={list} sort={sort} token={token} isSearch={isSearch} isAuthUser={(typeof token === 'string') ? true : false} />}
+                renderItem={({item}) => <RenderItem item={item} status={list} sort={sort} token={token} isSearch={isSearch} isAuthUser={(userID === null) ? true : false} />}
                 keyExtractor={(item, index) => index.toString()}
                 numColumns={2}
                 ListHeaderComponent={listHeader}
+                ListEmptyComponent={() => <View style={{flex:1, justifyContent:'center'}}><Text style={{textAlign:'center', fontSize:35, fontWeight:'bold', color:colors.text}}>{`No content yet!${'\n'}(◕︵◕)`}</Text></View>}
                 onEndReached={fetchMore}
                 onEndReachedThreshold={.4}
                 onRefresh={onRefresh}
