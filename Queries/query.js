@@ -58,6 +58,7 @@ statistics {
       count
       tag {
         id
+        category
         description
         name
       }
@@ -106,6 +107,7 @@ statistics {
     tags (limit:10, sort:COUNT_DESC) {
       count
       tag {
+        category
         id
         description
         name
@@ -129,10 +131,6 @@ statistics {
     }
   }
 }
-`;
-
-const STUDIO_FRAG = `
-
 `;
 
 export const HPQUERY = `
