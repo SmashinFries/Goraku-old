@@ -275,7 +275,7 @@ const SearchPage = React.memo(() => {
         setAdult(nsfw);
         setFilter(filtering);
         setData([]);
-        fetchSearch();
+        await fetchSearch();
         setRefresh(false);
     }
 
