@@ -14,11 +14,10 @@ import FastImage from 'react-native-fast-image';
 // Data
 import { getOverview, getStudio } from '../Data Handler/getdata';
 import { copyText } from '../Screens/character';
-import { updateFavorite, updateProgress, updateScore, updateStatus } from '../Data Handler/updatedata';
+import { deleteEntry, updateFavorite, updateProgress, updateScore, updateStatus } from '../Data Handler/updatedata';
 import Markdown from 'react-native-markdown-display';
 import { md, rules } from '../Utils/markdown';
 
-const types = ['Current', 'Planning', 'Completed', 'Repeating', 'Dropped', 'Paused'];
 const scoring = Array.from({ length: (10 - 0) / .1 + 1}, (_, i) => (i * .1).toFixed(1).replace(/\.0/g, '')).reverse();
 
 export const SectionInfo = ({header, info, style=null}) => {
@@ -90,12 +89,14 @@ export const Studio = ({route}) => {
 
 export const OverView = ({route}) => {
     const {data, auth, id, tags, lang, routeName} = route.params;
+    const types = ['Current', 'Planning', 'Completed', 'Repeating', 'Dropped', 'Paused', ... (data.mediaListEntry !== null) ? ['Remove'] : []];
     const [status, setStatus] = useState((data.mediaListEntry !== null) ? data.mediaListEntry.status : 'Not Added');
     const [progress, setProgress] = useState((data.mediaListEntry !== null) ? data.mediaListEntry.progress : '0');
     const [score, setScore] = useState((data.mediaListEntry !== null) ? data.mediaListEntry.score : '0');
     const [statusVis, setStatusVis] = useState(false);
     const [progressVis, setProgressVis] = useState(false);
     const [scoreVis, setScoreVis] = useState(false);
+    const [entryID, setEntryID] = useState((data.mediaListEntry !== null) ? data.mediaListEntry.id : null);
 
     const { colors } = useTheme();
     const { width, height } = useWindowDimensions();
@@ -105,12 +106,29 @@ export const OverView = ({route}) => {
     syn.toString();
 
     const updateContent = async(item) => {
-        const newItem = await updateStatus(auth, id, item.toUpperCase()); 
-        setStatus(item); 
-        ToastAndroid.show(`Updated to ${item}!`, ToastAndroid.SHORT); 
-        setStatusVis(false);
+        if (item === 'Remove') {
+            const removed = deleteEntry(auth, entryID);
+            setStatus('Not Added');
+            setStatusVis(false);
+        } else {
+            const newItem = await updateStatus(auth, id, item.toUpperCase()); 
+            setEntryID(newItem.id);
+            setStatus(item); 
+            setStatusVis(false);
+        }
+        
     }
     const StatusOverlay = () => {
+        if (status === 'Not Added') {
+            const index = types.indexOf('Remove');
+            if (index > -1) {
+                types.splice(index, 1);
+            }
+        } else {
+            if (types.indexOf('Remove') < 0) {
+                types.push('Remove');
+            }
+        }
         return(
             <Overlay isVisible={statusVis} onBackdropPress={() => setStatusVis(false)} overlayStyle={{backgroundColor:colors.card, width:width/2}}>
                 <View >
