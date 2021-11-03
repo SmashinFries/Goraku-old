@@ -22,7 +22,7 @@ const Stack = createStackNavigator();
 export const ThemeContext = React.createContext({theme: {theme: 'Light', object:LightTheme, title:'Default'}, setTheme: () => {}});
 const android = RNFetchBlob.android;
 let dirs = RNFetchBlob.fs.dirs
-export const VERSION = 'v1.2.5-beta';
+export const VERSION = 'v1.2.6-beta';
 
 export const downloadUpdate = (link) => {
     Vibration.vibrate(100);
@@ -35,7 +35,7 @@ export const downloadUpdate = (link) => {
           mime : 'application/vnd.android.package-archive',
           mediaScannable : true,
           notification : true,
-          path: dirs.DownloadDir + `/goraku.apk`,
+          path: dirs.DownloadDir + `/goraku-${VERSION}.apk`,
         }
       })
       .fetch('GET', `${link}`)

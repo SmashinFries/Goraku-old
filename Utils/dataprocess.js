@@ -13,6 +13,7 @@ export const textDecider = (data) => {
     let bottomText = '';
     let topText = '';
     let image = '';
+    let banner = '';
     let notifData = {title:'', body:''};
     let rawTime = data.createdAt * 1000;
     
@@ -21,6 +22,7 @@ export const textDecider = (data) => {
         topText = `${data.contexts[0]}${data.episode}${data.contexts[1]}${data.media.title.userPreferred}`;
         bottomText = `${data.contexts[2].replace(' ', '')}`;
         image = data.media.coverImage.extraLarge;
+        banner = (data.media.bannerImage !== null) ? data.media.bannerImage : '';
         notifData = {title:data.media.title.userPreferred, body:`${data.contexts[0]}${data.episode}${data.contexts[2]}`};
     } else if (typename === 'FollowingNotification') {
         topText = `${data.user.name}${data.context}`;
@@ -52,7 +54,7 @@ export const textDecider = (data) => {
         image = data.messenger.avatar.large;
     }
 
-    return({bottomText, topText, time, image, rawTime, notifData});
+    return({bottomText, topText, time, image, banner, rawTime, notifData});
 }
 
 export const FocusAwareStatusBar = (props) => {

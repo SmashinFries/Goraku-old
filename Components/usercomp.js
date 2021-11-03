@@ -115,12 +115,13 @@ export const Following = ({route}) => {
         }   
     }
 
-    return( (following.length > 0) ?
+    return(
         <View style={{flex:1}}>
             <FlatList 
             data={following}
             renderItem={({item}) => <RenderFollowing item={item} routeName={routeName} isAuth={true}/> } 
             keyExtractor={(item, index) => index.toString()} 
+            ListEmptyComponent={() => <Text style={{textAlign:'center', fontSize:35, fontWeight:'bold', paddingTop:5, color:colors.text}}>{`Not following anyone!${'\n'}(◕︵◕)`}</Text>}
             numColumns={3}
             contentContainerStyle={{paddingTop:10}}
             onRefresh={onRefresh}
@@ -128,7 +129,7 @@ export const Following = ({route}) => {
             onEndReached={getMore}
             onEndReachedThreshold={.4}
             />
-        </View> : <Text style={{textAlign:'center', fontSize:35, fontWeight:'bold', paddingTop:5, color:colors.text}}>{`Not following anyone!${'\n'}(◕︵◕)`}</Text>
+        </View>
     );
 }
 

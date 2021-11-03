@@ -6,12 +6,13 @@ import { getToken } from '../Storages/getstorage';
 import { fetchAiringNotification } from '../Data Handler/getdata';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { textDecider } from '../Utils/dataprocess';
+import { useTheme } from '@react-navigation/native';
 
 const setNotifs = async(unreadNum, data, latest) => {
     let items = await data.slice(0, unreadNum);
     const newItems = items.sort((a, b) => a.createdAt - b.createdAt);
     for (let notifNum in newItems) {
-        const { bottomText, topText, time, image, rawTime, notifData } = textDecider(newItems[notifNum]);
+        const { bottomText, topText, time, image, banner, rawTime, notifData } = textDecider(newItems[notifNum]);
         const message = notifData.body;
         PushNotification.localNotification({
             channelId: 'UserNotification',
@@ -20,6 +21,7 @@ const setNotifs = async(unreadNum, data, latest) => {
             when: rawTime,
             message: message,
             largeIconUrl: image,
+            bigPictureUrl: banner,
             color: '#28c922',
             group: 'Notif',
             vibrate: true,
@@ -27,11 +29,12 @@ const setNotifs = async(unreadNum, data, latest) => {
         });
     }
     await PushNotification.getDeliveredNotifications((notifs) => {
-        if (notifs.length <= unreadNum && notifs.length > 1) {
+        if (notifs.length <= unreadNum) {
             PushNotification.localNotification({
                 channelId:'UserNotification',
                 group:'Notif',
                 message:'',
+                color:'#28c922',
                 groupSummary:true,
             });
         }
@@ -49,7 +52,7 @@ const sendNotification = async() => {
             const unreadNum = Number(notifData.Viewer.unreadNotificationCount);
             const latest = notifData.Page.notifications[0].id;
             if (typeof lastNotif === 'string') {
-                if (unreadNum === 0 && latest === Number(lastNotif)) {
+                if (unreadNum !== 0 && latest !== Number(lastNotif)) {
                     await setNotifs(unreadNum, notifData.Page.notifications, latest);
                 } else if (unreadNum === 0 && latest !== Number(lastNotif)) {
                     await AsyncStorage.setItem('@LASTNOTIF', `${latest}`)

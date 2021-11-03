@@ -6,6 +6,7 @@ const themeColors = {
   ocean: 'rgba(11, 168, 189, 1)',
   crimson: 'rgba(153, 0, 0, 1)',
   spooky: 'rgba(255, 132, 0, 1)',
+  flamingo: 'rgba(252, 142, 172,1)',
 };
 
 // Light Theme
@@ -45,6 +46,16 @@ export const CrimsonLightTheme = {
   colors: {
     ...DefaultTheme.colors,
     primary: themeColors.crimson,
+    inactive: '#000',
+  }
+};
+
+export const FlamingoLightTheme = {
+  ...DefaultTheme,
+  dark: false,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: themeColors.flamingo,
     inactive: '#000',
   }
 };
@@ -90,17 +101,28 @@ export const CrimsonDarkTheme = {
   }
 };
 
+export const FlamingoDarkTheme = {
+  ...DarkTheme,
+  dark: true,
+  colors: {
+    ...DarkTheme.colors,
+    primary: themeColors.flamingo,
+    inactive: '#d1d1d1',
+  }
+};
+
 // Theme Array
 export const themes = [
   { theme: 'Light', object:LightTheme, title:'Default'},
   { theme: 'Light Crimson', object:CrimsonLightTheme, title:'Crimson'},
   { theme: 'Light Ocean', object:OceanLightTheme, title:'Ocean'},
   { theme: 'Light Spooky', object:SpookyLightTheme, title:'Spooky'},
+  { theme: 'Light Flamingo', object:FlamingoLightTheme, title:'Flamingo'},
   { theme: 'Dark', object:DimTheme, title:'Default'}, 
   { theme: 'Dark Crimson', object:CrimsonDarkTheme, title:'Crimson'},
   { theme: 'Dark Ocean', object:OceanDarkTheme, title:'Ocean'},
   { theme: 'Dark Spooky', object:SpookyDarkTheme, title:'Spooky'},
-  
+  { theme: 'Dark Flamingo', object:FlamingoDarkTheme, title:'Flamingo'},
 ];
 
 // Get Theme

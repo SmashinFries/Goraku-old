@@ -744,6 +744,7 @@ createdAt
 media {
   id
   meanScore
+  bannerImage
   coverImage {
     extraLarge
   }
@@ -787,6 +788,7 @@ query ($page:Int, $perPage:Int, $type:NotificationType) {
         media {
           id
           meanScore
+          bannerImage
           mediaListEntry {
             status
           }
