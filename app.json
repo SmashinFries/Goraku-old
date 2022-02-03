@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "Goraku",
+    "slug": "Goraku",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  },
+  "name": "Goraku"
+}
