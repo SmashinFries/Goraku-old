@@ -3,8 +3,31 @@
     "name": "Goraku",
     "slug": "Goraku",
     "version": "1.0.0",
+    "scheme": "goraku",
+    "splash": {
+      "image": "./Assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#28c922"
+    },
     "assetBundlePatterns": [
       "**/*"
+    ],
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Needed in order to search anime by saved image",
+          "cameraPermission": "Needed in order to search anime by new image"
+        }
+      ], 
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow you to access photos in-app",
+          "savePhotosPermission": "Allows you to save images",
+          "isAccessMediaLocationEnabled": false
+        }
+      ]
     ]
   },
   "name": "Goraku"
