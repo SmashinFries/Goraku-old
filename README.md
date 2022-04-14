@@ -26,7 +26,7 @@
   <h2>Features</h2>
   <p>Explore・Search・List</p>
   <p>Want to know everything this app can do?</p>
-  <a href="">Read this</a>
+  <a href="https://github.com/SmashinFries/Goraku/blob/master/FEATURES.md">Read this</a>
 </div>
 
 <div align="center">
