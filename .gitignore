@@ -53,6 +53,7 @@ buck-out/
 .expo/
 web-build/
 dist/
+eas.json
 
 # Scripts
 *.bat
