@@ -33,10 +33,10 @@ export const InfoDrawer = ({ navigation, route }:InfoProps) => {
             const result = await getMediaInfo(id);
             setAniLoading(result.res.data ? false : null);
             
-            const maldata = await getMalData(result.res.data.data.Media.idMal, result.res.data.data.Media.type);
+            const maldata = (result.res.data.data.Media.idMal) ? await getMalData(result.res.data.data.Media.idMal, result.res.data.data.Media.type) : {data:null};
             setMalLoading(maldata.data?.data ? false : null);
 
-            const images = await getMalImages(result.res.data.data.Media.idMal, result.res.data.data.Media.type);
+            const images = (result.res.data.data.Media.idMal) ? await getMalImages(result.res.data.data.Media.idMal, result.res.data.data.Media.type) : null;
             setImageLoading(images ? false : null);
 
             await new Promise(resolve => setTimeout(resolve, 500));
