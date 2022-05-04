@@ -5,7 +5,7 @@ export const AnimPressable = Animated.createAnimatedComponent(Pressable);
 
 const pressAnim = (value:Animated.Value) => {
     Animated.spring(value, {
-        toValue: .85,
+        toValue: .95,
         useNativeDriver: true,
     }).start();
 }
