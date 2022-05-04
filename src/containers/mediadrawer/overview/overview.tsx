@@ -9,13 +9,12 @@ import { AniMalType } from "../../../Api/types";
 import { OverviewNav, OverviewProps } from "../../types";
 import { handleCopy, handleShare } from "../../../utils";
 import { getMediaListEntry, quickRemove, toggleFav, updateMediaListEntry } from "../../../Api";
-import { EditListEntryModal } from "../../explore/components/entryModals";
+import { ListEntryDialog } from "../../explore/components/entryModals";
 import { PressableAnim } from "../../../Components/animated/AnimPressable";
 import { HeaderBackButton, HeaderBackground, HeaderRightButtons } from "../../../Components/header/headers";
 import { ListEntryUI, Trailer, MediaInformation, CharStaffList, ExternalLinkList, RecommendationList, RelationsList, TagScroll, OverViewHeader } from "./components";
 import { openURL } from "expo-linking";
 import RenderHtml from 'react-native-render-html';
-import AwesomeButton from "react-native-really-awesome-button-fixed";
 import { Portal } from 'react-native-paper';
 import { AnilistSVG } from "../../../Components/svg/svgs";
 import QrView from "../../../Components/qrView";
@@ -25,9 +24,10 @@ const AnimGradient = Animated.createAnimatedComponent(LinearGradient);
 
 type OverviewTabParams = {
     content: AniMalType;
+    isList?: boolean;
 }
 
-const OverviewTab = ({ content }: OverviewTabParams) => {
+const OverviewTab = ({ content, isList }: OverviewTabParams) => {
     const [data, setData] = useState(content);
     const [dates, setDates] = useState({ start: content.anilist.mediaListEntry?.startedAt ?? { year: null, month: null, day: null }, end: content.anilist.mediaListEntry?.completedAt ?? { year: null, month: null, day: null } });
     const [descVis, setDescVis] = useState(false);
@@ -41,7 +41,7 @@ const OverviewTab = ({ content }: OverviewTabParams) => {
     const gradientVal = useRef(new Animated.Value(1)).current;
     const bodyAnimVal = useRef(new Animated.Value(0)).current;
     const navigation = useNavigation<OverviewNav>();
-    const episodes = (data.anilist.episodes) ? data.anilist.episodes : data.anilist.chapters;
+    const episodes = (data.anilist.episodes) ? data.anilist.episodes : (data.anilist.format === 'NOVEL') ? data.anilist.volumes : data.anilist.chapters;
     const totalEP = Array.from(Array((episodes) ? episodes + 1 : 1001).keys());
 
     const handleFav = async () => {
@@ -204,21 +204,14 @@ const OverviewTab = ({ content }: OverviewTabParams) => {
                     <BackgroundInfo />
                     <SynonymsDisplay />
                     <Text style={{ marginLeft: 10, marginTop: 20, fontSize: 28, fontWeight: 'bold', color: colors.text }}>Links</Text>
-                    {(data?.anilist.externalLinks.length > 0) ?
-                        <View style={{ flex: 1 }}>
-                            <ExternalLinkList data={data} />
-                        </View>
-                        : <View style={{ width: 90, height: 50, marginLeft: 10, marginVertical: 10, marginHorizontal: 5, }}>
-                            <AwesomeButton onPress={() => openURL(data.anilist.siteUrl)} height={50} width={95} backgroundDarker='#000' backgroundColor={'rgb(60,180,242)'}>
-                                <AnilistSVG color={'#FFF'} />
-                            </AwesomeButton>
-                        </View>
-                    }
+                    <View style={{ flex: 1 }}>
+                        <ExternalLinkList data={data} colors={colors} />
+                    </View>
                 </View>
             </Animated.View>
             <ImageViewer data={data} imageIndex={imageIndex} visible={visible} setVisible={setVisible} theme={{ colors, dark }} />
             <Portal>
-                <EditListEntryModal data={data} setData={setData} colors={{ colors, dark }} totalEP={totalEP} visible={modalVisible} setVisible={setModalVisible} />
+                <ListEntryDialog data={data} setData={setData} colors={{ colors, dark }} totalEP={totalEP} visible={modalVisible} setVisible={setModalVisible} />
             </Portal>
         </View>
     );
@@ -228,7 +221,7 @@ const MediaInfoScreen = ({ navigation, route }: OverviewProps) => {
     const scrollY = useRef(new Animated.Value(0)).current;
     const [visible, setVisible] = useState(false);
     const [showQr, setShowQr] = useState(false);
-    const { data } = route.params;
+    const { data, isList } = route.params;
     const { colors, dark } = useTheme();
     const headerOpacity = scrollY.interpolate({
         inputRange: [0, 70],
@@ -239,7 +232,6 @@ const MediaInfoScreen = ({ navigation, route }: OverviewProps) => {
     const qrClose = () => setShowQr(false);
 
     useEffect(() => {
-        console.log('Updating!');
         navigation.setOptions({
             // @ts-ignore
             headerTitleStyle: { width: 150, opacity: headerOpacity },
@@ -257,7 +249,7 @@ const MediaInfoScreen = ({ navigation, route }: OverviewProps) => {
                 </View>,
             headerLeft: () => <HeaderBackButton style={{ marginLeft: 15 }} colors={colors} navigation={navigation} />,
         });
-    }, [headerOpacity, navigation]);
+    }, [headerOpacity, navigation, dark]);
 
     return (
         <View>
@@ -274,7 +266,7 @@ const MediaInfoScreen = ({ navigation, route }: OverviewProps) => {
                 scrollEventThrottle={16}
             >
                 <OverViewHeader data={data} colors={colors} dark={dark} setVisible={setVisible} />
-                <OverviewTab content={data} />
+                <OverviewTab content={data} isList={isList} />
                 <Portal>
                     <QrView colors={colors} visible={showQr} onDismiss={qrClose} link={`goraku://info/${data.anilist.type.toLowerCase()}/${data.anilist.id}`} />
                 </Portal>
