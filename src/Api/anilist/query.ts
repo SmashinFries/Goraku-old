@@ -312,6 +312,8 @@ externalLinks {
     id
     site
     url
+    color
+    icon
   }
 `;
 
