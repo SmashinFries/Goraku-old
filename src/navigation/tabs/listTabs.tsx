@@ -54,17 +54,6 @@ export const ListTabs = ({navigation, route}:ListTabProp) => {
         return(formattedData);
     }
 
-    const filterFavMedia = (media:UserFavMediaNode[], type?:string) => {
-        const mediaData = (type === 'NOVEL') ? 
-            media.filter((item) => item.node.format === 'NOVEL') 
-            : (type === 'MANGA') ? media.filter((item) => item.node.format === 'MANGA')
-            : media;
-        let formattedData = mediaData.filter((item:UserFavMediaNode) => {
-            return(item.node.format === format && item.node.isAdult === false);
-        });
-        return(formattedData);
-    }
-
     useEffect(() => {
         let isMounted = true;
         updateSearch('');
@@ -93,6 +82,7 @@ export const ListTabs = ({navigation, route}:ListTabProp) => {
     return(
         <View style={{ height:'100%' }}>
             <TagLayoutProvider>
+                {/* @ts-ignore */}
                 {(type !== 'FAVORITES') ? <Tabs.Navigator screenOptions={{ tabBarScrollEnabled: true, swipeEnabled: true, }}>
                     <Tabs.Screen name="Current" component={UserList} options={{ tabBarLabel: `Current` }} initialParams={initialParams('Current')} />
                     <Tabs.Screen name="Planning" component={UserList} options={{ tabBarLabel: `Planning` }} initialParams={initialParams('Planning')} />
