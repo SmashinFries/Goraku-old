@@ -44,7 +44,6 @@ const CharDetailScreen = ({ navigation, route }: CharDetailProps) => {
 
     useEffect(() => {
         navigation.setOptions({
-            headerTitleStyle: { width: 200 },
             headerStyle: { backgroundColor: colors.card },
             title: name,
             headerRight: () => (!loading) && <HeaderRightButtons navigation={navigation} colors={colors} id={id} drawer={inStack ?? false} share qrCode qrOnPress={() => qrOpen()} onShare={() => handleShare(data?.siteUrl ?? 'None')} />,
