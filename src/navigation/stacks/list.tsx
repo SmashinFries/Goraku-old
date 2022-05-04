@@ -13,12 +13,12 @@ export const ListStack = ({navigation}) => {
     return(
         <View style={{flex:1}} collapsable={false}>
             <ListSearchProvider>
-            <Stack.Navigator initialRouteName="UserList" screenOptions={{headerShown:false}}>
-                <Stack.Screen name="UserList" component={ListTabs} options={{headerShown:true,}} initialParams={{type: 'ANIME', format:'Any', layout:'column'}} />
-                <Stack.Screen name="UserListDetail" component={DrawerStack} />
-                <Stack.Screen name='UserCharDetail' component={CharDetailScreen} options={{ headerShown:true, headerTintColor:'#FFF' }} />
-                <Stack.Screen name='UserStaffDetail' component={StaffInfo} options={{ headerShown:true }} />
-            </Stack.Navigator>
+                <Stack.Navigator initialRouteName="UserList" screenOptions={{headerShown:false}}>
+                    <Stack.Screen name="UserList" component={ListTabs} options={{headerShown:true,}} initialParams={{type: 'ANIME', format:'Any', layout:'column'}} />
+                    <Stack.Screen name="UserListDetail" component={DrawerStack} initialParams={{isList:true}} />
+                    <Stack.Screen name='UserCharDetail' component={CharDetailScreen} options={{ headerShown:true, headerTintColor:'#FFF' }} />
+                    <Stack.Screen name='UserStaffDetail' component={StaffInfo} options={{ headerShown:true, headerTransparent:true }} />
+                </Stack.Navigator>
             </ListSearchProvider>
         </View>
     );
