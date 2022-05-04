@@ -73,7 +73,7 @@ export const ExploreStack = () => {
                 <Stack.Screen 
                     name='StaffExplore'
                     component={StaffInfo}
-                    options={{title:'Staff'}}
+                    options={{title:'Staff',}}
                 />
                 <Stack.Screen
                     name='RandomExplore'
