@@ -5,7 +5,7 @@ import { TraceMoeType } from "./types";
 const TRACE_MOE_API_URL = 'https://api.trace.moe/search?anilistInfo&cutBorders';
 
 type Image = ImagePicker.ImageInfo | ImagePicker.ImagePickerCancelledResult;
-export const searchLocalImage = async () => {
+export const searchLocalImage = async (setLoading, setImage, setMoeImage) => {
     const data = new FormData();
     let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -13,8 +13,10 @@ export const searchLocalImage = async () => {
         base64: true,
     });
     if (!result.cancelled) {
+        setLoading(true);
         const image: Image = result;
         // @ts-ignore
+        setImage('data:image/jpeg;base64,' + image.base64)
         data.append('image', {
             // @ts-ignore
             name: 'image',
@@ -24,10 +26,9 @@ export const searchLocalImage = async () => {
         });
         const res = await fetch(TRACE_MOE_API_URL, {method: 'POST', body: data});
         const resjson = await res.json();
-        // @ts-ignore
-        return {result: resjson, image:'data:image/jpeg;base64,' + image.base64};
+        setMoeImage(resjson);
     } else {
-        return null;
+        return;
     }
 }
 
