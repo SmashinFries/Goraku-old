@@ -10,7 +10,7 @@ const Drawer = createDrawerNavigator();
 const UserDrawer = () => {
     const { colors, dark } = useTheme();
     return(
-        <Drawer.Navigator initialRouteName="Overview" backBehavior="firstRoute" screenOptions={({ navigation, route }) => ({
+        <Drawer.Navigator initialRouteName="Overview" useLegacyImplementation backBehavior="firstRoute" screenOptions={({ navigation, route }) => ({
             drawerPosition: 'right',
             drawerType: 'back',
             swipeEdgeWidth: 10,
