@@ -22,7 +22,7 @@ type ListFilterProps = {
     navigation: NavigationProp<any>;
 }
 export const ListFilter = ({sheetRef, type, format, navigation}:ListFilterProps) => {
-    const snapPoints = useMemo(() => [25, '15%', '45%'], []);
+    const snapPoints = useMemo(() => [25, '20%', '48%'], []);
     const { colors, dark } = useTheme();
     const {tags, listLayout, updateLayout, updateTagLayout} = useTagLayout();
 
