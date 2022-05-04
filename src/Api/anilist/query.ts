@@ -662,6 +662,7 @@ query ($userId: Int, $type: MediaType, $sort: [MediaListSort]) {
 			entries {
 				customLists
         progress
+        progressVolumes
         updatedAt
 				media {
 					id
@@ -670,12 +671,16 @@ query ($userId: Int, $type: MediaType, $sort: [MediaListSort]) {
 					meanScore
           episodes
           chapters
+          volumes
           bannerImage
 					type
           synonyms
 					format
           isAdult
-          status
+          status (version:2)
+          nextAiringEpisode {
+						timeUntilAiring
+					}
 					title {
             userPreferred
 						english
