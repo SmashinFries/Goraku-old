@@ -43,7 +43,7 @@ export const ExploreScreen = ({navigation, route}:ExploreProps) => {
             />,
             headerBackground: () => <HeaderBackground colors={colors} />
         });
-    },[type, navigation, dark, colors]);
+    },[type, navigation, dark]);
 
     useEffect(() => {
         if (type === 'NOVEL') {
