@@ -58,9 +58,13 @@ const OverViewHeader = ({data, colors, dark, setVisible, scrollValue}:Props) => 
                             <MaterialIcons name="personal-video" size={16} color={colors.text} />
                             <Text style={{ fontSize: 16, textTransform: 'capitalize', marginLeft: 5, color: colors.text }}>{data?.anilist.episodes} Episodes</Text>
                         </View> : null}
-                        {(data?.anilist.chapters || data?.anilist.format === 'NOVEL') ? <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        {(data?.anilist.chapters && data?.anilist.format !== 'NOVEL') ? <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <MaterialIcons name="book" size={16} color={colors.text} />
-                            <Text style={{ fontSize: 16, textTransform: 'capitalize', marginLeft: 5, color: colors.text }}>{`${(data.anilist.format !== 'NOVEL') ? data?.anilist.chapters+' Chapters' : data?.anilist.volumes + ' Volumes'}`}</Text>
+                            <Text style={{ fontSize: 16, textTransform: 'capitalize', marginLeft: 5, color: colors.text }}>{`${data?.anilist.chapters+' Chapters'}`}</Text>
+                        </View> : null}
+                        {(data?.anilist.volumes && data?.anilist.format === 'NOVEL') ? <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <MaterialIcons name="book" size={16} color={colors.text} />
+                            <Text style={{ fontSize: 16, textTransform: 'capitalize', marginLeft: 5, color: colors.text }}>{`${data?.anilist.volumes + ' Volumes'}`}</Text>
                         </View> : null}
                     </View>
                 </View>
