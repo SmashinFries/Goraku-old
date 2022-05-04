@@ -8,6 +8,7 @@ import FastImage from 'react-native-fast-image';
 import { PressableAnim } from '../../../Components';
 import { ProgressTag, StatusTag } from './tags';
 import { MediaCollectionEntries } from '../../../Api/types';
+import { getTime } from '../../../utils';
 
 type RouteProp = {
     params: {
@@ -23,27 +24,31 @@ type TileProps = {
     colors: Theme;
     listStatus: string;
     navigation: MaterialTopTabNavigationProp<RouteProp>;
-    tags: {statusTag: boolean, progressTag: boolean};
+    tags: {statusTag: boolean | string, progressTag: boolean};
 }
 const ListTile = ({item, colors, listStatus, tags, navigation}:TileProps) => {
-    const total = item.media.episodes || item.media.chapters;
-    const progressPerc = ((item.progress/total)*100).toFixed(0);
+    const total = (item.media.format === 'NOVEL') ? item.media.volumes : item.media.episodes || item.media.chapters;
+    const progressPerc = (((item.media.format === 'NOVEL' ? item.progress : item.progressVolumes ) /total)*100).toFixed(0);
+    const statusString = ((item.media.status === 'RELEASING' && item.media.nextAiringEpisode?.timeUntilAiring) || (item.media.status === 'NOT_YET_RELEASED' && item.media.nextAiringEpisode?.timeUntilAiring)) ?
+        getTime(item.media.nextAiringEpisode?.timeUntilAiring)
+        : item.media.status
+    
     if (item.media.isAdult) return null;
     return(
         // @ts-ignore
-        <PressableAnim onPress={() => navigation.navigate('UserListDetail', {id: item.media.id})} style={{ height: 280, width:190 }}>
-            <FastImage source={{ uri: item.media.coverImage.extraLarge }} resizeMode={'cover'} style={{ height: 280, width: 190, borderRadius: 8 }} />
+        <PressableAnim onPress={() => navigation.navigate('UserListDetail', {id: item.media.id, isList:true})} style={{ height: 280, width:190 }}>
+            <FastImage fallback source={{ uri: item.media.coverImage.extraLarge }} resizeMode={'cover'} style={{ height: 280, width: 190, borderRadius: 8 }} />
             <LinearGradient colors={['transparent', 'rgba(0,0,0,.7)']} locations={[.65, .95]} style={{ position: 'absolute', height: '100%', width: '100%', justifyContent: 'flex-end', alignItems: 'center', borderRadius:8 }}>
                 <Text numberOfLines={2} style={{ color: '#FFF', textAlign: 'center', fontWeight: 'bold', paddingBottom:10, paddingHorizontal:5 }}>{item.media.title.userPreferred}</Text>
                 {(item.progress > 0) ? <View style={{ position: 'absolute', bottom: .1, left: 0, height: 8, width: (item.media.episodes ?? item.media.chapters) ? `${progressPerc}%` : '50%', backgroundColor: colors.colors.primary, borderBottomLeftRadius: 8, borderBottomRightRadius: (progressPerc === '100') ? 8 : 0 }} /> : null}
-                {((item.media.episodes ?? item.media.chapters) && listStatus !== 'Completed' && tags.progressTag) ? 
+                {((item.media.episodes || item.media.chapters || item.media.volumes) && listStatus !== 'Completed' && tags.progressTag && item.media.status !== 'NOT_YET_RELEASED') ? 
                     <View style={{position:'absolute', top:5, right:5}}>
-                        <ProgressTag progress={item.progress} colors={colors} total={item.media.episodes ?? item.media.chapters} />
+                        <ProgressTag progress={(item.media.format === 'NOVEL') ? item.progressVolumes : item.progress} colors={colors} total={total} />
                     </View>
                 : null}
                 {(item.media.status && tags.statusTag) ? 
                     <View style={{position:'absolute', top:5, left:5}}>
-                        <StatusTag mediaStatus={item.media.status} /> 
+                        <StatusTag mediaStatus={statusString} /> 
                     </View>
                 : null}
             </LinearGradient>
