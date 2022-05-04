@@ -56,23 +56,23 @@ const sortNotificaiton = (data:UserNotifications):NotifResponse => {
     }
 }
 
-TaskManager.defineTask(BACKGROUND_FETCH_TASK, async () => {
-    const notifs = await getUserNotifications();
-    const latestId = await getLatestNotif(notifs[0].id);
+// TaskManager.defineTask(BACKGROUND_FETCH_TASK, async () => {
+//     const notifs = await getUserNotifications();
+//     const latestId = await getLatestNotif(notifs[0].id);
 
-    console.log('Checking!');
+//     console.log('Checking!');
 
-    for (let notif of notifs) {
-        if (notif.id === latestId) {
-            break;
-        } else {
-            const data = sortNotificaiton(notif);
-            await schedulePushNotification(data.title, data.body, data.url);
-        }
-    }
-    AsyncStorage.setItem('@latestNotif', notifs[0].id.toString());
-    return BackgroundFetch.BackgroundFetchResult.NewData;
-});
+//     for (let notif of notifs) {
+//         if (notif.id === latestId) {
+//             break;
+//         } else {
+//             const data = sortNotificaiton(notif);
+//             await schedulePushNotification(data.title, data.body, data.url);
+//         }
+//     }
+//     AsyncStorage.setItem('@latestNotif', notifs[0].id.toString());
+//     return BackgroundFetch.BackgroundFetchResult.NewData;
+// });
 
 const registerBackgroundFetchAsync = async() => {
     try {

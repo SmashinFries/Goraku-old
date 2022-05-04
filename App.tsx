@@ -56,20 +56,20 @@ const config:PathConfigMap<ReactNavigation.RootParamList> = {
     }
 }
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: false,
-    shouldSetBadge: true,
-  }),
-});
+// Notifications.setNotificationHandler({
+//   handleNotification: async () => ({
+//     shouldShowAlert: true,
+//     shouldPlaySound: false,
+//     shouldSetBadge: true,
+//   }),
+// });
 
 const App = () => {
   const systemTheme = Appearance.getColorScheme();
   const [theme, setTheme] = useState((systemTheme === 'light') ? 'Light' : 'Dark');
   const {isAuth, setIsAuth} = useAnilistAuth();
   const [refresh, setRefresh] = useState();
-  const {receivedSubscription, responseSubscription} = useNotification(isAuth);
+  // const {receivedSubscription, responseSubscription} = useNotification(isAuth);
 
   const valueReset =  useMemo(() => ({ refresh, setRefresh }), [refresh]);
   const valueAuth =  useMemo(() => ({ isAuth, setIsAuth }), [isAuth]);
@@ -83,12 +83,12 @@ const App = () => {
     getTheme().then(theme => {(theme !== null) ? setTheme(theme) : setTheme((systemTheme === 'light') ? 'Light' : 'Dark');});
   },[isAuth]);
 
-  useEffect(() => {
-    return () => {
-      receivedSubscription.remove();
-      responseSubscription.remove();
-    }
-  }, []);
+  // useEffect(() => {
+  //   return () => {
+  //     receivedSubscription.remove();
+  //     responseSubscription.remove();
+  //   }
+  // }, []);
 
   return (
     <PaperProvider>

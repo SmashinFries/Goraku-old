@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import { View, Text, Linking, ToastAndroid, useWindowDimensions, ScrollView } from "react-native";
 import { useFocusEffect, useTheme } from "@react-navigation/native";
-import { List, Switch, Avatar, Portal, Dialog, RadioButton, Button, Caption } from 'react-native-paper';
+import { List, Switch, Avatar, Portal, Dialog, Button, Caption } from 'react-native-paper';
 import { checkTokenExpiration, getAuth, removeToken } from "../../../Storage/authToken";
 import { changeLanguage, changeNSFW, getUserOptions } from "../../../Api/anilist/anilist";
 import { RefreshContext, AccountContext, NotificationContext } from "../../../contexts/context";
@@ -12,6 +12,7 @@ import FastImage from "react-native-fast-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { storeNSFW } from "../../../Storage/nsfw";
 import { ADULT_ALLOW } from "../../../constants";
+import { RadioButton } from "../../../Components/buttons/radio";
 
 export const AccountHome = ({navigation, route}) => {
     const { isAuth, setIsAuth } = useContext(AccountContext);
@@ -103,14 +104,15 @@ export const AccountHome = ({navigation, route}) => {
                         left={props => <List.Icon {...props} icon="account-edit-outline" color={colors.primary} />}
                     />
                 }
-                {(isAuth) && 
+                {/* Disabling Notifications */}
+                {/* {(isAuth) && 
                     <List.Item 
                         title="Notifications" 
                         titleStyle={{color:colors.text}} 
                         left={props => <List.Icon {...props} icon="bell" color={colors.primary} />}
                         right={() => <Switch value={isAllowed} onValueChange={toggleFetchTask} color={colors.primary} />}
                     /> 
-                }
+                } */}
                 {(isAuth) &&
                     <List.Item
                         title="NSFW Content"
@@ -162,11 +164,9 @@ export const ChooseLanguage = ({navigation, route}) => {
             <Dialog visible={visible.vis} onDismiss={onDismiss} style={{ backgroundColor: colors.card }}>
                 <Dialog.Title theme={{ colors: { text: colors.text } }}>{visible.type + ' Language'}</Dialog.Title>
                 <Dialog.Content>
-                    <RadioButton.Group onValueChange={value => setValue(value)} value={value}>
                         {options.map((option, index) =>
-                            <RadioButton.Item key={index} mode='android' color={colors.primary} status={(option === value) ? 'checked' : 'unchecked'} uncheckedColor="#000" label={option.replace('_',' ')} value={option} theme={{ colors: { text: colors.text } }} />
+                            <RadioButton key={index} colors={{colors,dark}} activeItem={value} text={option} onPress={() => setValue(option)} />
                         )}
-                    </RadioButton.Group>
                 </Dialog.Content>
                 <Dialog.Actions>
                     <Button onPress={onDismiss} color={colors.text}>Cancel</Button>
