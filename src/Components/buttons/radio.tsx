@@ -23,17 +23,19 @@ const iconDecider = (active:string, title:string) => {
         case 'list':
             if (active === 'list') return 'view-sequential'
             return 'view-sequential-outline';
+        default: 
+            if (active === title) return 'radiobox-marked'
+            return 'radiobox-blank';
     }
 }
-export const RadioButton = ({text, activeItem, onPress, colors, fontSize=18, iconSize=30, style={}}:RadioButtonProps) => {
+export const RadioButton = ({text, activeItem, onPress, colors, fontSize=18, iconSize=24, style={}}:RadioButtonProps) => {
     const active = (activeItem) ? activeItem.toString().toLowerCase() : 'None' 
     const title = (typeof(text) === 'string') ? text.toLowerCase() : text.toString().toLowerCase();
     return(
             <View style={[style, {height:45, justifyContent:'center', borderRadius:12}]}>
                 <View style={{flexDirection:'row', justifyContent:'flex-start', alignItems:'center', borderRadius:12}}>
                     <IconButton onPress={onPress} icon={iconDecider(active, title)} size={iconSize} color={(active === title) ? colors.colors.primary : colors.colors.text} />
-                    {/* <IconButton icon={(text === 'Compact') ? 'view-grid-outline' : 'view-sequential-outline'} size={iconSize} color={colors.colors.text} /> */}
-                    <Text style={{ textTransform:'capitalize', fontSize:fontSize, paddingRight:5, color:colors.colors.text}}>{text}</Text>
+                    <Text onPress={onPress} style={{ textTransform:'capitalize', fontSize:fontSize, paddingRight:5, color:colors.colors.text}}>{text}</Text>
                 </View>
             </View>
     );
