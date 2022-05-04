@@ -126,7 +126,7 @@ export const getHomeData = async ({
     }
 }
 
-export const getMediaInfo = async(id:number, sort_c = ['ROLE','RELEVANCE','ID'], role_c = undefined, page_c = 1, perPage_c = 16, page_rec = 1, perPage_rec = 6) => {
+export const getMediaInfo = async(id:number, sort_c = ['ROLE','RELEVANCE','ID'], role_c = undefined, page_c = 1, perPage_c = 16, page_rec = 1, perPage_rec = 12) => {
     const header = await getHeader();
     try {
         const res = await axios.post<MediaQueryRoot>(_URL, {
@@ -436,7 +436,6 @@ export const useActivities = (page=1) => {
     }
 
     const onRefresh = async() => {
-        console.log('refresh');
         setRefresh(true);
         const resp = await fetchActivity();
         setData(resp);
@@ -446,7 +445,6 @@ export const useActivities = (page=1) => {
     useEffect(() => {
         if (!data) {
             setLoading(true);
-            console.log('Getting new info!');
             fetchActivity().then(data => {
                 setData(data);
                 setLoading(false);
@@ -455,7 +453,7 @@ export const useActivities = (page=1) => {
     },[]);
 
     useEffect(() => {
-        if (data && data.pageInfo.currentPage > 1) {
+        if (data && data.pageInfo.currentPage > 1 && !refresh) {
             fetchActivity().then(resp => {
                 console.log('Adding content!');
                 setData({...data, pageInfo: resp.pageInfo, activities: [...data.activities, ...resp.activities]})
