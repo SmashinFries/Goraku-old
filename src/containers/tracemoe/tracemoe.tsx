@@ -23,13 +23,8 @@ export const TraceMoeScreen = ({navigation, route}) => {
     const { colors, dark } = useTheme();
 
     const openGallery = async () => {
-        const res = await searchLocalImage();
-        if (res?.result) {
-            setLoading(true);
-            setCurrentImage(res.image);
-            setMoeImage(res.result);
-            setLoading(false);
-        }
+        await searchLocalImage(setLoading, setCurrentImage, setMoeImage);
+        setLoading(false);
     }
 
     const openCamera = async () => {
@@ -99,7 +94,7 @@ export const TraceMoeScreen = ({navigation, route}) => {
     }
     
     return(
-        <ScrollView keyboardShouldPersistTaps='handled'>
+        <ScrollView keyboardShouldPersistTaps='handled' contentContainerStyle={{flexGrow:1}}>
             <View style={{flex:1, height:40, marginHorizontal:30, marginTop:15, justifyContent:'center'}}>
                 <TextInput keyboardType="url" value={searchUrl} placeholderTextColor={colors.text} onChangeText={(txt) => setSearchUrl(txt)} onSubmitEditing={({nativeEvent}) => handleURLTrace(nativeEvent.text)} placeholder="Enter image URL" style={{height:40, color:colors.text, backgroundColor:colors.card, borderWidth:1, borderRadius:12, paddingHorizontal:40}} />
                 <AntDesign name="search1" size={20} color={colors.primary} style={{position:'absolute', left:10}} />
@@ -107,9 +102,7 @@ export const TraceMoeScreen = ({navigation, route}) => {
             </View>
             {(currentImage.length > 0) ? <CurrentImage /> : null}
             {(loading) ? 
-                <View style={{flex:1, justifyContent:'center'}}>
                     <LoadingView colors={{colors, dark}} />
-                </View>
             : null}
             {(moeImage && !loading) ? <TraceMoeUI data={moeImage.result} /> : null}
             <Portal>
