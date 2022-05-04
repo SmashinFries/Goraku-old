@@ -2,4 +2,5 @@
 <resources>
   <!-- Below line is handled by '@expo/configure-splash-screen' command and it's discouraged to modify it manually -->
   <color name="splashscreen_background">#000000</color>
+  <color name="splashscreen_statusbar_color">#000000</color>
 </resources>
