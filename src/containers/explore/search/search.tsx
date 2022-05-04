@@ -11,6 +11,7 @@ import { FilterSheet } from "../../bottomsheets/filterSheet";
 import { getCharacterSearch } from "../../../Api/anilist/anilist";
 import { CharacterSearchTile, CharSearchType, StaffSearchType } from "../../../Api/types";
 import { CharacterTile } from "../../../Components/Tiles/CharacterTile";
+import { uniqueItems } from "../../../utils/filters/uniqueItems";
 
 export const SearchScreen = ({ route, navigation }: SearchProps) => {
     const [data, setData] = useState<HomeType>();
@@ -112,7 +113,9 @@ export const SearchScreen = ({ route, navigation }: SearchProps) => {
                 status: searchParams.status,
                 licensedBy_in: (typeof (searchParams.licensedBy_in[0]) === 'string') ? searchParams.licensedBy_in : undefined,
             });
-            setData({ data: { ...data.data, Page: { ...data.data.Page, media: [...data.data.Page.media, ...result.data.data.Page.media], pageInfo: result.data.data.Page.pageInfo } } });
+            const newData = [...data.data.Page.media, ...result.data.data.Page.media];
+            const filtedData = uniqueItems(newData);
+            setData({ ...data, data: { ...data.data, Page: { ...data.data.Page, media: filtedData, pageInfo:result.data.data.Page.pageInfo } } });
         } catch (e) {
             console.log(e);
         }
