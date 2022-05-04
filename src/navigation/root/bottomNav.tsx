@@ -53,8 +53,8 @@ export const BottomNav = ({isAuth}) => {
                     name="UserStack" 
                     component={UserStack} 
                     options={{ 
-                        tabBarLabel: 'Activity', 
-                        title:'Activity', 
+                        tabBarLabel: 'User', 
+                        title:'User', 
                         tabBarIcon: ({ color }) => 
                             <MaterialIcons name="dynamic-feed" size={24} color={color} /> 
                         }} 

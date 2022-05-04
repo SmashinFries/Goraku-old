@@ -21,7 +21,7 @@ const BarChartCard = ({data, title, itemTitle, colors}:Props) => {
         backgroundGradientFromOpacity: 0,
         backgroundGradientTo: "transparent",
         backgroundGradientToOpacity: 0,
-        color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+        color: (opacity = 1) => `${rgbConvert(colors.primary, opacity)}`,
         strokeWidth: 2, // optional, default 3
         useShadowColorFromDataset: false // optional
     };
@@ -37,7 +37,7 @@ const BarChartCard = ({data, title, itemTitle, colors}:Props) => {
 
     return(
         <View style={{flex:1, marginTop:15, marginHorizontal:20}}>
-            <Card>
+            <Card style={{backgroundColor:colors.card}}>
                 <Card.Title title={title} style={{ backgroundColor: colors.primary }} />
                 <Card.Content>
                     <ScrollView horizontal showsHorizontalScrollIndicator={false} >

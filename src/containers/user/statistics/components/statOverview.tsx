@@ -49,7 +49,7 @@ const StatOverview = ({data, type, colors}:StatOverviewProps) => {
                 <IconButton icon={icon} size={30} style={{ backgroundColor: colors.primary }} />
                 <View style={{ justifyContent: 'center' }}>
                     <Title style={{ color: colors.primary }}>{value}</Title>
-                    <Caption>{description}</Caption>
+                    <Caption style={{color:colors.text}}>{description}</Caption>
                 </View>
             </View>
         );

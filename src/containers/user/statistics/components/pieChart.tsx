@@ -45,7 +45,7 @@ const MetaInfo = ({title, info, colors}) => {
     const [expanded, setExpanded] = useState<boolean>(false);
     
     return (
-        <List.Accordion title={title} theme={{colors:{primary:colors.primary, background:colors.background, text:colors.text}}} expanded={expanded} onPress={() => setExpanded(!expanded)}>
+        <List.Accordion title={title} titleStyle={{textTransform:'capitalize'}} theme={{colors:{primary:colors.primary, background:colors.background, text:colors.text}}} expanded={expanded} onPress={() => setExpanded(!expanded)}>
             <List.Item title={'Count'} titleStyle={{color:colors.text}} right={(props) => <Text style={{color: colors.text, textAlignVertical:'center'}}>{info.count}</Text>} />
             <List.Item title={(info.minutesWatched) ? 'Hours Watched' : 'Chapters Read'} titleStyle={{color:colors.text}} right={(props) => <Text style={{color: colors.text, textAlignVertical:'center'}}>{(info.minutesWatched) ? (info.minutesWatched / 60).toFixed(0) : info.chaptersRead}</Text>} />
             <List.Item title={'Mean Score'} titleStyle={{color:colors.text}} right={(props) => <Text style={{color: colors.text, textAlignVertical:'center'}}>{info.meanScore}</Text>} />
