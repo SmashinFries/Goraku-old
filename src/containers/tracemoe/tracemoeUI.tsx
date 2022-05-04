@@ -2,9 +2,8 @@ import { useNavigation, useTheme } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
 import { MaterialIcons, AntDesign } from '@expo/vector-icons';
-import { View, Text, useWindowDimensions, ViewStyle } from "react-native";
+import { View, Text, useWindowDimensions, ViewStyle, Pressable } from "react-native";
 import FastImage from "react-native-fast-image";
-import AwesomeButton from "react-native-really-awesome-button-fixed";
 import { MoeData } from "../../Api/types";
 import { ExploreScreenNavigationProp } from "../types";
 
@@ -45,12 +44,11 @@ const SimilarityTag = ({percentage, color, styles}:SimProps) => {
 const MoeRenderItem = ({anime, dimensions}:ItemProp) => {
     const { width, height } = dimensions;
     const { colors } = useTheme();
-    const nav = useNavigation<ExploreScreenNavigationProp>();
+    const nav = useNavigation<any>();
     if (anime.anilist.isAdult) return null;
     return(
         <View style={{marginBottom:10, marginHorizontal:'5%', borderRadius:12}}>
-            {/* @ts-ignore */}
-            <AwesomeButton onPress={() => nav.navigate('Info', {id:anime.anilist.id, type:'ANIME'})} backgroundDarker="#000" backgroundColor='rgba(0,0,0,.5)' borderRadius={8} width={(width*90)/100} height={190} style={{marginTop:10}} >
+            <Pressable onPress={() => nav.navigate('Info', {id:anime.anilist.id, type:'ANIME'})} style={{ marginTop: 10, backgroundColor: 'rgba(0,0,0,.5)', borderRadius: 8, width:(width*90)/100, height: 190 }} >
                 <FastImage source={{uri: anime.image}} style={{width: '100%', height: '100%'}} resizeMode={'cover'} />
                 <LinearGradient colors={['transparent', 'rgba(0,0,0,.85)']} locations={[.75, 1]} style={{position:'absolute', height:'100%', width:'100%', borderRadius:8, justifyContent:'flex-end'}}>
                     <Text numberOfLines={2} style={{textAlign:'center', fontWeight:'bold', fontSize:18, color:'#FFF'}}>{anime.anilist.title.romaji}</Text>
@@ -59,7 +57,7 @@ const MoeRenderItem = ({anime, dimensions}:ItemProp) => {
                         <SimilarityTag percentage={(anime.similarity * 100).toPrecision(4) + '%'} color={(anime.similarity > .89) ? 'green' : (anime.similarity < .89 && anime.similarity > .79) ? 'yellow' : 'red'} />
                     </View>
                 </LinearGradient>
-            </AwesomeButton>
+            </Pressable>
         </View>
     );
 }
