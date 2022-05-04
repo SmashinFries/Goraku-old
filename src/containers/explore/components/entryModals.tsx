@@ -1,43 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, Pressable, useWindowDimensions, Modal, ToastAndroid, FlatList, StatusBar, ViewStyle } from "react-native";
-import { MaterialIcons } from '@expo/vector-icons';
-import { Theme, useTheme } from "@react-navigation/native";
+import React, { useState } from "react";
+import { Text, Pressable, ToastAndroid, FlatList } from "react-native";
+import { Theme } from "@react-navigation/native";
 import { AniMalType } from "../../../Api/types";
 import { updateMediaListEntry } from "../../../Api";
 import { ScrollView } from "react-native-gesture-handler";
 import { RadioButton } from "../../../Components/buttons/radio";
-import { Button, Dialog, HelperText, TextInput } from "react-native-paper";
+import { Button, Dialog, IconButton, TextInput } from "react-native-paper";
+import { rgbConvert } from "../../../utils";
 
 const STATUS_OPTIONS = ['CURRENT', 'PLANNING', 'COMPLETED', 'DROPPED', 'PAUSED', 'REPEATING'];
 type visibleState = {
     vis: boolean;
     type: string;
-}
-
-type EntryModalProps = {
-    children: React.ReactNode;
-    visible: visibleState;
-    setVisible: React.Dispatch<React.SetStateAction<visibleState>>;
-    transparent?: boolean; 
-    style?:ViewStyle;
-}
-const EntryModal = ({children, visible, setVisible, transparent=true, style={}}:EntryModalProps) => {
-    const { width, height } = useWindowDimensions();
-    const { colors } = useTheme();
-    const statusBarHeight = StatusBar.currentHeight;
-    return(
-        <Modal visible={visible.vis} statusBarTranslucent presentationStyle="overFullScreen" transparent={transparent}>
-            <View style={[{position:'absolute', height:height, width:width, justifyContent:'center', alignItems:'center'}, style]}>
-                {(transparent) && <Pressable onPress={() => setVisible({...visible, vis:false})} style={{position:'absolute', height:'100%', width:'100%', backgroundColor:'rgba(0,0,0,.65)'}} />}
-                {children}
-                {(!transparent) &&
-                    <Pressable onPress={() => setVisible({...visible, vis:false})} style={{ position: 'absolute', top: 15+statusBarHeight, right: 20, justifyContent:'center', alignItems:'center', borderRadius: 35 / 2 }}>
-                        <MaterialIcons name="close" size={35} color={colors.text} />
-                    </Pressable>
-                }
-            </View>
-        </Modal>
-    );
 }
 
 type StatusProps = {
@@ -75,25 +49,39 @@ const StatusList = ({data, setData, onClose, colors}:StatusProps) => {
 }
 
 const ProgressList = ({data, setData, totalEP, onClose, colors}:StatusProps) => {
+    const [active, setActive] = useState<number>((data.anilist.mediaListEntry.progress && data.anilist.format !== 'NOVEL') ? data.anilist.mediaListEntry.progress : (data.anilist.mediaListEntry.progressVolumes) ? data.anilist.mediaListEntry.progressVolumes : 0);
     const current = (data.anilist.mediaListEntry.progress) ? data.anilist.mediaListEntry.progress : 0;
 
     const changeProgress = async(progress:number) => {
         if (data.anilist.format !== 'NOVEL') {
             if (data.anilist.status === 'PLANNING' && progress > 0) {
-                setData({ ...data, anilist: { ...data.anilist, mediaListEntry: { ...data.anilist.mediaListEntry, progress: progress } } });
-            } else {
                 setData({ ...data, anilist: { ...data.anilist, mediaListEntry: { ...data.anilist.mediaListEntry, progress: progress, status: 'CURRENT' } } });
+                const res = updateMediaListEntry(undefined, data.anilist.mediaListEntry.id, 'CURRENT', undefined, progress);
+            } else if (progress === data.anilist.episodes || progress === data.anilist.chapters || (data.anilist.format === 'NOVEL' && progress === data.anilist.volumes)) {
+                setData({ ...data, anilist: { ...data.anilist, mediaListEntry: { ...data.anilist.mediaListEntry, progress: progress, status: 'COMPLETED' } } });
+                const res = updateMediaListEntry(undefined, data.anilist.mediaListEntry.id, 'COMPLETED', undefined, progress);
+            } else {
+                setData({ ...data, anilist: { ...data.anilist, mediaListEntry: { ...data.anilist.mediaListEntry, progress: progress } } });
+                const res = updateMediaListEntry(undefined, data.anilist.mediaListEntry.id, undefined, undefined, progress);
             }
-            const res = updateMediaListEntry(undefined, data.anilist.mediaListEntry.id, (progress > 0 && data.anilist.mediaListEntry.status === 'PLANNING') ? 'CURRENT' : undefined, undefined, progress);
         } else {
-            setData({ ...data, anilist: { ...data.anilist, mediaListEntry: { ...data.anilist.mediaListEntry, progress: progress } } });
+            setData({ ...data, anilist: { ...data.anilist, mediaListEntry: { ...data.anilist.mediaListEntry, progressVolumes: progress } } });
             const res = updateMediaListEntry(undefined, data.anilist.mediaListEntry.id, (progress > 0 && data.anilist.mediaListEntry.status === 'PLANNING') ? 'CURRENT' : undefined, undefined, undefined, undefined, undefined, undefined, undefined, progress);
         }
     }
 
+    const onPress = (index:number) => {
+        setActive(index);
+    }
+
+    const onConfirm = () => {
+        changeProgress(active);
+        onClose();
+    }
+
     const RenderItem = ({item, index}) => {
         return(
-            <Pressable onPress={() => changeProgress(item)} style={{height:80, width:120, borderRadius:12, margin:5, backgroundColor:(current >= index) ? colors.colors.primary : colors.colors.card, borderWidth:1, borderColor:colors.colors.primary, justifyContent:'center', alignItems:'center'}}>
+            <Pressable onPress={() => onPress(index)} style={{height:80, width:120, borderRadius:12, margin:5, backgroundColor:(active >= index) ? colors.colors.primary : colors.colors.card, borderWidth:1, borderColor:colors.colors.primary, justifyContent:'center', alignItems:'center'}}>
                 <Text style={{color:(current >= index) ? '#FFF' : colors.colors.text, fontSize:24, fontWeight:'bold'}}>{item}</Text>
             </Pressable>
         );
@@ -114,7 +102,8 @@ const ProgressList = ({data, setData, totalEP, onClose, colors}:StatusProps) => 
                 />
             </Dialog.ScrollArea>
             <Dialog.Actions>
-                <Button onPress={onClose} color={colors.colors.primary}>Done</Button>
+                <Button onPress={onClose} color={colors.colors.primary}>Cancel</Button>
+                <Button onPress={onConfirm} color={colors.colors.primary}>Confirm</Button>
             </Dialog.Actions>
         </>
     );
@@ -160,17 +149,6 @@ const ScoreList = ({data, setData, onClose, colors}:StatusProps) => {
 const RepeatList = ({data, setData, onClose, colors}:StatusProps) => {
     const [value, setValue] = useState<string>();
 
-    // const hasErrors = () => {
-    //     if (!value) return null;
-    //     return Number(value) > 0;
-    // }
-
-    // const errorMessage = () => {
-    //     if (Number(value) <= 5) {
-    //         return ''
-    //     }
-    // }
-
     const changeRepeat = async() => {
         setData({...data, anilist:{...data.anilist, mediaListEntry:{...data.anilist.mediaListEntry, repeat:Number(value)}}});
         const result = await updateMediaListEntry(undefined, data.anilist.mediaListEntry.id, undefined, undefined, undefined, Number(value));
@@ -181,9 +159,6 @@ const RepeatList = ({data, setData, onClose, colors}:StatusProps) => {
             <Dialog.Title style={{ color: colors.colors.text }}>Repeats</Dialog.Title>
             <Dialog.Content>
                 <TextInput underlineColor={colors.colors.primary} defaultValue={data.anilist.mediaListEntry.repeat?.toString() ?? '0'} value={value} onChangeText={(txt) => setValue(txt)} mode='flat' keyboardType='number-pad' theme={{colors:{background:colors.colors.background, text:colors.colors.text, primary:colors.colors.primary}}} />
-                {/* <HelperText type="info" visible={hasErrors()}>
-                    Email address is invalid!
-                </HelperText> */}
             </Dialog.Content>
             <Dialog.Actions>
                 <Button onPress={onClose} color={colors.colors.text}>Cancel</Button>
@@ -201,7 +176,7 @@ type ListEntryModalProps = {
     totalEP?: number[];
     colors: Theme;
 }
-export const EditListEntryModal = ({visible, setVisible, data, setData, colors, totalEP}:ListEntryModalProps) => {
+export const ListEntryDialog = ({visible, setVisible, data, setData, colors, totalEP}:ListEntryModalProps) => {
     switch (visible.type) {
         case 'STATUS':
             return(
@@ -211,11 +186,9 @@ export const EditListEntryModal = ({visible, setVisible, data, setData, colors, 
             );
         case 'PROGRESS':
             return(
-                // <EntryModal visible={visible} setVisible={setVisible} transparent={false} style={{backgroundColor:colors.colors.card, position:'relative'}}>
                 <Dialog style={{backgroundColor:colors.colors.card, maxHeight:'80%'}} visible={visible.vis} onDismiss={() => setVisible({...visible, vis:false})} >
                     <ProgressList data={data} setData={setData} colors={colors} totalEP={totalEP} onClose={() => setVisible({...visible, vis:false})}/>
                 </Dialog>
-                // </EntryModal>
             );
         case 'SCORE':
             return(
