@@ -25,7 +25,7 @@ export const StaffInfo = ({ navigation, route }:StaffInfoProps) => {
     const [links, setLinks] = useState<linkType>([]);
     const [loading, setLoading] = useState(true);
     const [showQr, setShowQr] = useState<boolean>(false);
-    const { id, name, inStack } = route.params;
+    const { id, name, inStack, isList } = route.params;
     const { colors, dark } = useTheme();
     const date = new Date();
 
@@ -72,7 +72,7 @@ export const StaffInfo = ({ navigation, route }:StaffInfoProps) => {
 
     useEffect(() => {
         navigation.setOptions({
-            headerTitleStyle: { color: colors.text, width: 200 },
+            headerTitleStyle: { color: colors.text },
             title: name || data?.name.userPreferred || 'Staff',
             headerRight: () => (!loading) && <HeaderRightButtons colors={colors} navigation={navigation} drawer={(inStack) ? true : false} qrCode qrOnPress={() => qrOpen()} share onShare={() => handleShare(data?.siteUrl ?? 'None')} id={id} />,
             headerLeft: () => <HeaderBackButton style={{paddingRight:10}} colors={colors} navigation={navigation} />
@@ -134,7 +134,7 @@ export const StaffInfo = ({ navigation, route }:StaffInfoProps) => {
                 /> :
                 <FlatList
                     data={[0]}
-                    renderItem={() => <StaffMediaRender data={data} navigation={navigation} colors={colors} />}
+                    renderItem={() => <StaffMediaRender data={data} navigation={navigation} isList={isList} colors={colors} />}
                     keyExtractor={(item, index) => index.toString()}
                     ListHeaderComponent={() => <StaffOverview data={data} date={{day:date.getDate(), month:date.getMonth()}} links={links} liked={isLiked} toggleLike={toggleLike} colors={colors} />}
                     ItemSeparatorComponent={() => <View style={{ height: 15 }} />}
