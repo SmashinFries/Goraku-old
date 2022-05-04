@@ -1,9 +1,10 @@
 import { openURL } from "expo-linking";
 import React from "react";
-import { View } from "react-native";
+import { View, Text } from "react-native";
 import { Card, IconButton } from "react-native-paper";
 import { AnimeThemes } from "../../../../Api/types";
 import { ThemeColors } from "../../../../Components/types";
+import { handleCopy } from "../../../../utils";
 
 const getWikiURL = (title:string, slug:string, tags?:string, version?:number|null) => {
     console.log(version);
@@ -24,7 +25,7 @@ const MusicViewer = ({ track, animeTitle, colors }:ViewerProps) => {
             <Card style={{width:'100%', backgroundColor:colors.primary}}>
                 <Card.Title 
                     right={props => (track.song.artists[0]?.name) && <IconButton {...props}icon="account" onPress={() => openURL(`https://staging.animethemes.moe/wiki/artist/${track.song.artists[0].slug}`)} />} 
-                    title={track.slug + '・' + track.song.title} 
+                    title={<Text onLongPress={() => handleCopy(track.song.title)}>{track.slug + '・' + track.song.title}</Text>} 
                     titleNumberOfLines={3}
                     subtitle={(track.song.artists[0]?.name) ? 'By ' + track.song.artists[0]?.name : undefined} 
                 />
@@ -35,7 +36,7 @@ const MusicViewer = ({ track, animeTitle, colors }:ViewerProps) => {
                             title={'V' + (entry.version ?? '1')}
                             titleNumberOfLines={3}
                             titleStyle={{color:colors.text}}
-                            subtitle={`${(entry.episodes) ? 'Episodes ' + track.animethemeentries[0].episodes : ''}`}
+                            subtitle={`${(entry.episodes) ? 'Episodes ' + track.animethemeentries[0].episodes : ''}${(track.animethemeentries[0].episodes.charAt(track.animethemeentries[0].episodes.length -1) === '-') ? '?' : ''}`}
                             subtitleNumberOfLines={2}
                             subtitleStyle={{color:colors.text}}
                             right={(props) =>
