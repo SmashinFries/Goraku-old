@@ -634,6 +634,7 @@ export type RecommendationsFullType = {
 export type MediaCollectionEntries = {
     customLists: JSON;
     progress: number;
+    progressVolumes: number;
     updatedAt: number;
     media: {
         id: number;
@@ -644,10 +645,14 @@ export type MediaCollectionEntries = {
         format: string;
         episodes: number;
         chapters: number;
+        volumes: number;
         bannerImage: string;
         isAdult: boolean;
         status: string;
         synonyms: string[];
+        nextAiringEpisode: {
+            timeUntilAiring: number;
+        }
         title: {
             userPreferred: string;
 			english: string;
