@@ -281,6 +281,14 @@ export type MediaEntryInfoType = {
     createdAt: number;
 }
 
+export type ExtLink = {
+    id: number;
+    site: string;
+    url: string;
+    color: string;
+    icon: string;
+}
+
 export type MediaQueryType = {
     id: number;
     idMal: number;
@@ -309,11 +317,7 @@ export type MediaQueryType = {
             favourites: number;
         }[];
     }
-    externalLinks: {
-        id: number;
-        site: string;
-        url: string;
-    }[];
+    externalLinks: ExtLink[];
     recommendations: {
         pageInfo: pageInfoType;
         edges: MediaRecommendationNode[];
