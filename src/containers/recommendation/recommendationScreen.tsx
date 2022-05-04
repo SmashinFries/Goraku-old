@@ -1,20 +1,19 @@
 import { useTheme } from "@react-navigation/native";
-import React, { useEffect, useState, useRef, useContext } from "react";
-import { View, Text, ActivityIndicator, FlatList, Animated, useWindowDimensions, Pressable } from "react-native";
+import React, { useEffect, useState, useContext } from "react";
+import { View, Text, FlatList, useWindowDimensions, Pressable } from "react-native";
 import FastImage from "react-native-fast-image";
-import AwesomeButton from "react-native-really-awesome-button-fixed";
+import { Fontisto } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
 import { Avatar, IconButton } from 'react-native-paper';
 import { getRecommendations, saveRecommendation } from "../../Api/anilist/anilist";
 import { RecommendationInfoType, RecommendationMediaType, RecommendationsFullType } from "../../Api/types";
 import { LinearGradient } from "expo-linear-gradient";
 import { RecommendationProps } from "../types";
-import { LoadingView, PressableAnim } from "../../Components";
-import { getIsAuth } from "../../Storage/authToken";
+import { LoadingView } from "../../Components";
 import SelectDropdown from "react-native-select-dropdown";
 import { openURL } from "expo-linking";
-import { useAnilistAuth } from "../../auth/auth";
 import { AccountContext } from "../../contexts/context";
+import { rgbConvert } from "../../utils";
 
 const RecSort = {
     'Recent': 'ID_DESC',
@@ -176,6 +175,8 @@ export const RecommendationScreen = ({navigation, route}:RecommendationProps) =>
                                 </View>
                             </Pressable>
                         </View>
+                        <Fontisto name="arrow-v" size={34} color={rgbConvert(colors.text, .25)} style={{position:'absolute', left:15}} />
+                        <Fontisto name="arrow-v" size={34} color={rgbConvert(colors.text, .25)} style={{position:'absolute', right:15}} />
                     </View>
                     <MediaButton mode='Bottom' onPress={() => pressNav(item.mediaRecommendation)} title={item.mediaRecommendation.title.userPreferred} cover={(item.mediaRecommendation.bannerImage !== null) ? item.mediaRecommendation.bannerImage : item.mediaRecommendation.coverImage.extraLarge} />
                 </View>
