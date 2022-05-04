@@ -31,7 +31,6 @@ const Themes = ({navigation, route}:ThemesScreenProps) => {
 
     type ColorPickerProps = {icon: string; color: string; title?: AvailableThemes;}
     const toggleColor = (title:string) => {
-        console.log(title)
         if (title === selectedColor) {
             setSelectedColor((title.includes('Dark')) ? 'Dark' : 'Light'); 
             setTheme((title.includes('Dark')) ? 'Dark' : 'Light');
@@ -53,7 +52,6 @@ const Themes = ({navigation, route}:ThemesScreenProps) => {
     }
 
     const toggleDarkMode = () => {
-        console.log('Settings:', theme);
         const newTheme = (theme.includes('Dark')) ? theme.replace('Dark', '') : theme+'Dark';
         setTheme((theme === 'Dark' || theme === 'Light') ? (theme === 'Dark') ? 'Light' : 'Dark' : newTheme);
         setSelectedColor(newTheme);
