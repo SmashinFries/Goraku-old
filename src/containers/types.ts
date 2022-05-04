@@ -28,7 +28,7 @@ export type UserStackParamList = {
 }
 
 export type DrawerInfoParamList = {
-    DrawerInfo: { id: number, type?: string, banner?: string, coverImage?:string };
+    DrawerInfo: { id: number, isList?:boolean, type?: string, banner?: string, coverImage?:string };
 }
 
 export type ExploreStackParamList = {
@@ -74,7 +74,7 @@ export type ListTabProp = NativeStackScreenProps<ListParamList, 'UserList'>;
 
 
 export type DrawerParamList = {
-    Overview: {data: AniMalType };
+    Overview: {data: AniMalType, isList?:boolean };
     Music: { id:number, coverImage:string };
     CharacterStack: { data: AniMalType };
     Watch: { data: AniMalType };
