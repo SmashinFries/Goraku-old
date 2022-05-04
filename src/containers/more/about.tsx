@@ -1,45 +1,48 @@
-import React, { useState, version } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, useWindowDimensions, Image, Pressable, ScrollView, StatusBar } from "react-native";
 import { useTheme } from "@react-navigation/native";
-import { MaterialIcons } from '@expo/vector-icons';
 import { openURL } from "expo-linking";
-import { useRelease } from "../../Api/github/github";
 import { DataSourcesProps } from "../types";
-import { Divider, List, Dialog, Portal, Button, IconButton } from 'react-native-paper';
+import { Divider, List, Dialog, Portal, Button, IconButton, ActivityIndicator } from 'react-native-paper';
 import { VERSION } from "../../constants";
-import RenderHTML from "react-native-render-html";
 import FastImage from "react-native-fast-image";
+import { Current, Release } from "../../Api/github/types";
+import { fetchCurrent, fetchRelease } from "../../Api/github/github";
+import { getLastUpdateCheck, setLastUpdateCheck } from "../../Storage/updates";
+import DownloadDialog from "../../Components/dialogs/downloadDialog";
 
 const MERCH_URL = 'https://kuzumerch.bigcartel.com';
 
 const About = ({navigation}:DataSourcesProps) => {
-    const { colors, dark } = useTheme();
-    const {release} = useRelease();
+    const [release, setRelease] = useState<Release>();
+    const [current, setCurrent] = useState<Current>();
     const [visible, setVisible] = useState(false);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [lastChecked, setLastChecked] = useState<string>();
+    const { colors, dark } = useTheme();
     const { width, height } = useWindowDimensions();
 
     const openDialog = () => setVisible(true);
     const closeDialog = () => setVisible(false);
 
+    const checkForUpdates = async () => {
+        setLoading(true);
+        const latest = await fetchRelease();
+        const date = new Date().toLocaleString();
+        await setLastUpdateCheck(date);
+        setLastChecked(date);
+        setLoading(false);
+        setRelease(latest);
+        if (latest.tag_name !== VERSION) {
+            openDialog();
+        }
+    }
+
     const kofi = 'https://cdn.ko-fi.com/cdn/kofi1.png?v=3';
 
-    const DownloadDialog = () => {
-        if (!release) return null;
-        return(
-            <Dialog style={{ backgroundColor: colors.card }} visible={visible} onDismiss={closeDialog}>
-                <Dialog.Title style={{ color: colors.text }}>New Version Available!</Dialog.Title>
-                <Dialog.Content>
-                    <Text style={{color:colors.text}}>Version: {release.tag_name + '\n'}</Text>
-                    <Text style={{color:colors.text}}>Created: {release.assets[0].created_at.split('T')[0]}</Text>
-                </Dialog.Content>
-                <Dialog.Actions>
-                    <Button color={colors.primary} onPress={closeDialog}>Close</Button>
-                    <IconButton icon={'github'} onPress={() => openURL(release.html_url)} color={colors.primary} />
-                    <IconButton icon={'download'} onPress={() => openURL(release.assets[0].browser_download_url)} color={colors.primary} />
-                </Dialog.Actions>
-            </Dialog>
-        );
-    }
+    useEffect(() => {
+        getLastUpdateCheck().then((time) => setLastChecked(time));
+    },[]);
 
     return (
         <ScrollView style={{flex:1, backgroundColor:(dark) ? colors.background : colors.card}}>
@@ -55,15 +58,16 @@ const About = ({navigation}:DataSourcesProps) => {
                 </View>
             </View>
             <Divider style={{backgroundColor:colors.border}} />
+            {(release && release?.tag_name !== VERSION) && <List.Item title="New version available!" titleStyle={{color:colors.text}} rippleColor={colors.border} style={{borderWidth:2, borderColor:colors.primary}} onPress={openDialog} right={() => <IconButton icon='new-box' size={24} color={colors.primary} />} />}
             <List.Item 
                 title="Version"
                 titleStyle={{color:colors.text}}
                 rippleColor={colors.border}
-                description={`${VERSION}`} 
-                descriptionStyle={{color:colors.text}} 
-                onPress={() => (release?.tag_name !== VERSION) ? openDialog() : null}
-                right={props => (release?.tag_name !== VERSION) ? <List.Icon {...props} icon="new-box" color={colors.primary} /> : null}
+                description={`${VERSION}`}
+                descriptionStyle={{color:colors.text}}
+                onPress={openDialog}
             />
+            {(!release || release?.tag_name === VERSION) && <List.Item title="Check for updates" description={lastChecked && `Last checked: ${lastChecked}`} descriptionStyle={{color:colors.text}} titleStyle={{color:colors.text}} rippleColor={colors.border} right={() => (loading) ? <ActivityIndicator/> :  <IconButton icon='autorenew' style={{alignSelf:'center'}} color={colors.primary} />} onPress={() => checkForUpdates()} />}
             <List.Item title="What's new" titleStyle={{color:colors.text}} rippleColor={colors.border} onPress={() => openURL(`https://github.com/SmashinFries/Goraku/releases/tag/${VERSION}`)} />
             <List.Item title="Data sources" titleStyle={{color:colors.text}} rippleColor={colors.border} onPress={() => navigation.push('DataSources')} />
             <View style={{flexDirection:'row', marginHorizontal:20, marginTop:15, justifyContent:'space-evenly'}}>
@@ -73,11 +77,9 @@ const About = ({navigation}:DataSourcesProps) => {
                 <IconButton icon={'storefront-outline'} color={colors.primary} size={36} onPress={() => openURL(MERCH_URL)} />
             </View>
             <Pressable style={{marginTop:20}} onPress={() => openURL('https://ko-fi.com/C0C7C2AUX')}>
-                <FastImage source={{uri: kofi}} style={{alignSelf:'center', height:50, width:'90%'}} resizeMode='contain' />
+                <FastImage fallback source={{uri: kofi}} style={{alignSelf:'center', height:50, width:'90%'}} resizeMode='contain' />
             </Pressable>
-            <Portal>
-                <DownloadDialog />
-            </Portal>
+            <DownloadDialog colors={colors} visible={visible} onDismiss={closeDialog} release={release} />
         </ScrollView>
     );
 }
