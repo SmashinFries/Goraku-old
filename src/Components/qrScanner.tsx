@@ -14,6 +14,7 @@ const QrScanner = ({visible, onDismiss, color}:Props) => {
     const [hasPermission, setHasPermission] = useState(null);
     const [scanned, setScanned] = useState<boolean>(false);
     const { colors, dark } = color;
+    
     useEffect(() => {
         (async () => {
           const { status } = await BarCodeScanner.requestPermissionsAsync();
@@ -32,7 +33,7 @@ const QrScanner = ({visible, onDismiss, color}:Props) => {
     if (!visible) return null;
 
     return(
-        <View>
+        <View style={{height:'100%', backgroundColor:colors.background}}>
             <BarCodeScanner style={{height:'80%', width:'100%'}} onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}/>
             <View style={{flex:1, justifyContent:'center'}}>
                 <Button mode="outlined" onPress={onDismiss} style={{width:'50%', alignSelf:'center', borderColor:colors.primary, borderRadius:12}} color={colors.text}>Cancel</Button>
