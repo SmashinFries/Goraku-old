@@ -72,8 +72,9 @@ const ActivityTile = ({ item, colors, userId, navigation, deleteActivity }: Prop
                 
                 <View style={{ flex: 1, paddingLeft: 10, flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', width: '100%', paddingRight: 5, paddingBottom: 5 }}>
                     {(item.user.id === userId) && <DeleteButton onDelete={() => deleteActivity(item.id)} />}
+                    {/* navigation.push doesn't jump to screen */}
                     {/* @ts-ignore */}
-                    <DetailButton colors={colors} onPress={() => navigation.push('MediaDetail', { id: item.media.id })} />
+                    <DetailButton colors={colors} onPress={() => {navigation.push('Info', { id: item.media.id }); navigation.navigate('Info', { id: item.media.id })}} />
                     <AnilistLink link={item.siteUrl} color={colors.primary} />
                 </View>
                 <View style={{ position: 'absolute', top: -12, alignSelf: 'flex-end', justifyContent: 'center', paddingHorizontal:10, height: 22, borderRadius: 12, backgroundColor: colors.primary }}>
