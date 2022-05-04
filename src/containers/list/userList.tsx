@@ -32,8 +32,6 @@ export const UserList = ({navigation, route}:ListProps) => {
         });
     },[navigation, search]);
 
-    useEffect(() => {console.log(search)},[search]);
-
     if (!listLayout || listLayout === 'none') return <LoadingView colors={colors} />;
 
     return ( (listLayout === 'compact') ? 
