@@ -15,7 +15,6 @@ const MERCH_URL = 'https://kuzumerch.bigcartel.com';
 
 const About = ({navigation}:DataSourcesProps) => {
     const [release, setRelease] = useState<Release>();
-    const [current, setCurrent] = useState<Current>();
     const [visible, setVisible] = useState(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [lastChecked, setLastChecked] = useState<string>();
@@ -27,7 +26,7 @@ const About = ({navigation}:DataSourcesProps) => {
 
     const checkForUpdates = async () => {
         setLoading(true);
-        const latest = await fetchRelease();
+        const latest = await fetchRelease(); 
         const date = new Date().toLocaleString();
         await setLastUpdateCheck(date);
         setLastChecked(date);
