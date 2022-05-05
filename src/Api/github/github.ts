@@ -27,22 +27,16 @@ export const fetchCurrent = async (version:string) => {
 }
 
 export const useRelease = () => {
-    const [release, setRelease] = useState<Release>();
-
-    const fetchRelease = async () => {
-        try {
-            const res = await axios.get<Release[]>(RELEASE_URL);
-            return res.data;
-        } catch (e) {
-            console.warn('Release:', e);
-            return null;
-        }
-    }
+    const [newVersion, setNewVersion] = useState({isNew:false, release:null});
 
     useEffect(() => {
-        console.log('Checking for updates');
-        fetchRelease().then((data) => setRelease(data[0]));
+        console.log('checking!')
+        fetchRelease().then(release => {
+            if (release.tag_name !== VERSION) {
+                setNewVersion({isNew:true, release:release});
+            }
+        })
     },[]);
 
-    return {release};
+    return {newVersion};
 }
