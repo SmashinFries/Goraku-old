@@ -8,6 +8,6 @@ import { handleCopy } from './texts/copyText';
 import { saveImage, shareImage } from './saveImages';
 import { handleShare } from './share';
 import { handleLink } from './openLink';
-import { getTime } from './time/getTime';
+import { getTime, getDate } from './time/getTime';
 
-export { dataTitleFilter, getColor, getScoreColor, rgbConvert, getYear, getSeason, useKeyboard, getTime, handleCopy, handleLink, saveImage, shareImage, getMalScoreColor, handleShare };
+export { dataTitleFilter, getDate, getColor, getScoreColor, rgbConvert, getYear, getSeason, useKeyboard, getTime, handleCopy, handleLink, saveImage, shareImage, getMalScoreColor, handleShare };
