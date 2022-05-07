@@ -18,9 +18,9 @@ const RecommendationList = ({data, colors, navigation}:Props) => {
         <View>
             <Text style={{ marginLeft: 10, marginTop: 20, fontSize: 28, fontWeight: 'bold', color: colors.text }}>Recommendations</Text>
             <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-                {data?.anilist.recommendations.edges.map((rec, index) =>
+                {data?.anilist.recommendations.edges.filter((recom) => recom.node.mediaRecommendation !== null).map((rec, index) =>
                     <Pressable key={index} onPress={() => { navigation.push('DrawerInfo', { id: rec.node.mediaRecommendation.id, coverImage: rec.node.mediaRecommendation.coverImage.extraLarge, type: rec.node.mediaRecommendation.type }) }} style={{ marginHorizontal: 10, width: 120, height: 180, overflow:'hidden', borderRadius:8 }}>
-                        <FastImage fallback source={{ uri: rec.node.mediaRecommendation.coverImage.extraLarge }} style={{ width: 120, zIndex: -1, height: 180, borderRadius:8, position: 'absolute' }} />
+                        <FastImage fallback source={{ uri: rec.node.mediaRecommendation.coverImage?.extraLarge }} style={{ width: 120, zIndex: -1, height: 180, borderRadius:8, position: 'absolute' }} />
                         <LinearGradient colors={['transparent', 'rgba(0,0,0,.75)']} locations={[.6, .9]} style={{ position: 'absolute', height: '100%', borderRadius:8, justifyContent: 'flex-end', alignItems: 'center', width: '100%' }}>
                             <Text style={{ fontSize: 14, color: '#FFF', textTransform: 'capitalize', fontWeight: 'bold', textAlign: 'center' }} numberOfLines={2}>{rec.node.mediaRecommendation.title.userPreferred}</Text>
                             <View style={{ position: 'absolute', top: 0, right: 0 }}>
