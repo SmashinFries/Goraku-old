@@ -1,7 +1,7 @@
 import { View, ScrollView, Pressable, Text } from 'react-native';
 import { AniMalType } from '../../../../Api/types';
 import { ThemeColors } from '../../../../Components/types';
-import { getMalScoreColor, getScoreColor, handleCopy } from '../../../../utils';
+import { getDate, getMalScoreColor, getScoreColor, handleCopy } from '../../../../utils';
 
 type MetaDataTileProps = {
     header: string;
@@ -44,6 +44,7 @@ const AnimeDataTile = ({data, colors}:DataTileProps) => {
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 {(data.anilist.source) ? <MetaDataItem header='Source' text={data.anilist.source?.replace('_', ' ')} textColor={colors.text} /> : null}
                 <MetaDataItem header='Episodes' text={data.anilist.episodes?.toString()} textColor={colors.text} />
+                {(data.anilist.duration) ? <MetaDataItem header='Duration' text={data.anilist.duration.toString() + ' min'} textColor={colors.text} /> : null}
                 {(data.mal.data) ? <MetaDataItem header='Date' text={data.mal.data.aired.string} textColor={colors.text} /> : null}
                 {(data.anilist.season) ? <MetaDataItem header='Season' text={data.anilist.season + ' ' + data.anilist.seasonYear} textColor={colors.text} titleColor={colors.text} /> : null}
                 <MetaDataItem header='Average Score' text={data.anilist.averageScore?.toString()} textColor={getScoreColor(data.anilist.averageScore ?? null)} titleColor={colors.text} />
@@ -69,11 +70,20 @@ const MangaDataTile = ({data, colors}:DataTileProps) => {
         }
     }) : [];
 
+    const startDate = (data.mal.data?.published?.string) ? 
+        data.mal.data.published.string 
+        : (data.anilist.startDate.month) ? getDate(data.anilist.startDate): null;
+
+    const endDate = (data.mal.data?.published?.string) ?
+        null
+        : (data.anilist.endDate.month) ? getDate(data.anilist.endDate) : null;
+
     return (
             <View style={{ flex: 1, flexDirection:'row', marginTop: 15, marginHorizontal: 10, paddingVertical:10, justifyContent: 'space-evenly', backgroundColor: colors.card, borderRadius: 12, borderWidth: .5 }}>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                     {(data.anilist.source) ? <MetaDataItem header='Source' text={data.anilist.source?.replace('_', ' ')} textColor={colors.text} /> : null}
-                    {(data.mal.data) ? <MetaDataItem header='Date' text={data.mal?.data?.published?.string} textColor={colors.text} /> : null}
+                    {(startDate) ? <MetaDataItem header={(!endDate) ? 'Date' : 'Start Date'} text={startDate} textColor={colors.text} /> : null}
+                    {(endDate) ? <MetaDataItem header='End Date' text={endDate} textColor={colors.text} /> : null}
                     {data.anilist.chapters && <MetaDataItem header='Chapters' text={data.anilist.chapters?.toString()} textColor={colors.text} />}
                     {data.anilist.volumes && <MetaDataItem header='Volumes' text={data.anilist.volumes?.toString()} textColor={colors.text} />}
                     {data.anilist.averageScore && <MetaDataItem header='Average Score' text={data.anilist.averageScore?.toString()} textColor={getScoreColor(data.anilist.averageScore ?? null)} titleColor={colors.text} />}
