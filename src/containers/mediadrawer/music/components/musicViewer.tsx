@@ -36,7 +36,7 @@ const MusicViewer = ({ track, animeTitle, colors }:ViewerProps) => {
                             title={'V' + (entry.version ?? '1')}
                             titleNumberOfLines={3}
                             titleStyle={{color:colors.text}}
-                            subtitle={`${(entry.episodes) ? 'Episodes ' + track.animethemeentries[0].episodes : ''}${(track.animethemeentries[0].episodes.charAt(track.animethemeentries[0].episodes.length -1) === '-') ? '?' : ''}`}
+                            subtitle={`${(entry.episodes) ? 'Episodes ' + track.animethemeentries[0].episodes : ''}${(track.animethemeentries[0].episodes?.charAt(track.animethemeentries[0].episodes.length -1) === '-') ? '?' : ''}`}
                             subtitleNumberOfLines={2}
                             subtitleStyle={{color:colors.text}}
                             right={(props) =>
