@@ -202,7 +202,7 @@ reviews(limit:5, sort:RATING_DESC, page:1, perPage:5) {
         id
         userId
         summary
-        body
+        body(asHtml:true)
         rating
         ratingAmount
         userRating
@@ -431,6 +431,7 @@ Media(id:$id) {
     ${recommendation_q}
     ${mediaListEntry_q}
     ${staff_tile_q}
+    ${reviews_q}
     studios (isMain:true) {
 			nodes {
 				id
