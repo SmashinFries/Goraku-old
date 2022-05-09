@@ -289,6 +289,25 @@ export type ExtLink = {
     icon: string;
 }
 
+export type ReviewsNode = {
+    node: {
+        id: number;
+        userId: number;
+        summary: string;
+        body: string;
+        rating: number;
+        ratingAmount: number;
+        score: number;
+        siteUrl: number;
+        createdAt: number;
+        updatedAt: number;
+        user: UserBasic
+    }
+}
+export type Reviews = {
+    edges: ReviewsNode[];
+}
+
 export type MediaQueryType = {
     id: number;
     idMal: number;
@@ -309,6 +328,7 @@ export type MediaQueryType = {
     nextAiringEpisode: nextAiringType;
     mediaListEntry: MediaEntryInfoType;
     staff: StaffTileType;
+    reviews: Reviews;
     studios: {
         nodes: {
             id: number;
