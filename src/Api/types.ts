@@ -289,6 +289,7 @@ export type ExtLink = {
     icon: string;
 }
 
+export type userRatingReview = 'NO_VOTE' | 'UP_VOTE' | 'DOWN_VOTE';
 export type ReviewsNode = {
     node: {
         id: number;
@@ -299,6 +300,7 @@ export type ReviewsNode = {
         ratingAmount: number;
         score: number;
         siteUrl: number;
+        userRating: userRatingReview;
         createdAt: number;
         updatedAt: number;
         user: UserBasic
