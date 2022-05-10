@@ -1,11 +1,8 @@
-import { BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import { MaterialBottomTabScreenProps } from "@react-navigation/material-bottom-tabs";
 import { DrawerNavigationProp, DrawerScreenProps } from "@react-navigation/drawer";
 import { CompositeNavigationProp, CompositeScreenProps } from "@react-navigation/native";
 import { NativeStackNavigationProp, NativeStackScreenProps } from "@react-navigation/native-stack";
-import { MutableRefObject } from "react";
-import { Animated } from "react-native";
-import { AniMalType, MediaAnimeSort, MediaMangaSort, TagCollectionType } from "../Api/types";
+import { AniMalType, MediaAnimeSort, MediaMangaSort, ReviewsNode } from "../Api/types";
 
 export type BottomTabParamList = {
     ExploreStack: undefined;
@@ -79,6 +76,7 @@ export type DrawerParamList = {
     CharacterStack: { data: AniMalType };
     Watch: { data: AniMalType };
     StudioInfo: { id: number, name: string};
+    Reviews: { reviews: ReviewsNode[] };
 }
 
 export type CharStackParamList = {
@@ -106,6 +104,7 @@ export type CharacterProps = DrawerScreenProps<CharStackParamList, 'Character'>;
 export type CharDetailProps = DrawerScreenProps<CharStackParamList, 'CharDetail'>;
 export type WatchProps = DrawerScreenProps<DrawerParamList, 'Watch'>;
 export type StudioInfoProps = DrawerScreenProps<DrawerParamList, 'StudioInfo'>;
+export type ReviewProps = DrawerScreenProps<DrawerParamList, 'Reviews'>;
 
 // Recommendation Stack Nav/Route
 export type RecommendationProps = CompositeScreenProps<
