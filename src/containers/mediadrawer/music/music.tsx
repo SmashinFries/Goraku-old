@@ -10,8 +10,6 @@ import { HeaderBackButton, HeaderRightButtons, HeaderTitle } from "../../../Comp
 import { LoadingView } from "../../../Components";
 import MusicViewer from "./components/musicViewer";
 
-const MUSIC_URL = 'https://animethemes.moe/video/';
-
 const MusicTab = ({ navigation, route }: MusicProps) => {
     const [data, setData] = useState<MusicInfo>();
     const [loading, setLoading] = useState(true);
