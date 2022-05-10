@@ -196,7 +196,7 @@ recommendations(sort:RATING_DESC, page:$page_rec, perPage:$perPage_rec) {
 `;
 
 const reviews_q = `
-reviews(limit:5, sort:RATING_DESC, page:1, perPage:5) {
+reviews(limit:5, sort:RATING_DESC, page:1, perPage:20) {
     edges{
       node{
         id
