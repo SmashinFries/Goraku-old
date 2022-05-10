@@ -9,11 +9,12 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { getMalImages } from "../../Api/mal";
 import { StaffInfo } from "../../containers/staff/staffPage";
 import { CharDetailScreen } from "../../containers/character";
-import { MediaInfoScreen, MusicTab, NewsTab, StudioInfo, WatchTab } from "../../containers/mediadrawer";
+import { MediaInfoScreen, MusicTab, NewsTab, ReviewBody, ReviewsTab, StudioInfo, WatchTab } from "../../containers/mediadrawer";
 import CharacterStack from "../stacks/character";
 import { LoadingView } from "../../Components";
 import FollowingTab from "../../containers/mediadrawer/following/following";
 import { getIsAuth } from "../../Storage/authToken";
+import { HeaderBackButton, HeaderRightButtons } from "../../Components/header/headers";
 
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();
@@ -69,12 +70,15 @@ export const InfoDrawer = ({ navigation, route }:InfoProps) => {
             drawerType: 'back',
             headerTransparent: true,
             swipeEdgeWidth: 10,
+            headerLeft: () => <HeaderBackButton navigation={navigation} colors={colors} style={{paddingLeft:15}} />,
+            headerRight: () => <HeaderRightButtons navigation={navigation} colors={colors} drawer style={{paddingRight:15}} />,
             drawerStatusBarAnimation: 'slide',
             drawerStyle: { width: '40%' }
         })}>
             <Drawer.Screen name="Overview" component={MediaInfoScreen} initialParams={{ data:data }} />
             {(data.anilist.characters.edges.length > 0) ? <Drawer.Screen name="CharacterStack" component={CharacterStack} initialParams={{ data:data }} options={{drawerLabel:'Characters', headerShown:false}} /> : null}
             {(data.anilist.type === 'ANIME' && data.anilist.streamingEpisodes.length > 0) ? <Drawer.Screen name="Watch" component={WatchTab} initialParams={{ data:data }} options={{headerTransparent: false, headerTitle:'Watch'}} /> : null}
+            {(data.anilist.reviews.edges.length > 0) ? <Drawer.Screen name="Reviews" component={ReviewsTab} initialParams={{ reviews:data.anilist.reviews.edges }} options={{headerTransparent: false, headerTitle:'Reviews'}} /> : null}
             {(auth) && <Drawer.Screen name="Following" component={FollowingTab} initialParams={{id:data.anilist.id}} options={{headerShown:true, headerTransparent:false, headerTitle:'Following', headerStyle:{elevation:8}}}/>}
             {(data.anilist.type === 'ANIME') ? <Drawer.Screen name="Music" component={MusicTab} initialParams={{ id, coverImage: data.anilist.coverImage.extraLarge }} /> : null}
             {(data.mal) && <Drawer.Screen name="News" component={NewsTab} initialParams={{ mal_id:data.anilist.idMal, coverImage: data.anilist.coverImage.extraLarge, type: data.anilist.type }} />}
@@ -91,6 +95,7 @@ export const DrawerStack = ({navigation, route}) => {
             <Stack.Screen name="DrawerInfo" component={InfoDrawer} options={{headerShown:false}} initialParams={{id: id}} />
             <Stack.Screen name='Character' component={CharDetailScreen} options={{ headerTransparent:false}} />
             <Stack.Screen name="Staff" component={StaffInfo} options={{ headerTransparent:false}} initialParams={{isList:isList}} />
+            <Stack.Screen name="ReviewBody" component={ReviewBody} options={{ headerTransparent:false}} />
         </Stack.Navigator>
     );
 }
