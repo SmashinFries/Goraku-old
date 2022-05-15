@@ -213,6 +213,12 @@ reviews(limit:5, sort:RATING_DESC, page:1, perPage:20) {
         user {
           id
           name
+          about(asHtml:true)
+          bannerImage
+          createdAt
+          options {
+            profileColor
+          }
           avatar {
             large
           }
@@ -222,6 +228,14 @@ reviews(limit:5, sort:RATING_DESC, page:1, perPage:20) {
       }
     }
   }
+`;
+export const reviewUserRating_q = `
+query ($id: Int) {
+	Review (id:$id) {
+		id
+		userRating
+	}
+}
 `;
 
 const mediaListEntry_q = `
