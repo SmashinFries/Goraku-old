@@ -82,7 +82,7 @@ export const AccountHome = ({navigation, route}) => {
                         {(userData.bannerImage) && <FastImage fallback source={{uri: userData.bannerImage}} style={{height: 200, width: '100%'}} resizeMode='cover' />}
                         {(userData.bannerImage) && <LinearGradient colors={['transparent', 'rgba(0,0,0,.5)']} locations={[.60, 1]} style={{position:'absolute', top:0, height:200, width:'100%'}} />}
                         <View style={{position:'absolute', alignSelf:'center'}}>
-                            <Avatar.Image size={124} source={{uri:userData.avatar.large}} style={{alignSelf:'center'}}/>
+                            <Avatar.Image size={124} source={{uri:userData.avatar.large}} style={{alignSelf:'center', backgroundColor:userData.options.profileColor}}/>
                             <Text style={{textAlign:'center', alignSelf:'center', color:(userData.bannerImage) ? '#FFF' : colors.text, fontWeight:'bold', marginTop:10, fontSize:20}}>{userData.name}</Text>
                         </View>
                     </View>
