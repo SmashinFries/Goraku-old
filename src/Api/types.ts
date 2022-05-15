@@ -1216,6 +1216,23 @@ export type UserStats = {
     }
 }
 
+export type FollowerListUser = {
+    id: number;
+    name: string;
+    about: string;
+    createdAt: number;
+    bannerImage: string;
+    options: {
+        profileColor: string;
+    }
+    avatar: {
+        large: string;
+    }
+    mediaListOptions: {
+        scoreFormat: string;
+    }
+    siteUrl: string
+}
 export type FollowingMediaList = {
     id: number;
     status: string;
@@ -1229,17 +1246,7 @@ export type FollowingMediaList = {
         chapters: number;
         volumes: number;
     }
-    user: {
-        id: number;
-        name: string;
-        avatar: {
-            large: string;
-        };
-        mediaListOptions: {
-            scoreFormat: string;
-        }
-        siteUrl: string;
-    }
+    user: FollowerListUser;
 }
 export type FollowingMediaPage = {
     Page: {
