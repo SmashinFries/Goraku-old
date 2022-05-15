@@ -41,6 +41,7 @@ const ReviewBody = ({ navigation, route }) => {
                     contentWidth={width}
                     source={{html:review.node.body.replace(/[\[\]']+/g,'').replace(/\(\)+/g,'')}}
                     customHTMLElementModels={customHTMLElementModel}
+                    baseStyle={{color:colors.text}}
                 />
                 <FinalScore score={review.node.score} />
                 {(userRating && auth) && <RateReview action={(vote:userRatingReview) => {rateReview(review.node.id, vote)}} userRating={userRating} rating={review.node.rating} totalRatings={review.node.ratingAmount} colors={colors} />}

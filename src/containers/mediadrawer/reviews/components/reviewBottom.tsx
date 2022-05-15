@@ -41,7 +41,7 @@ export const RateReview = ({ userRating, rating, totalRatings, action, colors}:R
             <View style={{ borderWidth:1, borderRadius:8, marginHorizontal:12, borderColor:color, backgroundColor:background}}>
                 <IconButton 
                     icon={icon} 
-                    color={'#000'} 
+                    color={colors.text} 
                     size={32} 
                     onPress={() => {
                         changeVote(type === thumbs ? 'NO_VOTE' : type);
@@ -57,7 +57,7 @@ export const RateReview = ({ userRating, rating, totalRatings, action, colors}:R
                     <IconBox icon={(thumbs === 'DOWN_VOTE') ? "thumb-down" : "thumb-down-outline"} type="DOWN_VOTE" />
                     <IconBox icon={(thumbs === 'UP_VOTE') ? "thumb-up" : "thumb-up-outline"} type="UP_VOTE" />
                 </View>
-                <Caption style={{marginTop:10, color:'rgba(0,0,0,.6)'}}>{rating} / {totalRatings} people liked this</Caption>
+                <Caption style={{marginTop:10, color:colors.text}}>{rating} / {totalRatings} people liked this</Caption>
             </View>
         </View>
     );
