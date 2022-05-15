@@ -81,9 +81,9 @@ const UserModal = ({user, visible, onDismiss, colors}:Props) => {
         <Portal>
             <Modal visible={visible} onDismiss={onDismiss} contentContainerStyle={modalStyle.container}>
                 <View>
-                    <View style={modalStyle.bannerContainer}>
+                    {user.bannerImage && <View style={modalStyle.bannerContainer}>
                         <FastImage fallback source={{uri:user.bannerImage}} style={modalStyle.banner} />
-                    </View>
+                    </View>}
                     <View style={modalStyle.avatarContainer}>
                         <FastImage fallback source={{uri:user.avatar.large}} style={modalStyle.avatar} />
                     </View>
