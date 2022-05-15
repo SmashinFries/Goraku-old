@@ -9,9 +9,8 @@ import { getRecommendations, saveRecommendation } from "../../Api/anilist/anilis
 import { RecommendationInfoType, RecommendationMediaType, RecommendationsFullType } from "../../Api/types";
 import { LinearGradient } from "expo-linear-gradient";
 import { RecommendationProps } from "../types";
-import { LoadingView } from "../../Components";
+import { LoadingView, UserModal } from "../../Components";
 import SelectDropdown from "react-native-select-dropdown";
-import { openURL } from "expo-linking";
 import { AccountContext } from "../../contexts/context";
 import { rgbConvert } from "../../utils";
 
@@ -146,6 +145,7 @@ export const RecommendationScreen = ({navigation, route}:RecommendationProps) =>
     if (loading) return <LoadingView colors={{colors, dark}} />
     
     const RenderItem = ({item, index}:RenderItem) => {
+        const [visible, setVisible] = useState<boolean>(false);
         return(
                 <View style={{flex:1, borderWidth:2, borderColor:colors.border, marginVertical:20, backgroundColor:colors.card, marginHorizontal:10, borderRadius:12}}>
                     <MediaButton mode='Top' onPress={() => pressNav(item.media)} title={item.media.title.userPreferred} cover={(item.media.bannerImage !== null) ? item.media.bannerImage : item.media.coverImage.extraLarge} />
@@ -168,9 +168,9 @@ export const RecommendationScreen = ({navigation, route}:RecommendationProps) =>
                             />
                         </View> : <Text style={{textAlign:'center', color:colors.text}}>{(Math.sign(item.rating) !== -1) ? '+' : ''}{item.rating}</Text>}
                         <View style={{borderRadius:12, overflow:'hidden'}}>
-                            <Pressable onPress={() => openURL(item.user.siteUrl)} android_ripple={{color:colors.primary}} style={{padding:3, borderRadius:12}}>
+                            <Pressable onPress={() => setVisible(true)} android_ripple={{color:colors.primary}} style={{padding:3, borderRadius:12}}>
                                 <View style={{flexDirection:'row', alignItems:'center', backgroundColor:colors.card, borderRadius:12,}}>
-                                    <Avatar.Image source={{uri:item.user.avatar.large}} size={40} />
+                                    <Avatar.Image source={{uri:item.user.avatar.large}} size={40} style={{backgroundColor:item.user.options.profileColor}} />
                                     <Text style={{paddingLeft:5, color:colors.text}}>{`${item.user.name}`}</Text>
                                 </View>
                             </Pressable>
@@ -179,6 +179,7 @@ export const RecommendationScreen = ({navigation, route}:RecommendationProps) =>
                         <Fontisto name="arrow-v" size={34} color={rgbConvert(colors.text, .25)} style={{position:'absolute', right:15}} />
                     </View>
                     <MediaButton mode='Bottom' onPress={() => pressNav(item.mediaRecommendation)} title={item.mediaRecommendation.title.userPreferred} cover={(item.mediaRecommendation.bannerImage !== null) ? item.mediaRecommendation.bannerImage : item.mediaRecommendation.coverImage.extraLarge} />
+                    <UserModal user={item.user} visible={visible} onDismiss={() => setVisible(false)} colors={colors} />
                 </View>
         );
     }
