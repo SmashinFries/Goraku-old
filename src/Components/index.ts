@@ -8,5 +8,6 @@ import { FlatListAnim } from './animated/AnimFlatlist';
 import LoadingView from './loadingView';
 import SortFilterUI from './SearchFilter/sortFilter';
 import ImageViewer from './imageViewer';
+import UserModal from './dialogs/userModal';
 
-export { FilterGenre, LoadingView, ImageViewer, FilterTags, MediaTile, SearchBar, SortFilterUI, TraceMoeUI, SpoilerButton, PressableAnim, FlatListAnim };
+export { FilterGenre, LoadingView, ImageViewer, FilterTags, MediaTile, SearchBar, SortFilterUI, TraceMoeUI, SpoilerButton, PressableAnim, FlatListAnim, UserModal };
