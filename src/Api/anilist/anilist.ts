@@ -466,8 +466,6 @@ export const useActivities = (page=1) => {
 export const getRandomMedia = async(random:number, perRandom:number, type:'ANIME'|'MANGA'|'CHARACTER') => {
     const header = await getHeader();
     const nsfw = await getNSFW();
-    console.log('Random:', random);
-    console.log('PerRandom:', perRandom);
     try {
         const res = await axios.post<RandomContent>(_URL, {
             query:random_q,

@@ -22,7 +22,6 @@ const ReviewBody = ({ navigation, route }) => {
     useEffect(() => {
         const fetchUserRating = async() => {
             const newRating = await getReviewUserRating(review.node.id);
-            console.log('Fetched!', newRating);
             setUserRating(newRating);
         }
         fetchUserRating();

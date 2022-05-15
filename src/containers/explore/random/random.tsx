@@ -43,7 +43,6 @@ const RandomFive = ({navigation}) => {
         const resp2 = await getRandomMedia(getRandomPage(type === 'MANGA' ? 11600 : 3155), 1, type);
         const resp3 = await getRandomMedia(getRandomPage(type === 'MANGA' ? 11600 : 3155), 1, type);
         const allMedia = [resp1.data.Page.media[0], resp2.data.Page.media[0], resp3.data.Page.media[0]];
-        console.log(allMedia.length);
         await new Promise(resolve => setTimeout(resolve, 1000));
         setData(allMedia);
         setLoading(false);

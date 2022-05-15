@@ -30,7 +30,6 @@ export const useRelease = () => {
     const [newVersion, setNewVersion] = useState({isNew:false, release:null});
 
     useEffect(() => {
-        console.log('checking!')
         fetchRelease().then(release => {
             if (release.tag_name !== VERSION) {
                 setNewVersion({isNew:true, release:release});
