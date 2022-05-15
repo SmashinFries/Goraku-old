@@ -648,12 +648,7 @@ export type RecommendationInfoType = {
     userRating: 'NO_RATING'|'RATE_UP'|'RATE_DOWN';
     media: RecommendationMediaType;
     mediaRecommendation: RecommendationMediaType;
-    user: {
-        id: number;
-        name: string;
-        avatar: {large: string};
-        siteUrl: string;
-    }
+    user: UserBasic;
 }
 
 export type RecommendationsFullType = {
@@ -1112,6 +1107,7 @@ export type UserOptionViewer = {
         medium: string;
     }
     options: {
+        profileColor: string;
         titleLanguage: string;
         staffNameLanguage: string;
         displayAdultContent: boolean;
