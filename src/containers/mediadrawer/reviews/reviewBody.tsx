@@ -1,5 +1,4 @@
 import { useTheme } from "@react-navigation/native";
-import { openURL } from "expo-linking";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import { useWindowDimensions, Pressable } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
@@ -8,11 +7,13 @@ import RenderHtml from 'react-native-render-html';
 import { getReviewUserRating, rateReview } from "../../../Api/anilist/anilist";
 import { ReviewsNode, userRatingReview } from "../../../Api/types";
 import { UserModal } from "../../../Components";
+import { getAuthContext } from "../../../Storage/authToken";
 import { FinalScore, RateReview } from "./components/reviewBottom";
 import { customHTMLElementModel } from "./elements/customElements";
 
 const ReviewBody = ({ navigation, route }) => {
     const review:ReviewsNode = route.params.review;
+    const auth = getAuthContext();
     const [visible, setVisible] = useState(false);
     const [userRating, setUserRating] = useState<userRatingReview>();
     const { colors, dark } = useTheme();
@@ -42,7 +43,7 @@ const ReviewBody = ({ navigation, route }) => {
                     customHTMLElementModels={customHTMLElementModel}
                 />
                 <FinalScore score={review.node.score} />
-                {(userRating) && <RateReview action={(vote:userRatingReview) => {rateReview(review.node.id, vote)}} userRating={userRating} rating={review.node.rating} totalRatings={review.node.ratingAmount} colors={colors} />}
+                {(userRating && auth) && <RateReview action={(vote:userRatingReview) => {rateReview(review.node.id, vote)}} userRating={userRating} rating={review.node.rating} totalRatings={review.node.ratingAmount} colors={colors} />}
                 <UserModal user={review.node.user} visible={visible} onDismiss={() => setVisible(false)} colors={colors} />
             </ScrollView>
     );
