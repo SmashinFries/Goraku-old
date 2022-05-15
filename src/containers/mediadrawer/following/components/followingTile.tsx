@@ -3,6 +3,7 @@ import { openURL } from "expo-linking";
 import React, { useState } from "react";
 import { Avatar, Card, IconButton, Menu } from "react-native-paper";
 import { FollowingMediaList } from "../../../../Api/types";
+import { UserModal } from "../../../../Components";
 
 const FollowingTile = ({item, colors}:{item:FollowingMediaList, colors:Theme}) => {
     const [visible, setVisible] = useState<boolean>(false);
@@ -25,28 +26,31 @@ const FollowingTile = ({item, colors}:{item:FollowingMediaList, colors:Theme}) =
 
     const rightIcon = (props) => {
         return (
-            <Menu 
-                visible={visible} 
-                onDismiss={() => setVisible(false)}
-                contentStyle={{backgroundColor:colors.colors.card}}
-                anchor={<IconButton {...props} icon="dots-vertical" color={colors.colors.text} onPress={() => setVisible(true)} />}>
-                    <Menu.Item title='View Profile' titleStyle={{color:colors.colors.text}} icon={() => <IconButton icon='account' color={colors.colors.text} />}  onPress={() => openURL(item.user.siteUrl)} />
-                    {/* <Menu.Item title='Unfollow' titleStyle={{color:colors.colors.text}} icon={() => <IconButton icon='account-cancel' color={'red'} />} /> */}
-            </Menu>
+            <IconButton {...props} icon="dots-vertical" color={colors.colors.text} onPress={() => setVisible(true)} />            // <Menu 
+            //     visible={visible} 
+            //     onDismiss={() => setVisible(false)}
+            //     contentStyle={{backgroundColor:colors.colors.card}}
+            //     anchor={<IconButton {...props} icon="dots-vertical" color={colors.colors.text} onPress={() => setVisible(true)} />}>
+            //         <Menu.Item title='View Profile' titleStyle={{color:colors.colors.text}} icon={() => <IconButton icon='account' color={colors.colors.text} />}  onPress={() => openURL(item.user.siteUrl)} />
+            //         {/* <Menu.Item title='Unfollow' titleStyle={{color:colors.colors.text}} icon={() => <IconButton icon='account-cancel' color={'red'} />} /> */}
+            // </Menu>
         );
     }
 
     return(
-        <Card.Title
-            style={{backgroundColor:(colors.dark) ? colors.colors.background : colors.colors.card}}
-            title={item.user.name}
-            titleStyle={{color:colors.colors.text}}
-            subtitle={getSubtitles()}
-            subtitleStyle={{textTransform:'capitalize', color:colors.colors.text}}
-            subtitleNumberOfLines={2}
-            left={(props) => <Avatar.Image {...props} source={{uri:item.user.avatar.large}} />}
-            right={rightIcon}
-        />
+        <>
+            <Card.Title
+                style={{backgroundColor:(colors.dark) ? colors.colors.background : colors.colors.card}}
+                title={item.user.name}
+                titleStyle={{color:colors.colors.text}}
+                subtitle={getSubtitles()}
+                subtitleStyle={{textTransform:'capitalize', color:colors.colors.text}}
+                subtitleNumberOfLines={2}
+                left={(props) => <Avatar.Image {...props} source={{uri:item.user.avatar.large}} size={46} />}
+                right={rightIcon}
+            />
+            <UserModal user={item.user} visible={visible} onDismiss={() => setVisible(false)} colors={colors.colors} />
+        </>
     );
 }
 
