@@ -11,7 +11,7 @@ type FinalScoreProps = {
 export const FinalScore = ({ score }:FinalScoreProps) => {
     return(
         <View style={{alignItems:'center', marginBottom:10, marginTop:15}}>
-            <View style={{maxWidth:160, justifyContent:'center', borderRadius:6, flexDirection:'row', alignItems:'flex-end', paddingHorizontal:12, paddingVertical:5, backgroundColor:getScoreColor(score)}}>
+            <View style={{maxWidth:170, justifyContent:'center', borderRadius:6, flexDirection:'row', alignItems:'flex-end', paddingHorizontal:12, paddingVertical:5, backgroundColor:getScoreColor(score)}}>
                 <Text style={{fontSize:58, color:'#FFF'}}>{score}</Text>
                 <Text style={{color:'#FFF'}}>/100</Text>
             </View>
