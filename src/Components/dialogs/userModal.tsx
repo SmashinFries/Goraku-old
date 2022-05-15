@@ -3,12 +3,12 @@ import { StyleSheet, TextStyle, useWindowDimensions, View, ViewStyle } from "rea
 import { Button, Modal, Portal, Text } from "react-native-paper";
 import { ThemeColors } from "../types";
 import FastImage, { ImageStyle } from "react-native-fast-image";
-import { UserBasic } from "../../Api/types";
+import { FollowerListUser, UserBasic } from "../../Api/types";
 import { openURL } from "expo-linking";
 import { convertUnixTime } from "../../utils/time/getTime";
 
 type Props = {
-    user: UserBasic;
+    user: UserBasic | FollowerListUser;
     visible: boolean;
     onDismiss: () => void;
     colors: ThemeColors;
@@ -29,7 +29,7 @@ const UserModal = ({user, visible, onDismiss, colors}:Props) => {
     const modalStyle = StyleSheet.create<Styles>({
         container: {
             margin:'10%',
-            backgroundColor:'rgba(255,255,255,0.95)',
+            backgroundColor:colors.card,
             padding:20,
             borderRadius:30,
         },
