@@ -289,6 +289,14 @@ export type ExtLink = {
     icon: string;
 }
 
+export type ReviewRating = {
+    data: {
+        Review: {
+            id: number;
+            userRating: userRatingReview;
+        };
+    };
+}
 export type userRatingReview = 'NO_VOTE' | 'UP_VOTE' | 'DOWN_VOTE';
 export type ReviewsNode = {
     node: {
@@ -1012,6 +1020,12 @@ export type StaffSearchType = {
 export type UserBasic = {
     id: number;
     name: string;
+    about: string;
+    createdAt: number;
+    bannerImage: string;
+    options: {
+        profileColor: string;
+    }
     avatar: {
         large: string;
     }
