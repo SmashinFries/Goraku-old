@@ -77,3 +77,12 @@ mutation ($id: Int) {
 	}
 }
 `;
+
+export const rateReview_M = `
+mutation ($id: Int, $rating: ReviewRating) {
+	RateReview (reviewId:$id, rating:$rating) {
+		id
+		userRating
+	}
+}
+`;
