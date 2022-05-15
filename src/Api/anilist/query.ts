@@ -500,11 +500,16 @@ query ($page:Int,  $perPage:Int, $mediaId: Int) {
 			updatedAt
       user {
 				id
+        about(asHtml:true)
+        createdAt
+        bannerImage
+        options {
+          profileColor
+        }
         name
 				avatar {
 					large
 				}
-				bannerImage
       }
     }
 	}
@@ -655,14 +660,20 @@ query ($id: Int, $page: Int, $perPage: Int) {
 			}
 			user {
 				id
-				name
-				avatar {
-					large
-				}
+        name
+        about
+        createdAt
+        bannerImage
+        options {
+            profileColor
+        }
+        avatar {
+            large
+        }
+        siteUrl
 				mediaListOptions {
 					scoreFormat
 				}
-        siteUrl
 			}
 		}
 	}
