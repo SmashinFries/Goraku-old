@@ -1,7 +1,7 @@
 import { useTheme } from "@react-navigation/native";
 import React, { useState } from "react";
-import { View, Text, FlatList } from "react-native";
-import { Reviews, ReviewsNode } from "../../../Api/types";
+import { View, FlatList } from "react-native";
+import { ReviewsNode } from "../../../Api/types";
 import { ReviewProps } from "../../types";
 import { SummaryCard } from "./components/summaryCard";
 
@@ -23,6 +23,7 @@ const ReviewsTab = ({navigation, route}:ReviewProps) => {
                 keyExtractor={(item) => item.node.id.toString()}
                 ItemSeparatorComponent={() => <View style={{height:10}}/>}
             />
+            
         </View>
     );
 }
