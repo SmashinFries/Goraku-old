@@ -1,11 +1,9 @@
 import { useTheme } from "@react-navigation/native";
 import React, { useEffect, useRef } from "react";
 import { View, Text, Animated, Pressable } from 'react-native';
-import { AntDesign } from '@expo/vector-icons';
 import { WatchProps } from "../../types";
 import { MediaHeader } from "../../../Components/header/mediaHeader";
 import { StreamingEpType } from "../../../Api/types";
-import { useHeaderHeight } from "@react-navigation/elements";
 import FastImage from "react-native-fast-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { handleLink } from "../../../utils";
@@ -31,14 +29,14 @@ const WatchTab = ({navigation, route}:WatchProps) => {
 
     const RenderItem = ({item}:renderProps) => {
         return(
-          <View style={{ alignItems: 'center', alignSelf: 'center', width: '90%' }}>
+          <View style={{alignSelf: 'center', width: '90%' }}>
             <Pressable onPress={() => handleLink(item.url)} style={{height:220}}>
               <FastImage source={{ uri: item.thumbnail }} style={{ height: 220, width: '100%' }} resizeMode='cover' />
               <LinearGradient colors={['transparent', '#000']} locations={[0.35, .9]} style={{ position: 'absolute', width: '100%', justifyContent: 'flex-end', height: 220 }}>
                 <View style={{ width: '100%', padding: 5 }}>
                   <Text style={{ color: '#FFF', textAlign: 'center' }}>{item.title}</Text>
                 </View>
-                {(item.site === 'Crunchyroll') ? <CrunchyRollSVG style={{ position: 'absolute', top: 5, left: 0 }} /> : null}
+                {(item.site === 'Crunchyroll') ? <CrunchyRollSVG style={{ position: 'absolute', top: 5, left: 5 }} /> : null}
               </LinearGradient>
             </Pressable>
           </View>
