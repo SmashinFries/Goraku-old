@@ -1,11 +1,10 @@
 import axios, { AxiosResponse } from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
-import { changeAdultContent_M, changeLanguage_M, changeNotifications_M, quickAdd_M, quickRemove_M, removeActivity_M, saveRecommendation_M, toggleLike_M } from "./mutations";
-import { account_options_q, activity_q, alsofollowing_media_q, character_search_q, charDetail_Q, favoriteAnime_q, favoriteCharacters_q, favoriteManga_q, favoriteStaff_q, favoriteStudio_q, fullInfo_Q, mediaListEntryFull_q, mediaTile_Q, notification_q, random_q, recommendations_full_q, staff_info_q, staff_search_q, studio_list_q, TagCollection_Q, user_list_q, user_statistics_q } from "./query";
-import { ActivityData, ActivityPage, CharFullType, CharSearchType, HomePageFetchParams, MediaEntryInfoType, MediaFollowing, MediaListCollectionType, MediaQueryRoot, RandomContent, RecommendationsFullType, StaffFullType, StudioListType, TagArrangedType, TagCollectionType, UserFavoritesType, UserNotificationData, UserOptions, UserStats } from "../types";
+import { changeAdultContent_M, changeLanguage_M, changeNotifications_M, quickAdd_M, quickRemove_M, rateReview_M, removeActivity_M, saveRecommendation_M, toggleLike_M } from "./mutations";
+import { account_options_q, activity_q, alsofollowing_media_q, character_search_q, charDetail_Q, favoriteAnime_q, favoriteCharacters_q, favoriteManga_q, favoriteStaff_q, favoriteStudio_q, fullInfo_Q, mediaListEntryFull_q, mediaTile_Q, notification_q, random_q, recommendations_full_q, reviewUserRating_q, staff_info_q, staff_search_q, studio_list_q, TagCollection_Q, user_list_q, user_statistics_q } from "./query";
+import { ActivityData, ActivityPage, CharFullType, CharSearchType, HomePageFetchParams, MediaEntryInfoType, MediaFollowing, MediaListCollectionType, MediaQueryRoot, RandomContent, RecommendationsFullType, ReviewRating, StaffFullType, StudioListType, TagArrangedType, TagCollectionType, UserFavoritesType, UserNotificationData, UserOptions, userRatingReview, UserStats } from "../types";
 import { useEffect, useState } from "react";
-import { useUserId } from "../../Storage/authToken";
 import { HomeType } from "../../Components/types";
 import { ADULT_ALLOW } from "../../constants";
 import { getNSFW, storeNSFW } from "../../Storage/nsfw";
@@ -516,6 +515,22 @@ export const getUserStats = async() => {
     }
 }
 
+export const getReviewUserRating = async(id:number) => {
+    const header = await getHeader();
+    try {
+        const res = await axios.post<ReviewRating>(_URL, {
+            query:reviewUserRating_q,
+            variables: {
+                id: id
+            }
+        }, {headers: header});
+        return res.data.data.Review.userRating;
+    } catch (e) {
+        console.warn('getReviewUserRating:', e);
+        return null;
+    }
+}
+
 // Mutations
 type ToggleFav = 'ANIME' | 'MANGA' | 'CHARACTER' | 'STAFF' | 'STUDIO';
 export const toggleFav = async(id:number, type:ToggleFav) => {
@@ -678,6 +693,23 @@ export const removeActivity = async(id:number) => {
         return (res.data) ? true : false;
     } catch (e) {
         console.log('removeActivity:', e);
+        return null;
+    }
+}
+
+export const rateReview = async(id:number, rating:userRatingReview) => {
+    const header = await getHeader();
+    try {
+        const res = await axios.post(_URL, {
+            query:rateReview_M,
+            variables: {
+                id: id,
+                rating: rating
+            }
+        }, {headers: header});
+        return res.data;
+    } catch (e) {
+        console.log('rateReview:', e);
         return null;
     }
 }
