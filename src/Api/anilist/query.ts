@@ -600,6 +600,12 @@ query ($page:Int,  $perPage:Int, $sort:[RecommendationSort], $onList:Boolean) {
       user {
         id
         name
+        bannerImage
+        about
+        createdAt
+        options {
+          profileColor
+        }
         avatar {
           large
         }
