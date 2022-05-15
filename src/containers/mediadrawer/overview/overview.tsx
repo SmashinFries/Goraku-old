@@ -205,7 +205,7 @@ const OverviewTab = ({ content, isList }: OverviewTabParams) => {
                     <SynonymsDisplay />
                     {(data.anilist.hashtag) ? <View>
                         <Text style={{ marginLeft: 10, marginTop: 20, fontSize: 28, fontWeight: 'bold', color: colors.text }}>HashTag</Text>
-                        <Text onLongPress={() => handleCopy(data.anilist.hashtag)} style={{ fontSize: 16, marginLeft: 10, color: colors.text }}>{data.anilist.hashtag}</Text>
+                        <Text selectable style={{ fontSize: 16, marginLeft: 10, color: colors.text }}>{data.anilist.hashtag}</Text>
                     </View> : null}
                     <Text style={{ marginLeft: 10, marginTop: 20, fontSize: 28, fontWeight: 'bold', color: colors.text }}>Links</Text>
                     <View style={{ flex: 1 }}>
