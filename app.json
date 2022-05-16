@@ -4,6 +4,7 @@
     "slug": "Goraku",
     "version": "2.0.0",
     "scheme": "goraku",
+    "jsEngine": "hermes",
     "assetBundlePatterns": [
       "**/*"
     ],
