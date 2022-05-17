@@ -3,7 +3,7 @@ import { View, Text, useWindowDimensions, Image, Pressable, ScrollView, StatusBa
 import { useTheme } from "@react-navigation/native";
 import { openURL } from "expo-linking";
 import { DataSourcesProps } from "../types";
-import { Divider, List, Dialog, Portal, Button, IconButton, ActivityIndicator } from 'react-native-paper';
+import { Divider, List, Button, IconButton, ActivityIndicator } from 'react-native-paper';
 import { VERSION } from "../../constants";
 import FastImage from "react-native-fast-image";
 import { Current, Release } from "../../Api/github/types";
@@ -75,6 +75,9 @@ const About = ({navigation}:DataSourcesProps) => {
                 <IconButton icon={'instagram'} color={colors.primary} size={36} onPress={() => openURL('https://www.instagram.com/smashinfries/')} />
                 <IconButton icon={'storefront-outline'} color={colors.primary} size={36} onPress={() => openURL(MERCH_URL)} />
             </View>
+            <Button mode='outlined' color={colors.text} style={{borderColor:colors.primary, width:'60%', alignSelf:'center'}} onPress={() => openURL('https://linktr.ee/kuzutech')}>
+                All the Links
+            </Button>
             <Pressable style={{marginTop:20}} onPress={() => openURL('https://ko-fi.com/C0C7C2AUX')}>
                 <FastImage fallback source={{uri: kofi}} style={{alignSelf:'center', height:50, width:'90%'}} resizeMode='contain' />
             </Pressable>
