@@ -28,7 +28,7 @@ export const SummaryCard = ({ review, colors, onPress }:Props) => {
                 style={{backgroundColor:colors.primary}}
             />
             <Card.Content style={{paddingTop:10}}>
-                <Text style={{color:colors.text}}>{review.node.summary}</Text>
+                <Text selectable style={{color:colors.text}}>{review.node.summary}</Text>
             </Card.Content>
             <Card.Actions style={{justifyContent:'space-between'}}>
                 {/* <View style={{padding:5, backgroundColor:getScoreColor(review.node.score), borderRadius:8}}>
