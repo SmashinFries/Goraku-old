@@ -1047,6 +1047,7 @@ query ($random: Int, $perRandom: Int, $type:MediaType, $isAdult:Boolean) {
       genres
       description(asHtml:true)
       status(version:3)
+      ${tags_Q}
 			${title_Q}
       ${coverImage_Q}
       bannerImage
