@@ -14,6 +14,7 @@ const RandomFive = ({navigation}) => {
     const diceAnimVal = useRef(new Animated.Value(1)).current;
     const diceSpin = useRef(new Animated.Value(0)).current;
     const animSpin = useRef(spinAnimate(diceSpin)).current;
+    const listRef = useRef<FlatList>(null);
     const spin = diceSpin.interpolate({
         inputRange: [0, 1],
         outputRange: ['0deg', '360deg']
@@ -46,7 +47,7 @@ const RandomFive = ({navigation}) => {
         await new Promise(resolve => setTimeout(resolve, 1000));
         setData(allMedia);
         setLoading(false);
-        
+        listRef.current?.scrollToOffset({offset:0, animated:true});
     }
 
     const onPress = () => {
@@ -94,10 +95,12 @@ const RandomFive = ({navigation}) => {
         <View style={{flex:1}}>
             {data.length > 0 ? 
             <FlatList
+                ref={listRef}
                 data={data}
                 renderItem={renderItem}
-                contentContainerStyle={{paddingBottom:100}}
+                contentContainerStyle={{paddingVertical:100}}
                 keyExtractor={({ id }) => id.toString()}
+                ItemSeparatorComponent={() => <View style={{height:100}} />}
             /> : <EmptyList />}
             <DiceHeader />
         </View>
