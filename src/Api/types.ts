@@ -955,6 +955,7 @@ export type RandomMediaInfo = {
     id: number;
     idMal: number;
     genres: string[];
+    tags: TagsType[];
     title: {
         userPreferred: string,
         romaji: string,
