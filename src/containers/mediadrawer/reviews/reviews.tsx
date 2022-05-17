@@ -12,7 +12,7 @@ const ReviewsTab = ({navigation, route}:ReviewProps) => {
     const renderItem = ({item}:{item:ReviewsNode}) => {
         return(
             // @ts-ignore
-            <SummaryCard colors={colors} review={item} onPress={() => navigation.navigate('ReviewBody', {review: item, setData:setData})} />
+            <SummaryCard colors={colors} review={item} onPress={() => navigation.navigate('ReviewBody', {review: item})} />
         );
     }
     return(
