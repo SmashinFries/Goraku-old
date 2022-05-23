@@ -18,7 +18,7 @@
       "android": {
         "buildType": "apk",
         "autoIncrement": "versionCode",
-        "gradleCommand":":app:bundleProductionRelease"
+        "gradleCommand":":app:assembleRelease"
       }
     }
   },

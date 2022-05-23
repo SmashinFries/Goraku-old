@@ -262,7 +262,7 @@ android {
             dimension "env"
             applicationId "com.goraku"
         }
-    // }
+    }
 
     // applicationVariants are e.g. debug, release
     applicationVariants.all { variant ->
