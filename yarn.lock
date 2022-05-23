@@ -3504,7 +3504,7 @@ expo-constants@~13.1.0, expo-constants@~13.1.1:
     "@expo/config" "^6.0.14"
     uuid "^3.3.2"
 
-expo-dev-client@~0.9.5:
+expo-dev-client@~0.9.6:
   version "0.9.6"
   resolved "https://registry.yarnpkg.com/expo-dev-client/-/expo-dev-client-0.9.6.tgz#528bfb5a7ea28ed7db664ecdf74bd3bcb9b75f0f"
   integrity sha512-0yqD70w5fsmHyYbetAv1waCAzoaowJjSMxzNQYTbPbhUKdpHinJl6TtcztMMvgvqoGXi2/B3cMtq2Hx7p3yp4w==
