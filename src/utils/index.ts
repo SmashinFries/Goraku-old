@@ -9,5 +9,6 @@ import { saveImage, shareImage } from './saveImages';
 import { handleShare } from './share';
 import { handleLink } from './openLink';
 import { getTime, getDate } from './time/getTime';
+import { _openBrowserUrl } from './browser/browserHandles';
 
-export { dataTitleFilter, getDate, getColor, getScoreColor, rgbConvert, getYear, getSeason, useKeyboard, getTime, handleCopy, handleLink, saveImage, shareImage, getMalScoreColor, handleShare };
+export { dataTitleFilter, getDate, getColor, getScoreColor, rgbConvert, getYear, getSeason, useKeyboard, getTime, handleCopy, handleLink, saveImage, shareImage, getMalScoreColor, handleShare, _openBrowserUrl };

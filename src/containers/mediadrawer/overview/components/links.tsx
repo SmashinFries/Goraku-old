@@ -4,15 +4,17 @@ import FastImage from "react-native-fast-image";
 import { AniMalType, ExtLink } from "../../../../Api/types";
 import { AnilistSVG, MalSVG } from "../../../../Components/svg/svgs";
 import { ThemeColors } from "../../../../Components/types";
+import { _openBrowserUrl } from "../../../../utils";
 
 const ExternalLinkList = ({data, colors}:{data:AniMalType, colors:ThemeColors}) => {
     const officialLinks = data.anilist.externalLinks.filter((link, index) => link.site === 'Official Site');
     const malLink = data.mal?.data?.url;
 
     const LinkButton = ({link, width, height}:{link:ExtLink, width?:number|string, height?:number|string}) => {
+        // () => Linking.openURL(link.url)
         return (
             <View style={[{ marginVertical: 5, width:(link.site === 'Official Site') ? width : undefined, borderRadius:8, marginHorizontal: 5, }]}>
-                <Pressable onPress={() => Linking.openURL(link.url)} style={{ height: height, width:width, alignItems:'center', justifyContent:'center', borderRadius:8, backgroundColor: (link.site === 'Official Site') ? colors.primary : link.color}}>
+                <Pressable onPress={() => _openBrowserUrl(link)} style={{ height: height, width:width, alignItems:'center', justifyContent:'center', borderRadius:8, backgroundColor: (link.site === 'Official Site') ? colors.primary : link.color}}>
                     {(link.icon) ?
                     <FastImage fallback source={{uri:link.icon}} style={{height:40, width:40, borderRadius:8}} />
                     : <Text style={{ textAlign: 'center', fontSize: 15, color: '#FFF' }}>{link.site}</Text>
