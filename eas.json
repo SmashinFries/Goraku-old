@@ -17,7 +17,6 @@
       "distribution": "internal",
       "android": {
         "buildType": "apk",
-        "autoIncrement": "versionCode",
         "gradleCommand":":app:assembleRelease"
       }
     }
