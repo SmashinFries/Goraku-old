@@ -14,7 +14,7 @@ const ExternalLinkList = ({data, colors}:{data:AniMalType, colors:ThemeColors}) 
         // () => Linking.openURL(link.url)
         return (
             <View style={[{ marginVertical: 5, width:(link.site === 'Official Site') ? width : undefined, borderRadius:8, marginHorizontal: 5, }]}>
-                <Pressable onPress={() => _openBrowserUrl(link)} style={{ height: height, width:width, alignItems:'center', justifyContent:'center', borderRadius:8, backgroundColor: (link.site === 'Official Site') ? colors.primary : link.color}}>
+                <Pressable onPress={() => _openBrowserUrl(link.url)} style={{ height: height, width:width, alignItems:'center', justifyContent:'center', borderRadius:8, backgroundColor: (link.site === 'Official Site') ? colors.primary : link.color}}>
                     {(link.icon) ?
                     <FastImage fallback source={{uri:link.icon}} style={{height:40, width:40, borderRadius:8}} />
                     : <Text style={{ textAlign: 'center', fontSize: 15, color: '#FFF' }}>{link.site}</Text>
