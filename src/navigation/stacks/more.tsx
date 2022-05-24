@@ -7,7 +7,7 @@ import { MoreScreen } from "../../containers/more/moreUI";
 import { SettingsStack } from "../../containers/more/settings";
 import { MoreStackProps } from "../../containers/types";
 import AccountStack from "./account";
-import About from "../../containers/more/about";
+import About from "../../containers/more/about/about";
 import DataSources from "../../containers/more/datasources";
 import { openURL } from "expo-linking";
 

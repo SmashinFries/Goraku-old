@@ -9,12 +9,13 @@ import { _openBrowserUrl } from "../../../../utils";
 const ExternalLinkList = ({data, colors}:{data:AniMalType, colors:ThemeColors}) => {
     const officialLinks = data.anilist.externalLinks.filter((link, index) => link.site === 'Official Site');
     const malLink = data.mal?.data?.url;
+    const openLink = (link:string) => _openBrowserUrl(link, colors.primary, colors.text)
 
     const LinkButton = ({link, width, height}:{link:ExtLink, width?:number|string, height?:number|string}) => {
         // () => Linking.openURL(link.url)
         return (
             <View style={[{ marginVertical: 5, width:(link.site === 'Official Site') ? width : undefined, borderRadius:8, marginHorizontal: 5, }]}>
-                <Pressable onPress={() => _openBrowserUrl(link.url)} style={{ height: height, width:width, alignItems:'center', justifyContent:'center', borderRadius:8, backgroundColor: (link.site === 'Official Site') ? colors.primary : link.color}}>
+                <Pressable onPress={() => openLink(link.url)} style={{ height: height, width:width, alignItems:'center', justifyContent:'center', borderRadius:8, backgroundColor: (link.site === 'Official Site') ? colors.primary : link.color}}>
                     {(link.icon) ?
                     <FastImage fallback source={{uri:link.icon}} style={{height:40, width:40, borderRadius:8}} />
                     : <Text style={{ textAlign: 'center', fontSize: 15, color: '#FFF' }}>{link.site}</Text>
@@ -35,7 +36,7 @@ const ExternalLinkList = ({data, colors}:{data:AniMalType, colors:ThemeColors}) 
             
             <View style={{flex:1, flexDirection: 'row', justifyContent: 'center', paddingLeft:5, flexWrap: 'wrap', alignItems: 'center'}}>
                 <View style={{ marginVertical: 5, marginHorizontal: 5, borderRadius:8 }}>
-                    <Pressable onPress={() => Linking.openURL(data.anilist.siteUrl)} style={{ height: 50, width: 85, alignItems:'center', borderRadius:8, justifyContent:'center', backgroundColor: 'rgb(60,180,242)'}}>
+                    <Pressable onPress={() => openLink(data.anilist.siteUrl)} style={{ height: 50, width: 85, alignItems:'center', borderRadius:8, justifyContent:'center', backgroundColor: 'rgb(60,180,242)'}}>
                         <AnilistSVG color={'#FFF'} width={35} height={35} />
                     </Pressable>
                 </View>
@@ -44,7 +45,7 @@ const ExternalLinkList = ({data, colors}:{data:AniMalType, colors:ThemeColors}) 
                 )}
                 {malLink && 
                     <View style={[{ marginVertical: 5, borderRadius:8, marginHorizontal: 5, }]}>
-                        <Pressable onPress={() => Linking.openURL(malLink)} style={{ height: 50, width:85, alignItems:'center', justifyContent:'center', borderRadius:8, backgroundColor: '#2A50A3'}}>
+                        <Pressable onPress={() => openLink(malLink)} style={{ height: 50, width:85, alignItems:'center', justifyContent:'center', borderRadius:8, backgroundColor: '#2A50A3'}}>
                             <MalSVG color='#FFF' width={45} height={45} />
                         </Pressable>
                     </View>

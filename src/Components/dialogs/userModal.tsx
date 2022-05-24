@@ -6,6 +6,7 @@ import FastImage, { ImageStyle } from "react-native-fast-image";
 import { FollowerListUser, UserBasic } from "../../Api/types";
 import { openURL } from "expo-linking";
 import { convertUnixTime } from "../../utils/time/getTime";
+import { _openBrowserUrl } from "../../utils"
 
 type Props = {
     user: UserBasic | FollowerListUser;
@@ -87,12 +88,9 @@ const UserModal = ({user, visible, onDismiss, colors}:Props) => {
                     <View style={modalStyle.avatarContainer}>
                         <FastImage fallback source={{uri:user.avatar.large}} style={modalStyle.avatar} />
                     </View>
-                    
-
                     <Text style={modalStyle.userName}>{user.name}</Text>
                     <Text style={modalStyle.createdText}>Created {convertUnixTime(user.createdAt)}</Text>
-                    <Button mode="outlined" color={colors.primary} onPress={() => openURL(user.siteUrl)} style={modalStyle.viewButton}>View Profile</Button>
-                    
+                    <Button mode="outlined" color={colors.primary} onPress={() => _openBrowserUrl(user.siteUrl, colors.primary, colors.text)} style={modalStyle.viewButton}>View Profile</Button>
                 </View>
             </Modal>
         </Portal>

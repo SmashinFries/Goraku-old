@@ -13,6 +13,9 @@ import { LinearGradient } from "expo-linear-gradient";
 import { storeNSFW } from "../../../Storage/nsfw";
 import { ADULT_ALLOW } from "../../../constants";
 import { RadioButton } from "../../../Components/buttons/radio";
+import { _openAuthBrowser } from "../../../utils";
+import UserHeader from "./components/userHeading";
+import { LoginButton, LogoutButton, MLMenuButton, NSFWswitch, ProfileMenuButton } from "./components/buttons";
 
 export const AccountHome = ({navigation, route}) => {
     const { isAuth, setIsAuth } = useContext(AccountContext);
@@ -22,6 +25,8 @@ export const AccountHome = ({navigation, route}) => {
     const [isPressed, setIsPressed] = useState(false);
     const [tokenExp, setTokenExp] = useState<string>();
     const token = route.params?.token;
+
+    const handleLogin = () => _openAuthBrowser().then(() => setIsPressed(true));
 
     const value =  useMemo(() => ({ isAllowed, toggleFetchTask }), [isAllowed]);
 
@@ -78,31 +83,19 @@ export const AccountHome = ({navigation, route}) => {
         <NotificationContext.Provider value={value}>
             <ScrollView style={{flex:1, backgroundColor:(dark) ? colors.background : colors.card}}>
                 {(userData && isAuth) && 
-                    <View style={{justifyContent:'center', height: 200, width: '100%'}}>
-                        {(userData.bannerImage) && <FastImage fallback source={{uri: userData.bannerImage}} style={{height: 200, width: '100%'}} resizeMode='cover' />}
-                        {(userData.bannerImage) && <LinearGradient colors={['transparent', 'rgba(0,0,0,.5)']} locations={[.60, 1]} style={{position:'absolute', top:0, height:200, width:'100%'}} />}
-                        <View style={{position:'absolute', alignSelf:'center'}}>
-                            <Avatar.Image size={124} source={{uri:userData.avatar.large}} style={{alignSelf:'center', backgroundColor:userData.options.profileColor}}/>
-                            <Text style={{textAlign:'center', alignSelf:'center', color:(userData.bannerImage) ? '#FFF' : colors.text, fontWeight:'bold', marginTop:10, fontSize:20}}>{userData.name}</Text>
-                        </View>
-                    </View>
+                    <UserHeader userData={userData} colors={colors} />
                 }
                 {(!isAuth) ? 
-                    <List.Item rippleColor={colors.border} title="Login" titleStyle={{color:colors.text}} onPress={() => Linking.openURL('https://anilist.co/api/v2/oauth/authorize?client_id=7515&response_type=token').then(() => setIsPressed(true))} left={props => <List.Icon {...props} icon="login" color={colors.primary} />} />
-                    : <List.Item rippleColor={colors.border} title="Logout" titleStyle={{color:colors.text}} description={(tokenExp === null) && 'Token expired! Please re-login'} descriptionStyle={{color:'red'}} onPress={() => logout()} left={props => <List.Icon {...props} icon="logout" color={colors.primary} />} />
-                }
-                {(isAuth) ? 
-                    <List.Item title="Media Language" rippleColor={colors.border} titleStyle={{color:colors.text}} left={props => <List.Icon {...props} icon="earth" color={colors.primary} />} onPress={() => navigation.push('Languages', {title: userData?.options.titleLanguage, staffName: userData?.options.staffNameLanguage})} /> 
-                    : null
+                    <LoginButton handleLogin={handleLogin} colors={colors} />
+                    : <LogoutButton colors={colors} tokenExp={tokenExp} logout={logout} />
                 }
                 {(isAuth) &&
-                    <List.Item
-                        rippleColor={colors.border}
-                        title="Edit Profile"
-                        titleStyle={{ color: colors.text }}
-                        onPress={() => openURL(userData.siteUrl)}
-                        left={props => <List.Icon {...props} icon="account-edit-outline" color={colors.primary} />}
-                    />
+                    <View>
+                        <MLMenuButton userData={userData} navigation={navigation} colors={colors} />
+                        <ProfileMenuButton userData={userData} colors={colors} />
+                        <NSFWswitch userData={userData} adultContentWarning={adultContentWarning} handleNSFW={handleNSFW} colors={colors} />
+                        {(tokenExp) && <Caption onPress={() => checkTokenExpiration().then(txt => setTokenExp(txt))} style={{color:colors.text, paddingLeft:10}}>{`Login Expires in:\n${tokenExp}`}</Caption>}
+                    </View>
                 }
                 {/* Disabling Notifications */}
                 {/* {(isAuth) && 
@@ -113,17 +106,6 @@ export const AccountHome = ({navigation, route}) => {
                         right={() => <Switch value={isAllowed} onValueChange={toggleFetchTask} color={colors.primary} />}
                     /> 
                 } */}
-                {(isAuth) &&
-                    <List.Item
-                        title="NSFW Content"
-                        titleStyle={{ color: colors.text }}
-                        description={(userData?.options.displayAdultContent && !ADULT_ALLOW) ? adultContentWarning() : null}
-                        descriptionStyle={{color:'red'}}
-                        left={props => <List.Icon {...props} icon="alert-box-outline" color={colors.primary} />}
-                        right={() => <Switch value={(userData?.options.displayAdultContent) ? true : false} color={colors.primary} onValueChange={() => handleNSFW()} />}
-                    />
-                }
-                {(isAuth && tokenExp) && <Caption onPress={() => checkTokenExpiration().then(txt => setTokenExp(txt))} style={{color:colors.text, paddingLeft:10}}>{`Login Expires in:\n${tokenExp}`}</Caption>}
             </ScrollView>
         </NotificationContext.Provider>
     );
