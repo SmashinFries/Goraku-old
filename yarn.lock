@@ -1374,9 +1374,9 @@
     lodash.template "^4.5.0"
 
 "@gorhom/bottom-sheet@^4.1.5":
-  version "4.3.0"
-  resolved "https://registry.yarnpkg.com/@gorhom/bottom-sheet/-/bottom-sheet-4.3.0.tgz#88883ad7b085a4e4a0d1b087fd282513b0eecc7a"
-  integrity sha512-0RAkpdZj8hY/xsxKUFojKPEC/VAkUkU6sO7F31xYmjECCeDvc1BI/N6nl4NLRjMpEojfGld/kgCLjLordH9soQ==
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/@gorhom/bottom-sheet/-/bottom-sheet-4.3.1.tgz#842790fd9f4c2470dc0682a1eb9616b68f93a71e"
+  integrity sha512-z7Mlo8GOqGAZsPJXL17v3o+I1TQBPZ+n+FmZybBCoM73m/aYXLCtpXo/knoPaZkI91eKuWQ3LLz+yCfGkNPiuA==
   dependencies:
     "@gorhom/portal" "1.0.13"
     invariant "^2.2.4"
@@ -2649,9 +2649,9 @@ copy-descriptor@^0.1.0:
   integrity sha1-Z29us8OZl8LuGsOpJP1hJHSPV40=
 
 core-js-compat@^3.21.0, core-js-compat@^3.22.1:
-  version "3.22.6"
-  resolved "https://registry.yarnpkg.com/core-js-compat/-/core-js-compat-3.22.6.tgz#2e7c7a703238c168883dbf55c24bbb67503cddcb"
-  integrity sha512-dQ/SxlHcuiywaPIoSUCU6Fx+Mk/H5TXENqd/ZJcK85ta0ZcQkbzHwblxPeL0hF5o+NsT2uK3q9ZOG5TboiVuWw==
+  version "3.22.7"
+  resolved "https://registry.yarnpkg.com/core-js-compat/-/core-js-compat-3.22.7.tgz#8359eb66ecbf726dd0cfced8e48d5e73f3224239"
+  integrity sha512-uI9DAQKKiiE/mclIC5g4AjRpio27g+VMRhe6rQoz+q4Wm4L6A/fJhiLtBw+sfOpDG9wZ3O0pxIw7GbfOlBgjOA==
   dependencies:
     browserslist "^4.20.3"
     semver "7.0.0"
@@ -5128,9 +5128,9 @@ node-int64@^0.4.0:
   integrity sha1-h6kGXNs1XTGC2PlM4RGIuCXGijs=
 
 node-releases@^2.0.3:
-  version "2.0.4"
-  resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-2.0.4.tgz#f38252370c43854dc48aa431c766c6c398f40476"
-  integrity sha512-gbMzqQtTtDz/00jQzZ21PQzdI9PyLYqUSvD0p3naOhX4odFji0ZxYdnVwPTxmSwkmxhcFImpozceidSG+AgoPQ==
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-2.0.5.tgz#280ed5bc3eba0d96ce44897d8aee478bfb3d9666"
+  integrity sha512-U9h1NLROZTq9uE1SNffn6WuPDg8icmi3ns4rEl/oTfIle4iLjTliCzgTsbaIFMq/Xn078/lfY/BL0GWZ+psK4Q==
 
 node-stream-zip@^1.9.1:
   version "1.15.0"
@@ -5718,9 +5718,9 @@ react-native-reanimated@~2.3.1:
     string-hash-64 "^1.0.3"
 
 react-native-redash@^16.1.1:
-  version "16.2.4"
-  resolved "https://registry.yarnpkg.com/react-native-redash/-/react-native-redash-16.2.4.tgz#bded45d264b7d358de376708a4a72f93b1d5b723"
-  integrity sha512-LrMc3H8O8lBg1IWXvLvLqTgrvs0/JVp7fHAE4iznQV710cedWaAzVObiIVq3BCZnUd1cojfRFLs9QXdf2gw7Vg==
+  version "16.3.0"
+  resolved "https://registry.yarnpkg.com/react-native-redash/-/react-native-redash-16.3.0.tgz#a9112ff1b0e0b506a2e2ae50967597e73b69d343"
+  integrity sha512-dhmeYbQ/usGzxZSGZmzmRuIFF2LrtJUKqgseKgf9Jdj0JQ7VM20m/LqTg60+wjxeiyAh2D/vKsQ2U7rMkuoplQ==
   dependencies:
     abs-svg-path "^0.1.1"
     normalize-svg-path "^1.0.1"
