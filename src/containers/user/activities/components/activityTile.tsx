@@ -1,5 +1,5 @@
 import { openURL } from "expo-linking";
-import React from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import { View, Text, Pressable } from "react-native";
 import { IconButton, Button } from 'react-native-paper';
 import FastImage from "react-native-fast-image";
@@ -8,6 +8,7 @@ import { AnilistSVG } from "../../../../Components/svg/svgs";
 import { ThemeColors } from "../../../../Components/types";
 import { NavigationProp } from "@react-navigation/native";
 import { convertUnixTime } from "../../../../utils/time/getTime";
+import { UserModal } from "../../../../Components";
 
 const statusText = (status: string, progress: number) => {
     if (progress) {
@@ -43,9 +44,9 @@ const AnilistLink = ({ link, color }: { link: string, color:string }) => {
     );
 }
 
-const OtherUser = ({user, colors}:{user:UserBasic, colors:ThemeColors}) => {
+const OtherUser = ({user, setVisible, colors}:{user:UserBasic, setVisible:Dispatch<SetStateAction<boolean>>, colors:ThemeColors}) => {
     return(
-        <Pressable onPress={() => openURL(user.siteUrl)} style={{flexDirection:'row', alignItems:'center'}}>
+        <Pressable onPress={() => setVisible(true)} style={{flexDirection:'row', alignItems:'center'}}>
             <FastImage fallback source={{uri:user.avatar.large}} style={{height:35, width:35, borderRadius:35/2}} />
             <Text style={{color:colors.text, paddingLeft:10}}>{user.name}</Text>
         </Pressable>
@@ -60,13 +61,14 @@ type Props = {
     userId: number;
 }
 const ActivityTile = ({ item, colors, userId, navigation, deleteActivity }: Props) => {
+    const [visible, setVisible] = useState(false);
     return (
         <View style={{ borderRadius: 8, flexDirection: 'row', backgroundColor: colors.card }}>
             <View style={{justifyContent:'center', paddingLeft:5}}>
                 <FastImage fallback source={{ uri: item.media.coverImage.extraLarge }} style={{ borderRadius: 8, height: 168, width: 110 }} resizeMode='cover' />
             </View>
             <View style={{ flex: 1, paddingTop: 15, alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
-                <OtherUser user={item.user} colors={colors} />
+                <OtherUser user={item.user} setVisible={setVisible} colors={colors} />
                 <Text style={{ color: colors.text, marginTop: 20, textTransform: 'capitalize' }}>{statusText(item.status, item.progress)}</Text>
                 <Text numberOfLines={2} style={{ color: colors.text, fontWeight: 'bold', paddingHorizontal: 5, fontSize: 16, height: 45, textAlign: 'center', textAlignVertical: 'center' }}>{item.media.title.userPreferred}</Text>
                 
@@ -81,6 +83,7 @@ const ActivityTile = ({ item, colors, userId, navigation, deleteActivity }: Prop
                     <Text style={{ color: '#FFF', textAlign: 'center' }}>{convertUnixTime(item.createdAt)}</Text>
                 </View>
             </View>
+            <UserModal visible={visible} onDismiss={() => setVisible(false)} user={item.user} colors={colors} />
         </View>
     );
 }
