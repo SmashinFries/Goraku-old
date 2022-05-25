@@ -1132,11 +1132,17 @@ query ($page: Int, $isFollowing: Boolean, $userId: Int) {
         createdAt
         user {
 					id
-					name
-					avatar {
-						large
-					}
-					siteUrl
+          name
+          about
+          createdAt
+          bannerImage
+          options {
+              profileColor
+          }
+          avatar {
+              large
+          }
+          siteUrl
 				}
 				media {
 					id
