@@ -1,6 +1,6 @@
 import { useTheme } from "@react-navigation/native";
-import React, {useState, useEffect, useRef} from "react";
-import { View, ActivityIndicator, Animated, FlatList} from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, FlatList} from "react-native";
 import { IconButton } from 'react-native-paper';
 import { getStudioList, toggleFav } from "../../../Api/anilist/anilist";
 import { StudioListType } from "../../../Api/types";
@@ -13,7 +13,7 @@ const StudioInfo = ({navigation, route}:StudioInfoProps) => {
     const [studio, setStudio] = useState<StudioListType>();
     const [isLiked, setIsLiked] = useState<boolean>();
     const [loading, setLoading] = useState(true);
-    const { id, name } = route.params;
+    const { id, name, isAuth } = route.params;
     const { colors, dark } = useTheme();
 
     const handleStudioFetch = async () => {
@@ -36,7 +36,7 @@ const StudioInfo = ({navigation, route}:StudioInfoProps) => {
         navigation.setOptions({
             headerRight: () =>
             <View style={{flexDirection:'row', justifyContent:'center'}}>
-                <IconButton icon={(isLiked) ? 'heart' : 'heart-outline'} onPress={() => likeStudio()} color={(isLiked) ? 'red' : colors.text} />
+                {isAuth && <IconButton icon={(isLiked) ? 'heart' : 'heart-outline'} onPress={() => likeStudio()} color={(isLiked) ? 'red' : colors.text} />}
                 <HeaderRightButtons colors={colors} navigation={navigation} style={{paddingRight:15}} drawer />
             </View>,
             headerLeft: () => 

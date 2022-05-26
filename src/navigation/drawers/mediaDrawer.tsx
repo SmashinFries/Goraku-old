@@ -82,7 +82,7 @@ export const InfoDrawer = ({ navigation, route }:InfoProps) => {
             {(auth) && <Drawer.Screen name="Following" component={FollowingTab} initialParams={{id:data.anilist.id}} options={{headerShown:true, headerTransparent:false, headerTitle:'Following', headerStyle:{elevation:8}}}/>}
             {(data.anilist.type === 'ANIME') ? <Drawer.Screen name="Music" component={MusicTab} initialParams={{ id, coverImage: data.anilist.coverImage.extraLarge }} /> : null}
             {(data.mal?.data && data.anilist.idMal) && <Drawer.Screen name="News" component={NewsTab} initialParams={{ mal_id:data.anilist.idMal, coverImage: data.anilist.coverImage.extraLarge, type: data.anilist.type }} />}
-            {(data.anilist.studios.nodes.length > 0) ? <Drawer.Screen name="StudioInfo" component={StudioInfo} initialParams={{id: data.anilist.studios.nodes[0].id, name: data.anilist.studios.nodes[0].name}} options={{headerTitle:`${data.anilist.studios.nodes[0].name}`, drawerLabel:`Studio`, headerStyle:{backgroundColor:colors.card}, headerTransparent:false}} /> : null}
+            {(data.anilist.studios.nodes.length > 0) ? <Drawer.Screen name="StudioInfo" component={StudioInfo} initialParams={{id: data.anilist.studios.nodes[0].id, name: data.anilist.studios.nodes[0].name, isAuth:auth}} options={{headerTitle:`${data.anilist.studios.nodes[0].name}`, drawerLabel:`Studio`, headerStyle:{backgroundColor:colors.card}, headerTransparent:false}} /> : null}
         </Drawer.Navigator>
     );
 }
