@@ -75,7 +75,7 @@ export type DrawerParamList = {
     Music: { id:number, coverImage:string };
     CharacterStack: { data: AniMalType };
     Watch: { data: AniMalType };
-    StudioInfo: { id: number, name: string};
+    StudioInfo: { id: number, name: string, isAuth: boolean };
     Reviews: { reviews: ReviewsNode[] };
 }
 
