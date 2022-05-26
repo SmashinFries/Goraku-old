@@ -1,8 +1,7 @@
 import { LinearGradient } from "expo-linear-gradient";
 import React, { Dispatch, useState } from "react";
-import { View, Text, ScrollView, Pressable } from "react-native";
+import { View, Text, ScrollView, Pressable, ToastAndroid } from "react-native";
 import FastImage from "react-native-fast-image";
-import AwesomeButton from "react-native-really-awesome-button-fixed";
 import { toggleFav } from "../../../../Api";
 import { AniMalType, CharacterItemType, StudioItemType } from "../../../../Api/types";
 import { ThemeColors } from "../../../../Components/types";
@@ -31,6 +30,9 @@ const CharStaffList = ({charData, staffData, data, setData, navigation, title, c
         const handleFav = async() => {
             setFav(!fav);
             const resp = await toggleFav(person.node.id, (charData) ? 'CHARACTER' : 'STAFF');
+            if (resp === null) {
+                ToastAndroid.show('Login Required / Network Error', ToastAndroid.SHORT);
+            }
         }
         return(
             // @ts-ignore 
