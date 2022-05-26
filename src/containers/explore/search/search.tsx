@@ -190,7 +190,7 @@ export const SearchScreen = ({ route, navigation }: SearchProps) => {
                 date={{day: date.getDate(), month: date.getMonth()+1}}
                 primaryColor={colors.primary}
                 // @ts-ignore
-                onPress={() => navigation.push(searchParams.type === 'CHARACTERS' ? 'CharacterExplore' : 'StaffExplore', { id: item.id, name: item.name.full, malId: null, type: null, inStack: false })}
+                onPress={() => navigation.push(searchParams.type === 'CHARACTERS' ? 'CharacterExplore' : 'StaffExplore', { id: item.id, name: item.name.full, malId: item.media?.nodes[0].idMal, type: item.media?.nodes[0].type, inStack: false })}
             />
         )
     }
