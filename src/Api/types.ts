@@ -166,6 +166,7 @@ export type CharFullEdge = {
         meanScore: number;
         format: string;
         type: string;
+        countryOfOrigin: string;
         coverImage: {
             extraLarge: string;
         }
@@ -991,6 +992,12 @@ export type CharacterSearchTile = {
     image: {
         large: string;
     };
+    media: {
+        nodes: {
+            type: string;
+            idMal: number;
+        }
+    }
     dateOfBirth: DateType;
     isFavourite: boolean;
     favourites: number;

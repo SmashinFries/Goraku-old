@@ -555,6 +555,7 @@ query ($id: Int, $page: Int, $perPage: Int) {
           meanScore
           format
           type
+          countryOfOrigin
           title {
             userPreferred
           }
@@ -1079,6 +1080,12 @@ query ($search: String, $page: Int, $perPage: Int, $isBirthday:Boolean) {
         month
         day
       }
+      media (sort:POPULARITY_DESC, perPage:1) {
+				nodes {
+					type
+					idMal
+				}
+			}
 			isFavourite
 			favourites
 		}
