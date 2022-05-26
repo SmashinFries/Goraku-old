@@ -14,12 +14,13 @@ export const getMalData = async (id:number, type:string) => {
 }
 
 export const getMalChar = async (id:number, name: string, type:string) => {
+    if (!type) return null;
     try {
         const res = await axios.get<MalCharactersType>(`https://api.jikan.moe/v4/${type.toLowerCase()}/${id}/characters`);
         const char = res.data.data.filter(char => char.character.name === name);
         if (char.length > 0) {
             const images = await axios.get<MalCharImagesType>(`https://api.jikan.moe/v4/characters/${char[0].character.mal_id}/pictures`)
-            return images.data;
+            return {images:images.data, link:char[0].character.url};
         } else {
             return null;
         }
