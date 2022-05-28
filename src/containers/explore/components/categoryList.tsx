@@ -13,7 +13,8 @@ import { LoadingView } from "../../../Components";
 
 type CategoryProps = { 
     titleType:Titles;
-    format:Formats; 
+    format:Formats;
+    noFormat?:Formats[] | undefined;
     sort:MediaAnimeSort; 
     type:string;
     season:string|undefined; 
@@ -52,7 +53,7 @@ export const CategoryList = (props:CategoryProps) => {
                 type:props.type, 
                 format:props.format,
                 page:1,
-                perPage:10, 
+                perPage:24, 
                 isAdult:false,
                 season:props.season, seasonYear:props.year,
                 search:undefined,
@@ -61,7 +62,7 @@ export const CategoryList = (props:CategoryProps) => {
                 chapters_greater:undefined, chapters_lesser:undefined,
                 duration_greater:undefined, duration_lesser:undefined,
                 episodes_greater:undefined, episodes_lesser:undefined,
-                format_in:undefined, format_not_in:undefined,
+                format_in:undefined, format_not_in:props.noFormat,
                 tag_in:undefined, tag_not_in:undefined,
                 genre_in:undefined, genre_not_in:undefined,
                 volumes_greater:undefined, volumes_lesser:undefined,
@@ -139,7 +140,7 @@ export const CategoryList = (props:CategoryProps) => {
             <FlatList
                 style={{flex:1}}
                 data={data !== undefined ? data : []}
-                renderItem={({ item, index }) => <MediaTile data={item} index={index} sheetControl={actionSheet} setActiveId={setActiveId} titleType={props.titleType} colors={colors} />}
+                renderItem={({ item, index }) => <MediaTile data={item} index={index} sheetControl={actionSheet} setActiveId={setActiveId} titleType={props.titleType} colors={colors} size={{width:160, height:250}} />}
                 keyExtractor={item => item.id.toString()}
                 horizontal={true}
                 showsHorizontalScrollIndicator={false}
