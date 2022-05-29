@@ -1,21 +1,18 @@
 import { useTheme } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
-import { View, Text, Animated, Pressable, ScrollView, FlatList } from "react-native";
-import FastImage from 'react-native-fast-image';
-import { Button, Portal } from 'react-native-paper';
+import { View, Animated } from "react-native";
+import { Portal } from 'react-native-paper';
 import { getCharacterDetail, toggleFav } from "../../Api/anilist/anilist";
-import { CharDetailShort, CharFullEdge, MalCharImagesShort } from "../../Api/types";
+import { CharDetailShort, MalCharImagesShort } from "../../Api/types";
 import { CharDetailProps } from "../types";
 import { MediaHeader } from "../../Components/header/mediaHeader";
 import { handleShare } from "../../utils";
 import { LinearGradient } from "expo-linear-gradient";
 import { getMalChar } from "../../Api/mal";
 import { HeaderBackButton, HeaderRightButtons } from "../../Components/header/headers";
-import { ImageViewer, LoadingView } from "../../Components";
-import RenderHtml from "react-native-render-html";
+import { ImageViewer, LoadingView, CharacterHeaderImage, CharacterOverview, CharacterBody } from "../../Components";
 import QrView from "../../Components/qrView";
-import { CharacterBody, CharacterFeatured, CharacterHeaderImage, CharacterImages, CharacterOverview } from "./components/views";
-
+import { CharacterFeatured, CharacterImages } from "./components/views";
 const CharDetailScreen = ({ navigation, route }: CharDetailProps) => {
     const { id, name, malId, type, inStack } = route.params;
     const [data, setData] = useState<CharDetailShort>(null);
@@ -87,10 +84,15 @@ const CharDetailScreen = ({ navigation, route }: CharDetailProps) => {
             <Animated.ScrollView contentContainerStyle={{ paddingBottom: 10 }}>
                 <LinearGradient colors={['rgba(0,0,0,0)', colors.background]} locations={[0, .35]}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                        <CharacterHeaderImage data={data} date={date} colors={colors} />
-                        <CharacterOverview data={data} colors={colors} />
+                        <CharacterHeaderImage 
+                            origin={data.media.edges[0].node.countryOfOrigin} 
+                            image={data.image}
+                            dateOfBirth={data.dateOfBirth}
+                            date={date}
+                        />
+                        <CharacterOverview name={data.name} dateOfBirth={data.dateOfBirth} favourites={data.favourites} colors={colors} />
                     </View>
-                    <CharacterBody data={data} links={links} favorite={favorite} toggleLike={toggleLike} colors={colors} />
+                    <CharacterBody description={data.description} links={links} favorite={favorite} toggleLike={toggleLike} colors={colors} />
                     <CharacterFeatured data={data} parNav={parNav} colors={colors} />
                     <CharacterImages images={images} setSelectedImg={setSelectedImg} setVisible={setVisible} colors={colors} />
                 </LinearGradient>
