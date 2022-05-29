@@ -158,6 +158,7 @@ export type CharacterItemType = {
     }
 }
 
+export type Origin = 'JP' | 'KR' | 'CN' | 'TW';
 export type CharFullEdge = {
     id: number;
     node: {
@@ -166,7 +167,7 @@ export type CharFullEdge = {
         meanScore: number;
         format: string;
         type: string;
-        countryOfOrigin: string;
+        countryOfOrigin: Origin;
         coverImage: {
             extraLarge: string;
         }
@@ -174,15 +175,17 @@ export type CharFullEdge = {
     }
 }
 
+export type Names = {
+    full: string;
+    userPreferred: string;
+    native: string;
+    first: string;
+    last: string;
+}
+
 export type CharDetailShort = {
     id: number;
-    name: {
-        full: string;
-        userPreferred: string;
-        native: string;
-        first: string;
-        last: string;
-    };
+    name: Names;
     image: {
         large: string;
     };
@@ -798,6 +801,7 @@ export type StaffMediaEdge = {
     }
 }
 
+export type LanguageV2 = 'Japanese'| 'English'| 'Korean'| 'Italian'| 'Spanish'| 'Portuguese'| 'French'| 'German'| 'Hebrew'| 'Hungarian'| 'Chinese'| 'Arabic'| 'Filipino'| 'Catalan'| 'Finnish'| 'Turkish'| 'Dutch'| 'Swedish'| 'Thai'| 'Tagalog'| 'Malaysian'| 'Indonesian'| 'Vietnamese'| 'Nepali'| 'Hindi'| 'Urdu';
 export type StaffDataType = {
     id: number;
     name: {
@@ -825,7 +829,7 @@ export type StaffDataType = {
     primaryOccupations: string[];
     dateOfBirth: DateType;
     dateOfDeath: DateType;
-    languageV2: string;
+    languageV2: LanguageV2;
     staffMedia: {
         pageInfo: pageInfoType;
         edges: StaffMediaEdge[];
@@ -958,7 +962,7 @@ export type RandomMediaInfo = {
     genres: string[];
     tags: TagsType[];
     title: {
-        userPreferred: string,
+        userPreferred: string
         romaji: string,
         native: string,
         english: string,
@@ -1020,6 +1024,41 @@ export type StaffSearchType = {
     }
 }
 
+export type UserFavMed = {
+    id: number;
+    title: {
+        userPreferred: string;
+    };
+    coverImage: {
+        extraLarge: string;
+    };
+    siteUrl: string;
+};
+
+export type UserFavChar = {
+    id: number;
+    name: {
+        userPreferred: string;
+    }
+    image: {
+        large: string;
+    }
+    gender: string;
+    siteUrl: string;
+}
+
+export type UserFavorites = {
+    anime: {
+        nodes: UserFavMed[];
+    };
+    manga: {
+        nodes: UserFavMed[];
+    };
+    characters: {
+        nodes: UserFavChar[];
+    }
+}
+
 export type UserBasic = {
     id: number;
     name: string;
@@ -1032,6 +1071,7 @@ export type UserBasic = {
     avatar: {
         large: string;
     }
+    favourites: UserFavorites;
     siteUrl: string
 };
 
@@ -1235,6 +1275,7 @@ export type FollowerListUser = {
     mediaListOptions: {
         scoreFormat: string;
     }
+    favourites: UserFavorites;
     siteUrl: string
 }
 export type FollowingMediaList = {
