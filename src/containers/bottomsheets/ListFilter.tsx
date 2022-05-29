@@ -3,11 +3,13 @@ import { NavigationProp, useTheme } from "@react-navigation/native";
 import React, { useMemo, } from "react";
 import { View, Text } from "react-native";
 import { AntDesign, Octicons } from '@expo/vector-icons';
-import { IconButton } from 'react-native-paper';
+import { Button, IconButton } from 'react-native-paper';
 import { PressableAnim } from "../../Components";
 import { RadioButton } from "../../Components/buttons/radio";
 import { useTagLayout } from "../../Storage/listStorage";
 import { TagCheckBox } from "../../Components/buttons/checkboxes";
+import { _openBrowserUrl } from "../../utils";
+import { useUserId } from "../../Storage/authToken";
 
 type TypeButton = {
     title: string;
@@ -24,6 +26,7 @@ type ListFilterProps = {
 export const ListFilter = ({sheetRef, type, format, navigation}:ListFilterProps) => {
     const snapPoints = useMemo(() => [25, '20%', '48%'], []);
     const { colors, dark } = useTheme();
+    const userId = useUserId();
     const {tags, listLayout, updateLayout, updateTagLayout} = useTagLayout();
 
     const selectedType = (currentButton:string) => {
@@ -56,6 +59,14 @@ export const ListFilter = ({sheetRef, type, format, navigation}:ListFilterProps)
         );
     }
 
+    const reorderFavs = async () => {
+        const url = `https://anilist.co/user/${userId}/favorites`;
+        const params = {type: 'FAVORITES', format: 'Any'};
+        await _openBrowserUrl(url, colors.primary, colors.text);
+        // @ts-ignore
+        navigation.replace('UserList', params);
+    }
+
     const TagCheckBoxes = () => {
         return(
             <View style={{ flexDirection: 'row' }}>
@@ -83,6 +94,16 @@ export const ListFilter = ({sheetRef, type, format, navigation}:ListFilterProps)
                     <TypeButton title={'Novel'} icon='book-open-outline' iconActive='book-open' />
                     <TypeButton title={'Favorites'} icon='heart-outline' iconActive='heart' />
                 </BottomSheetView>
+                {(type === 'FAVORITES') &&
+                    <Button
+                        mode='outlined'
+                        color={colors.primary}
+                        onPress={() => reorderFavs()}
+                        style={{ width: '80%', borderColor: colors.primary, alignSelf: 'center' }}
+                    >
+                        Reorder Favorites
+                    </Button>
+                }
                 {(type !== 'FAVORITES') ? <View>
                     <Text style={{fontSize:24, fontWeight:'bold', color:colors.text, textAlign:'center'}}>Layout</Text>
                     <View style={{borderWidth:1, borderColor:colors.border, marginHorizontal:80}} />
