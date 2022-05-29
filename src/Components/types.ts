@@ -35,6 +35,7 @@ export type MediaTileProps = {
     data:MediaTileType;
     titleType:Titles;
     colors:ThemeColors;
+    sheetRef?:MutableRefObject<BottomSheetModalMethods>;
     index?:number;
     sheetControl?:MutableRefObject<BottomSheetModalMethods>;
     setActiveId?: Dispatch<SetStateAction<{id:number|null, index:number|null}>>;
