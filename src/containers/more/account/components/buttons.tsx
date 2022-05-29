@@ -61,15 +61,16 @@ const MLMenuButton = ({userData, navigation, colors}:MLMenuProps) => {
 
 type ProfileMenuProps = {
     userData: UserOptionViewer;
+    onPress: () => Promise<void>;
     colors:ThemeColors;
 }
-const ProfileMenuButton = ({userData, colors}:ProfileMenuProps) => {
+const ProfileMenuButton = ({userData, onPress, colors}:ProfileMenuProps) => {
     return(
         <List.Item
             rippleColor={colors.border}
             title="Edit Profile"
             titleStyle={{ color: colors.text }}
-            onPress={() => _openBrowserUrl('https://anilist.co/settings', colors.primary, colors.text)}
+            onPress={onPress}
             left={props => <List.Icon {...props} icon="account-edit-outline" color={colors.primary} />}
         />
     );
