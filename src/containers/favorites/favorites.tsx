@@ -9,7 +9,7 @@ import { openURL } from "expo-linking";
 import { getFavoriteChar, getFavoriteMedia, getFavoriteStaff, getFavoriteStudio } from "../../Api/anilist/anilist";
 import { LoadingView } from "../../Components";
 import { useListSearch } from "../../Storage/listStorage";
-import { dataTitleFilter } from "../../utils";
+import { dataTitleFilter, _openBrowserUrl } from "../../utils";
 
 const dataPersonFilter = (search:string, data:any[]) => {
     if (search.length === 0) return data;
@@ -42,7 +42,7 @@ const StudioFav = ({navigation, route}) => {
 
     const renderItem = ({item}:{item:UserFavStudioNode}) => {
         return(
-            <Button mode="outlined" color={colors.primary} onPress={() => openURL(item.node.siteUrl)} style={{borderColor:colors.primary}}>{item.node.name}</Button>
+            <Button mode="outlined" color={colors.primary} onPress={() => _openBrowserUrl(item.node.siteUrl, colors.primary, colors.text)} style={{borderColor:colors.primary}}>{item.node.name}</Button>
         );
     }
 
@@ -250,11 +250,12 @@ const MediaFav = ({navigation, route}) => {
     const { colors, dark } = useTheme();
     const { type } = route.params;
     const {search} = useListSearch();
+    const tileSize = {width: 190-40, height: 280-40}
 
     const renderItem = ({item}:{item:UserFavMediaNode}) => {
         return(
-            <Pressable onPress={() => navigation.navigate('UserListDetail', { id: item.node.id })} style={{ height: 280, width: 190 }}>
-                <FastImage source={{ uri: item.node.coverImage.extraLarge }} resizeMode={'cover'} style={{ height: 280, width: 190, borderRadius: 8 }} />
+            <Pressable onPress={() => navigation.navigate('UserListDetail', { id: item.node.id })} style={{ ...tileSize }}>
+                <FastImage source={{ uri: item.node.coverImage.extraLarge }} resizeMode={'cover'} style={{ ...tileSize, borderRadius: 8 }} />
                 <LinearGradient colors={['transparent', 'rgba(0,0,0,.7)']} locations={[.65, .95]} style={{ position: 'absolute', height: '100%', width: '100%', justifyContent: 'flex-end', alignItems: 'center', borderRadius: 8 }}>
                     <Text numberOfLines={2} style={{ color: '#FFF', textAlign: 'center', fontWeight: 'bold', paddingBottom: 10, paddingHorizontal: 5 }}>{item.node.title.userPreferred}</Text>
                 </LinearGradient>
@@ -296,7 +297,7 @@ const MediaFav = ({navigation, route}) => {
                 ItemSeparatorComponent={() => <View style={{height:5}} />}
                 columnWrapperStyle={{justifyContent:'space-evenly', paddingHorizontal:5}}
                 contentContainerStyle={{paddingBottom:50, paddingTop:10}}
-                numColumns={2}
+                numColumns={3}
                 onEndReached={() => data.pageInfo.hasNextPage && fetchMore(data.pageInfo.currentPage + 1)}
                 onEndReachedThreshold={0.3}
                 refreshing={refreshing}
