@@ -26,12 +26,11 @@ export const ListTabs = ({navigation, route}:ListTabProp) => {
         navigation.setOptions({
             title:'List',
             headerSearchBarOptions:{
-                // Need to somehow fix the color of the placeholder text and left icon
-                // May have to implement custom search bar
                 autoCapitalize:'words',
-                // @ts-ignore
                 headerIconColor:colors.text,
                 textColor:colors.text,
+                hintTextColor:colors.text,
+                shouldShowHintSearchIcon:false,
                 disableBackButtonOverride:false,
                 onSearchButtonPress:(event) => Keyboard.dismiss(),
                 onChangeText: (event) => updateSearch(event.nativeEvent.text),
