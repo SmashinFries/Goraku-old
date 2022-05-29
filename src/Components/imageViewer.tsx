@@ -38,6 +38,7 @@ const ImageViewer = ({data, images, imageIndex, visible, setVisible, theme}:Prop
             }
             backgroundColor={(theme.dark) ? theme.colors.background : theme.colors.card}
             images={images_data}
+            doubleTapToZoomEnabled={true}
             imageIndex={imageIndex} visible={visible} onRequestClose={() => setVisible(false)}
         />
     );
