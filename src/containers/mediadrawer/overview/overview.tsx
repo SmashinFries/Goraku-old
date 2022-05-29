@@ -13,10 +13,8 @@ import { ListEntryDialog } from "../../explore/components/entryModals";
 import { PressableAnim } from "../../../Components/animated/AnimPressable";
 import { HeaderBackButton, HeaderBackground, HeaderRightButtons } from "../../../Components/header/headers";
 import { ListEntryUI, Trailer, MediaInformation, CharStaffList, ExternalLinkList, RecommendationList, RelationsList, TagScroll, OverViewHeader } from "./components";
-import { openURL } from "expo-linking";
 import RenderHtml from 'react-native-render-html';
 import { Portal } from 'react-native-paper';
-import { AnilistSVG } from "../../../Components/svg/svgs";
 import QrView from "../../../Components/qrView";
 import { ImageViewer } from "../../../Components";
 
@@ -137,6 +135,7 @@ const OverviewTab = ({ content, isList }: OverviewTabParams) => {
     const StudioButton = () => {
         if (data.anilist.studios.nodes.length <= 0) return null;
         return (
+            // @ts-ignore
             <PressableAnim onPress={() => navigation.navigate('StudioInfo', { id: data.anilist.studios.nodes[0].id, name: data.anilist.studios.nodes[0].name })} style={{ backgroundColor: colors.primary, borderRadius: 12, marginHorizontal: 10, marginTop: 10, justifyContent: 'center', alignItems: 'center', height: 35 }}>
                 <Text style={{ color: '#FFF', fontSize: 18 }}>Studio: {data.anilist.studios.nodes[0].name}</Text>
             </PressableAnim>
@@ -269,13 +268,18 @@ const MediaInfoScreen = ({ navigation, route }: OverviewProps) => {
                 ], { useNativeDriver: true })}
                 scrollEventThrottle={16}
             >
-                <OverViewHeader data={data} colors={colors} dark={dark} setVisible={setVisible} />
-                <OverviewTab content={data} isList={isList} />
-                <Portal>
-                    <QrView colors={colors} visible={showQr} onDismiss={qrClose} link={`goraku://info/${data.anilist.type.toLowerCase()}/${data.anilist.id}`} />
-                </Portal>
-                <ImageViewer imageIndex={0} visible={visible} setVisible={setVisible} theme={{colors, dark}} images={[{ uri: data.anilist.coverImage.extraLarge }, { uri: data.anilist.bannerImage }]} />
+                <LinearGradient colors={['rgba(0,0,0,0)', colors.background]} locations={[0, .065]}>
+                    <OverViewHeader data={data} colors={colors} dark={dark} setVisible={setVisible} />
+                    <OverviewTab content={data} isList={isList} />
+                    <Portal>
+                        <QrView colors={colors} visible={showQr} onDismiss={qrClose} link={`goraku://info/${data.anilist.type.toLowerCase()}/${data.anilist.id}`} />
+                    </Portal>
+                    <ImageViewer imageIndex={0} visible={visible} setVisible={setVisible} theme={{colors, dark}} images={[{ uri: data.anilist.coverImage.extraLarge }, { uri: data.anilist.bannerImage }]} />
+                </LinearGradient>
             </Animated.ScrollView>
+            <View style={{ position: 'absolute', zIndex: -1, height: 195, width: '100%' }}>
+                <FastImage source={{ priority: 'high', uri: (data.anilist.bannerImage !== null) ? data.anilist.bannerImage : data.anilist.coverImage.extraLarge }} fallback style={{ height: 195, width: '100%' }} resizeMode='cover' />
+            </View>
         </View>
     );
 }
