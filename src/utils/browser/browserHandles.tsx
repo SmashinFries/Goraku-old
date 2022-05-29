@@ -1,7 +1,7 @@
 import { openURL } from 'expo-linking';
 import { InAppBrowser } from 'react-native-inappbrowser-reborn'
 
-const _openBrowserUrl = async (url:string, primaryColor:string, textColor:string) => {
+const _openBrowserUrl = async (url:string, primaryColor:string, textColor:string, disableBackButton=false) => {
     try {
         if (await InAppBrowser.isAvailable()) {
             const result = await InAppBrowser.open(url,
@@ -17,7 +17,7 @@ const _openBrowserUrl = async (url:string, primaryColor:string, textColor:string
                     secondaryToolbarColor: textColor,
                     navigationBarColor: primaryColor,
                     enableUrlBarHiding: true,
-                    hasBackButton: true,
+                    hasBackButton: disableBackButton,
                 });
         } else {
             openURL(url);
