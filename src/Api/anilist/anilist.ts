@@ -401,66 +401,27 @@ export const getFavoriteStudio = async(page=1) => {
     }
 }
 
-export const useActivities = (page=1) => {
-    const [data, setData] = useState<ActivityPage>();
-    const [userId, setUserId] = useState<string>();
-    const [loading, setLoading] = useState<boolean>(true);
-    const [refresh, setRefresh] = useState<boolean>(false);
-
-    const fetchActivity = async() => {
-        const header = await getHeader();
-        const nsfw = await getNSFW();
-        if (!userId) {
-            const userId = await AsyncStorage.getItem('@userID');
-            setUserId(userId);
-        }
-        try {
-            const res = await axios.post<ActivityData>(_URL, {
-                query:activity_q,
-                variables: {
-                    isFollowing: true,
-                    page:page,
-                    userId: undefined,
-                }
-            }, {headers: header});
-            if (nsfw === false || ADULT_ALLOW === false) {
-                const filtered = res.data.data.Page.activities.filter(media => media.media.isAdult === false);
-                res.data.data.Page.activities = filtered;
+export const fetchActivity = async(page=1) => {
+    const header = await getHeader();
+    const nsfw = await getNSFW();
+    try {
+        const res = await axios.post<ActivityData>(_URL, {
+            query:activity_q,
+            variables: {
+                isFollowing: true,
+                page:page,
+                userId: undefined,
             }
-            return res.data.data.Page;
-        } catch (e) {
-            console.warn('Activities:', e);
-            return null;
+        }, {headers: header});
+        if (nsfw === false || ADULT_ALLOW === false) {
+            const filtered = res.data.data.Page.activities.filter(media => media.media.isAdult === false);
+            res.data.data.Page.activities = filtered;
         }
+        return res.data.data.Page;
+    } catch (e) {
+        console.warn('Activities:', e);
+        return null;
     }
-
-    const onRefresh = async() => {
-        setRefresh(true);
-        const resp = await fetchActivity();
-        setData(resp);
-        setRefresh(false);
-    } 
-
-    useEffect(() => {
-        if (!data) {
-            setLoading(true);
-            fetchActivity().then(data => {
-                setData(data);
-                setLoading(false);
-            });
-        }
-    },[]);
-
-    useEffect(() => {
-        if (data && data.pageInfo.currentPage > 1 && !refresh) {
-            fetchActivity().then(resp => {
-                console.log('Adding content!');
-                setData({...data, pageInfo: resp.pageInfo, activities: [...data.activities, ...resp.activities]})
-            });
-        }
-    },[page]);
-
-    return {data, setData, loading, refresh, onRefresh, userId};
 }
 
 export const getRandomMedia = async(random:number, perRandom:number, type:'ANIME'|'MANGA'|'CHARACTER') => {
