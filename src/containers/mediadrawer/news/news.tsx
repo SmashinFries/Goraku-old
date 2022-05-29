@@ -10,6 +10,7 @@ import { openURL } from "expo-linking";
 import { LoadingView } from "../../../Components";
 import { HeaderBackButton, HeaderRightButtons } from "../../../Components/header/headers";
 import { useHeaderHeight } from "@react-navigation/elements";
+import { _openBrowserUrl } from "../../../utils";
 
 type renderProp = {item: MalNewsData}
 
@@ -25,6 +26,8 @@ const NewsTab = ({navigation, route}) => {
     const { colors, dark } = useTheme();
     const scrollY = useRef(new Animated.Value(0)).current;
     const headerHeight = useHeaderHeight();
+
+    const openLink = (link:string) => _openBrowserUrl(link, colors.primary, colors.text);
 
     const headerOpacity = scrollY.interpolate({
         inputRange: [0, 70],
@@ -50,7 +53,7 @@ const NewsTab = ({navigation, route}) => {
     const newsCard = ({item}:renderProp) => {
         return(
             <Card style={{ width:'95%', alignSelf:'center', marginVertical:10, backgroundColor:colors.card }}>
-                <Card.Title title={item.title} titleNumberOfLines={2} subtitle={`By ${item.author_username} @ ${item.date.slice(0, 10)}`} right={props => <IconButton icon={'account'} onPress={() => openURL(item.author_url)} />} style={{backgroundColor:colors.primary}} />
+                <Card.Title title={item.title} titleNumberOfLines={2} subtitle={`By ${item.author_username} @ ${item.date.slice(0, 10)}`} right={props => <IconButton icon={'account'} onPress={() => openLink(item.author_url)} />} style={{backgroundColor:colors.primary}} />
                 <Card.Content style={{ padding:5 }}>
                     <View style={{ width:'70%', flexDirection:'row', paddingTop:10 }}>
                         <Card.Cover source={{ uri:item.images.jpg.image_url }} resizeMode='cover' style={{ width:90, height:140 }} />
@@ -58,8 +61,8 @@ const NewsTab = ({navigation, route}) => {
                     </View>
                 </Card.Content>
                 <Card.Actions style={{ justifyContent:'flex-end' }}>
-                    <Button onPress={() => openURL(item.forum_url)} color={colors.primary}>Forum</Button>
-                    <Button onPress={() => openURL(item.url)} color={colors.primary}>Read More</Button>
+                    <Button onPress={() => openLink(item.forum_url)} color={colors.primary}>Forum</Button>
+                    <Button onPress={() => openLink(item.url)} color={colors.primary}>Read More</Button>
                 </Card.Actions>
             </Card>
         );

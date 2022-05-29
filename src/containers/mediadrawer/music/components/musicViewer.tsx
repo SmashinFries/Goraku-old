@@ -4,7 +4,7 @@ import { View, Text } from "react-native";
 import { Card, IconButton } from "react-native-paper";
 import { AnimeThemes } from "../../../../Api/types";
 import { ThemeColors } from "../../../../Components/types";
-import { handleCopy } from "../../../../utils";
+import { handleCopy, _openBrowserUrl } from "../../../../utils";
 
 const getWikiURL = (title:string, slug:string, tags?:string, version?:number|null) => {
     console.log(version);
@@ -20,11 +20,12 @@ type ViewerProps = {
     colors: ThemeColors;
 }
 const MusicViewer = ({ track, animeTitle, colors }:ViewerProps) => {
+    const openLink = (link:string) => _openBrowserUrl(link, colors.primary, colors.text);
     return(
         <View key={track.id} style={{ flex: 1, width: '95%', padding: 10, marginVertical: 15, alignItems: 'center', justifyContent: 'space-between', borderWidth: 0, borderRadius: 0, backgroundColor: 'transparent' }}>
             <Card style={{width:'100%', backgroundColor:colors.primary}}>
                 <Card.Title 
-                    right={props => (track.song.artists[0]?.name) && <IconButton {...props}icon="account" onPress={() => openURL(`https://staging.animethemes.moe/wiki/artist/${track.song.artists[0].slug}`)} />} 
+                    right={props => (track.song.artists[0]?.name) && <IconButton {...props}icon="account" onPress={() => openLink(`https://staging.animethemes.moe/wiki/artist/${track.song.artists[0].slug}`)} />} 
                     title={<Text onLongPress={() => handleCopy(track.song.title)}>{track.slug + '・' + track.song.title}</Text>} 
                     titleNumberOfLines={3}
                     subtitle={(track.song.artists[0]?.name) ? 'By ' + track.song.artists[0]?.name : undefined} 
@@ -40,7 +41,7 @@ const MusicViewer = ({ track, animeTitle, colors }:ViewerProps) => {
                             subtitleNumberOfLines={2}
                             subtitleStyle={{color:colors.text}}
                             right={(props) =>
-                                <IconButton {...props} icon="music" color={colors.text} onPress={() => openURL(getWikiURL(animeTitle, track.slug, entry.videos[index]?.tags, (entry.version) ? ((entry.version > 1) ? entry.version : null) : null))} />
+                                <IconButton {...props} icon="music" color={colors.text} onPress={() => openLink(getWikiURL(animeTitle, track.slug, entry.videos[index]?.tags, (entry.version) ? ((entry.version > 1) ? entry.version : null) : null))} />
                             }
                         />
                     )}
