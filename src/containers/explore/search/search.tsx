@@ -47,7 +47,7 @@ export const SearchScreen = ({ route, navigation }: SearchProps) => {
                     type: searchParams.type,
                     format: searchParams.format,
                     page: 1,
-                    perPage: 16,
+                    perPage: 24,
                     onList: (searchParams.onList === true) ? true : (searchParams.onList === false) ? false : undefined,
                     search: searchParams.search,
                     countryOfOrigin: searchParams.country,
@@ -179,7 +179,7 @@ export const SearchScreen = ({ route, navigation }: SearchProps) => {
 
     const renderItem = ({ item }) => {
         return (
-            <MediaTile titleType='userPreferred' data={item} colors={colors} size={{ width: 185, height: 275 }} />
+            <MediaTile titleType='userPreferred' data={item} colors={colors} sheetRef={sheetRef}  />
         );
     }
 
@@ -187,10 +187,10 @@ export const SearchScreen = ({ route, navigation }: SearchProps) => {
         return (
             <CharacterTile
                 character={item}
-                date={{day: date.getDate(), month: date.getMonth()+1}}
+                date={date}
                 primaryColor={colors.primary}
                 // @ts-ignore
-                onPress={() => navigation.push(searchParams.type === 'CHARACTERS' ? 'CharacterExplore' : 'StaffExplore', { id: item.id, name: item.name.full, malId: item.media?.nodes[0].idMal, type: item.media?.nodes[0].type, inStack: false })}
+                onPress={() => {sheetRef?.current?.close(); navigation.push(searchParams.type === 'CHARACTERS' ? 'CharacterExplore' : 'StaffExplore', { id: item.id, name: item.name.full, malId: item.media?.nodes[0].idMal, type: item.media?.nodes[0].type, inStack: false })}}
             />
         )
     }
@@ -204,8 +204,8 @@ export const SearchScreen = ({ route, navigation }: SearchProps) => {
                     data={(data !== undefined) ? data.data.Page.media : []}
                     renderItem={renderItem}
                     keyExtractor={(item) => item.id.toString()}
-                    numColumns={2}
-                    columnWrapperStyle={{ margin: 5, justifyContent: 'space-around' }}
+                    numColumns={3}
+                    columnWrapperStyle={{ marginVertical: 5, justifyContent: 'space-evenly' }}
                     onEndReached={() => (data.data.Page.pageInfo.hasNextPage) ? fetchMore() : null}
                     onEndReachedThreshold={0.7}
                 /> :
@@ -215,7 +215,8 @@ export const SearchScreen = ({ route, navigation }: SearchProps) => {
                         renderItem={charRenderItem}
                         keyExtractor={(item) => item.id.toString()}
                         numColumns={3}
-                        columnWrapperStyle={{ margin: 3, justifyContent: 'space-around' }}
+                        columnWrapperStyle={{ margin: 3, justifyContent: 'space-evenly' }}
+                        ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
                         onEndReached={() => (charData.data.Page.pageInfo.hasNextPage) ? fetchMoreChar() : null}
                         onEndReachedThreshold={0.7}
                     /> :
@@ -224,7 +225,8 @@ export const SearchScreen = ({ route, navigation }: SearchProps) => {
                         renderItem={charRenderItem}
                         keyExtractor={(item) => item.id.toString()}
                         numColumns={3}
-                        columnWrapperStyle={{ margin: 3, justifyContent: 'space-around' }}
+                        columnWrapperStyle={{ margin: 3, justifyContent: 'space-evenly' }}
+                        ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
                         onEndReached={() => (staffData.data.Page.pageInfo.hasNextPage) ? fetchMoreChar() : null}
                         onEndReachedThreshold={0.7}
                     />
