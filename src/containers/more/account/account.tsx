@@ -1,19 +1,16 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
-import { View, Text, Linking, ToastAndroid, useWindowDimensions, ScrollView } from "react-native";
+import { View, Text, ToastAndroid, useWindowDimensions, ScrollView, Image } from "react-native";
 import { useFocusEffect, useTheme } from "@react-navigation/native";
-import { List, Switch, Avatar, Portal, Dialog, Button, Caption } from 'react-native-paper';
+import { List, Portal, Dialog, Button, Caption, ActivityIndicator } from 'react-native-paper';
 import { checkTokenExpiration, getAuth, removeToken } from "../../../Storage/authToken";
 import { changeLanguage, changeNSFW, getUserOptions } from "../../../Api/anilist/anilist";
 import { RefreshContext, AccountContext, NotificationContext } from "../../../contexts/context";
 import useNotification from "../../../Notifications/notifications";
-import { openURL } from "expo-linking";
 import {  UserOptionViewer } from "../../../Api/types";
-import FastImage from "react-native-fast-image";
-import { LinearGradient } from "expo-linear-gradient";
 import { storeNSFW } from "../../../Storage/nsfw";
 import { ADULT_ALLOW } from "../../../constants";
 import { RadioButton } from "../../../Components/buttons/radio";
-import { _openAuthBrowser } from "../../../utils";
+import { _openAuthBrowser, _openBrowserUrl } from "../../../utils";
 import UserHeader from "./components/userHeading";
 import { LoginButton, LogoutButton, MLMenuButton, NSFWswitch, ProfileMenuButton } from "./components/buttons";
 
@@ -24,9 +21,15 @@ export const AccountHome = ({navigation, route}) => {
     const { colors, dark } = useTheme();
     const [isPressed, setIsPressed] = useState(false);
     const [tokenExp, setTokenExp] = useState<string>();
+    const [loading, setLoading] = useState<boolean>(false);
     const token = route.params?.token;
+    const { width, height } = useWindowDimensions();
 
-    const handleLogin = () => _openAuthBrowser().then(() => setIsPressed(true));
+    const handleLogin = async() => {
+        await _openAuthBrowser();
+        setLoading(true);
+        setIsPressed(true);
+    };
 
     const value =  useMemo(() => ({ isAllowed, toggleFetchTask }), [isAllowed]);
 
@@ -49,6 +52,15 @@ export const AccountHome = ({navigation, route}) => {
         setUserData({...userData, options: {...userData.options, displayAdultContent: !userData.options.displayAdultContent}});        
     }
 
+    const editProfile = async() => {
+        await _openBrowserUrl('https://anilist.co/settings', colors.primary, colors.text);
+        setLoading(true);
+        const data = await getUserOptions()
+        setUserData(data);
+        storeNSFW(data.options.displayAdultContent);
+        setLoading(false);
+    }
+
     useEffect(() => {
         if (!isAuth && isPressed) {
             // @ts-ignore
@@ -57,6 +69,7 @@ export const AccountHome = ({navigation, route}) => {
                 setUserData(data);
                 storeNSFW(data.options.displayAdultContent);
             });
+            setLoading(false);
         }
     },[token]);
 
@@ -79,6 +92,14 @@ export const AccountHome = ({navigation, route}) => {
         }
     },[]);
 
+    if (loading) return(
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+            <Image source={require('../../../assets/login.png')} style={{ resizeMode: 'contain', width: width, height: 250, alignSelf: 'center' }} />
+            <Text style={{ color: colors.text, paddingBottom: 10 }}> Yui is signing you in! </Text>
+            <ActivityIndicator size={'small'} color={colors.primary} />
+        </View>
+    );
+
     return (
         <NotificationContext.Provider value={value}>
             <ScrollView style={{flex:1, backgroundColor:(dark) ? colors.background : colors.card}}>
@@ -92,7 +113,11 @@ export const AccountHome = ({navigation, route}) => {
                 {(isAuth) &&
                     <View>
                         <MLMenuButton userData={userData} navigation={navigation} colors={colors} />
-                        <ProfileMenuButton userData={userData} colors={colors} />
+                        <ProfileMenuButton 
+                            userData={userData}
+                            onPress={editProfile} 
+                            colors={colors}
+                        />
                         <NSFWswitch userData={userData} adultContentWarning={adultContentWarning} handleNSFW={handleNSFW} colors={colors} />
                         {(tokenExp) && <Caption onPress={() => checkTokenExpiration().then(txt => setTokenExp(txt))} style={{color:colors.text, paddingLeft:10}}>{`Login Expires in:\n${tokenExp}`}</Caption>}
                     </View>
