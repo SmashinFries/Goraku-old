@@ -8,7 +8,9 @@ import { handleCopy } from './texts/copyText';
 import { saveImage, shareImage } from './saveImages';
 import { handleShare } from './share';
 import { handleLink } from './openLink';
-import { getTime, getDate } from './time/getTime';
+import { getTime, getDate, checkBD } from './time/getTime';
 import { _openBrowserUrl, _openAuthBrowser } from './browser/browserHandles';
 
-export { dataTitleFilter, getDate, getColor, getScoreColor, rgbConvert, getYear, getSeason, useKeyboard, getTime, handleCopy, handleLink, saveImage, shareImage, getMalScoreColor, handleShare, _openBrowserUrl, _openAuthBrowser };
+export { dataTitleFilter, getDate, getColor, getScoreColor, rgbConvert, getYear, 
+    getSeason, useKeyboard, getTime, handleCopy, handleLink, saveImage, shareImage, 
+    getMalScoreColor, handleShare, _openBrowserUrl, _openAuthBrowser, checkBD };
