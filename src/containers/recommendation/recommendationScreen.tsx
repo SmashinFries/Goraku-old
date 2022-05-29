@@ -144,7 +144,7 @@ export const RecommendationScreen = ({navigation, route}:RecommendationProps) =>
 
     if (loading) return <LoadingView colors={{colors, dark}} />
     
-    const RenderItem = ({item, index}:RenderItem) => {
+    const RecView = ({item, index}:RenderItem) => {
         const [visible, setVisible] = useState<boolean>(false);
         return(
                 <View style={{flex:1, borderWidth:2, borderColor:colors.border, marginVertical:20, backgroundColor:colors.card, marginHorizontal:10, borderRadius:12}}>
@@ -184,11 +184,17 @@ export const RecommendationScreen = ({navigation, route}:RecommendationProps) =>
         );
     }
 
+    const renderItem = ({item, index}) => {
+        return(
+            <RecView item={item} index={index} />
+        );
+    }
+
     return (
         <View style={{flex:1}}>
             <FlatList 
                 data={data}
-                renderItem={({item, index}) => <RenderItem item={item} index={index} />}
+                renderItem={renderItem}
                 keyExtractor={(item, index) => index.toString()}
                 contentContainerStyle={{marginHorizontal:10}}
                 onRefresh={refreshList}
