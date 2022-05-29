@@ -1,9 +1,7 @@
 import { useNavigation, useTheme } from "@react-navigation/native";
 import React, { useState } from "react";
-import { View, Text, Image, Pressable } from "react-native";
+import { View, Text, Pressable } from "react-native";
 import FastImage from "react-native-fast-image";
-import { Button, Surface } from "react-native-paper";
-import AwesomeButton from "react-native-really-awesome-button-fixed";
 import { Shadow } from "react-native-shadow-2";
 import { DrawerInfoNavProp } from "../../containers/types";
 import { getScoreColor, listColor } from "../../utils/colors/scoreColors";
@@ -26,6 +24,7 @@ export const ScoreTag = ({score}:ScoreTagProps) => {
 }
 
 const onPress = (props, nav) => {
+    props.sheetRef?.current?.close();
     props.route && nav.push(props.route, {id:props.data.id, title:props.data.title.userPreferred, banner:props.data.bannerImage, coverImage:props.data.coverImage.extraLarge, type:props.data.type});
     !props.route && nav.navigate('Info', {screen:'DrawerInfo', params: {id:props.data.id, title:props.data.title.userPreferred, banner:props.data.bannerImage, coverImage:props.data.coverImage.extraLarge, type:props.data.type}});
 }
@@ -34,7 +33,7 @@ export const MediaTile = (props: MediaTileProps) => {
     const [status, setStatus] = useState((props.data.mediaListEntry) ? props.data.mediaListEntry.status : null);
     const [visible, setVisible] = useState<boolean>(false);
     const score = (props.data.averageScore !== null) ? props.data.averageScore : props.data.meanScore;
-    const {width, height } = props.size || {width:160, height:250};
+    const {width, height } = props.size || {width:140, height:230};
     const { colors } = useTheme();
     const nav = useNavigation<DrawerInfoNavProp>();
     // onLongPress={() => {props.setActiveId({id:props.data.id, index:props.index}); console.log(props.data.id); props.sheetControl.current.present()}}
