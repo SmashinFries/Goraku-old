@@ -138,20 +138,6 @@ characters (sort:$sort_c, role:$role_c, page:$page_c, perPage:$perPage_c) {
   }
 `;
 
-const studio_q = `
-studios (sort:$sort_studio) {
-    edges {
-      isMain
-      node {
-        id
-        name
-        isAnimationStudio
-        siteUrl
-      }
-    }
-  }
-`;
-
 const streamingEP_q = `
 streamingEpisodes {
     title
@@ -195,6 +181,48 @@ recommendations(sort:RATING_DESC, page:$page_rec, perPage:$perPage_rec) {
   }
 `;
 
+const userFavorites_frag = `
+favourites {
+  anime (perPage:1) {
+    nodes {
+      id
+      title {
+        userPreferred
+      }
+      coverImage {
+        extraLarge
+      }
+      siteUrl
+    }
+  }
+  manga (perPage:1) {
+    nodes {
+      id
+      title {
+        userPreferred
+      }
+      coverImage {
+        extraLarge
+      }
+      siteUrl
+    }
+  }
+  characters (perPage:1) {
+    nodes {
+      id
+      name {
+        userPreferred
+      }
+      image {
+        large
+      }
+      gender
+      siteUrl
+    }
+  }
+}
+`;
+
 const reviews_q = `
 reviews(limit:5, sort:RATING_DESC, page:1, perPage:20) {
     edges{
@@ -222,6 +250,7 @@ reviews(limit:5, sort:RATING_DESC, page:1, perPage:20) {
           avatar {
             large
           }
+          ${userFavorites_frag}
           donatorBadge
           siteUrl
         }
@@ -320,7 +349,6 @@ relations {
     }
 }
 `;
-
 const extLinks_q = `
 externalLinks {
     id
@@ -331,37 +359,6 @@ externalLinks {
   }
 `;
 
-const trends_q = `
-trends (sort: $sort_trend, perPage:$perPage_trend) {
-    edges{
-      node{
-        trending
-        date
-        averageScore
-        popularity
-        inProgress
-        episode
-        mediaId
-        releasing
-      }
-    }
-  }
-`;
-
-const airing_schedule_q = `
-airingSchedule(notYetAired:true, page:$page_airing, perPage:$perPage_airing) {
-    edges {
-      id
-      node {
-        mediaId
-        episode
-        airingAt
-        timeUntilAiring
-      }
-    }
-  }
-`;
-
 const nextAiring = `
 nextAiringEpisode {
     id
@@ -369,17 +366,6 @@ nextAiringEpisode {
     timeUntilAiring
     episode
     mediaId
-  }
-`;
-
-const statsdistribution_q = `
-scoreDistribution {
-    score
-    amount
-  }
-  statusDistribution {
-    status
-    amount
   }
 `;
 
@@ -506,6 +492,7 @@ query ($page:Int,  $perPage:Int, $mediaId: Int) {
         options {
           profileColor
         }
+        ${userFavorites_frag}
         name
 				avatar {
 					large
@@ -610,6 +597,7 @@ query ($page:Int,  $perPage:Int, $sort:[RecommendationSort], $onList:Boolean) {
         avatar {
           large
         }
+        ${userFavorites_frag}
         siteUrl
       }
     }
@@ -677,6 +665,7 @@ query ($id: Int, $page: Int, $perPage: Int) {
         avatar {
             large
         }
+        ${userFavorites_frag}
         siteUrl
 				mediaListOptions {
 					scoreFormat
@@ -870,7 +859,6 @@ query staff($id:Int,$sort:[MediaSort],$characterPage:Int,$staffPage:Int,$onList:
   }
 }
 `;
-
 
 export const favoriteCharacters_q = `
 query ($page: Int) {
@@ -1149,6 +1137,7 @@ query ($page: Int, $isFollowing: Boolean, $userId: Int) {
           avatar {
               large
           }
+          ${userFavorites_frag}
           siteUrl
 				}
 				media {
