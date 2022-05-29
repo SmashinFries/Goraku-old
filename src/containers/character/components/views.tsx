@@ -1,88 +1,19 @@
 import { NavigationProp } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import { View, Text, useWindowDimensions, ScrollView, Pressable, FlatList } from "react-native";
 import FastImage from "react-native-fast-image";
-import { Avatar, Button, IconButton } from "react-native-paper";
+import { Button } from "react-native-paper";
 import RenderHtml from "react-native-render-html";
 import { CharDetailShort, CharFullEdge, MalCharImagesShort } from "../../../Api/types";
 import { SiteButton } from "../../../Components/buttons/siteButtons";
 import { ThemeColors } from "../../../Components/types";
-import { getDate, handleCopy, _openBrowserUrl } from "../../../utils";
+import { _openBrowserUrl } from "../../../utils";
 
 type CharacterHeaderProps = {
     data:CharDetailShort;
     date:Date;
     colors:ThemeColors;
-}
-const CharacterHeaderImage = ({data, date, colors}:CharacterHeaderProps) => {
-    const origin = data.media.edges[0].node.countryOfOrigin;
-    const birthdayJP = ['Happy Birthday!', 'Tanjoubi Omedetou!', 'お誕生日おめでとう！']
-    const birthdayKR = ['Happy Birthday!', 'Saengil Chukahae', '생일 축하해!']
-    const birthdayCN = ['Happy Birthday!', 'Shēngrì Kuàilè', '生日快乐!']
-
-    const getBirthday = () => {
-        if (origin === 'JP') return birthdayJP;
-        if (origin === 'KR') return birthdayKR;
-        if (origin === 'CN' || origin === 'TW') return birthdayCN;
-        if (!origin) return birthdayJP;
-    }
-    const birthdayLang = getBirthday();
-    const emojis = ['🎉', '🥳', '🎈', '🎂', '🎁'];
-    const [emoji, setEmoji] = useState(emojis[Math.floor(Math.random() * emojis.length)]);
-    const [birthdayIndex, setBirthdayIndex] = useState(0);
-
-
-    const switchLanguage = (count:number) => {
-        if (count < 2) {
-            count +=1;
-            setBirthdayIndex(count);
-        } else {
-            count = 0;
-            setBirthdayIndex(0);
-        }
-        return count;
-    }
-
-    useEffect(() => {
-        if (date.getDate() + 1 === data.dateOfBirth.day && date.getMonth() + 1 === data.dateOfBirth.month) {
-            let count = 0;
-            const interval = setInterval(() => {
-                const randomEmoji = Math.floor(Math.random() * emojis.length);
-                setEmoji(emojis[randomEmoji]);
-                count = switchLanguage(count);
-            }, 2000);
-            return () => {
-                clearInterval(interval);
-            };
-        }
-    },[])
-    
-    return (
-        <Pressable style={{ height: 290, width: 180 }}>
-                <FastImage source={{ uri: data?.image.large }} style={{ height: 290, width: 180, marginTop: 10, marginLeft: 10, borderRadius: 12, borderWidth: .5 }} />
-                <LinearGradient colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.9)']} locations={[0.80, 1]} style={{ position: 'absolute', justifyContent: 'flex-end', marginLeft: 10, marginTop: 10, borderBottomLeftRadius: 12, borderBottomRightRadius: 12, height: '100%', width: '100%' }}>
-                    {(date.getDate() + 1 === data.dateOfBirth.day && date.getMonth() + 1 === data.dateOfBirth.month) ? 
-                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingBottom:5}}>
-                        <Text style={{ fontSize:14, color:'#FFF'}}>{emoji}{birthdayLang[birthdayIndex]}{emoji}</Text>                    
-                    </View> : null}
-                </LinearGradient>
-        </Pressable>
-    );
-}
-
-const CharacterOverview = ({data, colors}:{data:CharDetailShort, colors:ThemeColors}) => {
-    return(
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'flex-start', paddingLeft: 20 }}>
-            <Text onLongPress={() => handleCopy(data?.name?.userPreferred)} style={{ textAlign: 'left', fontSize: 22, fontWeight: 'bold', color: colors.text }}>{data?.name?.userPreferred}</Text>
-            <Text onLongPress={() => handleCopy(data?.name?.native)} style={{ textAlign: 'left', fontSize: 18, color: colors.text }}>{data?.name?.native}</Text>
-            <View style={{flexDirection:'row', alignItems:'center'}}>
-                <Avatar.Icon icon='heart' size={24} color='red' style={{backgroundColor:'transparent'}} />
-                <Text style={{color: colors.text}}>{data.favourites}</Text>
-            </View>
-            {(data?.dateOfBirth.day) ? <Text style={{ textAlign: 'left', fontSize: 15, color: colors.text }}>{'\n'}Birthday: {getDate(data.dateOfBirth)}</Text> : null}
-        </View>
-    );
 }
 
 type CharacterDescProps = {
@@ -196,4 +127,4 @@ const CharacterImages = ({images, setSelectedImg, setVisible, colors}:CharacterI
     );
 }
 
-export { CharacterHeaderImage, CharacterOverview, CharacterBody, CharacterFeatured, CharacterImages };
+export { CharacterBody, CharacterFeatured, CharacterImages };
