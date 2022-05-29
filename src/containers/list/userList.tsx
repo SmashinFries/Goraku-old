@@ -32,6 +32,18 @@ export const UserList = ({navigation, route}:ListProps) => {
         });
     },[navigation, search]);
 
+    const renderCompactItem = ({item}) => {
+        return(
+            <ListTile item={item} listStatus={listStatus} navigation={navigation} colors={colors} tags={tags} />
+        );
+    }
+
+    const renderRowItem = ({item}) => {
+        return(
+            <RowTile item={item} listStatus={listStatus} navigation={navigation} colors={colors} tags={tags} />
+        );
+    }
+
     if (!listLayout || listLayout === 'none') return <LoadingView colors={colors} />;
 
     return ( (listLayout === 'compact') ? 
@@ -40,7 +52,7 @@ export const UserList = ({navigation, route}:ListProps) => {
                 contentInsetAdjustmentBehavior="automatic"
                 data={(search) ? dataTitleFilter(data, search) : data}
                 keyExtractor={(item) => item.media.id.toString()}
-                renderItem={({item}) => <ListTile item={item} listStatus={listStatus} navigation={navigation} colors={colors} tags={tags} />}
+                renderItem={renderCompactItem}
                 numColumns={2}
                 ItemSeparatorComponent={() => <View style={{height:10}} />}
                 columnWrapperStyle={{justifyContent:'space-evenly'}}
@@ -52,7 +64,7 @@ export const UserList = ({navigation, route}:ListProps) => {
                 key={listLayout}
                 data={(search) ? dataTitleFilter(data, search) : data}
                 contentInsetAdjustmentBehavior="automatic"
-                renderItem={({item}) => <RowTile item={item} listStatus={listStatus} navigation={navigation} colors={colors} tags={tags} />}
+                renderItem={renderRowItem}
                 keyExtractor={(item) => item.media.id.toString()}
                 contentContainerStyle={{paddingBottom:30}}
                 showsVerticalScrollIndicator={false}
