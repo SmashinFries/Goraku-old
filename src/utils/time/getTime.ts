@@ -49,3 +49,9 @@ export const getDate = (dates:DateType) => {
     if (!dates.year) return `${months[dates.month]} ${dates.day}`;
     return `${dates.month}/${dates.day}/${dates.year}`;
 }
+
+export const checkBD = (date:Date, dateOfBirth:DateType) => {
+    const dobDate = new Date(Date.UTC(date.getFullYear(), dateOfBirth.month - 1, dateOfBirth.day, 14, 59));
+    const isBDA = (date.getTime() <= dobDate.getTime());
+    return isBDA;
+}
