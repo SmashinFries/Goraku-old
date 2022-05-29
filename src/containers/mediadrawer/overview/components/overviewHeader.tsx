@@ -1,7 +1,8 @@
-import React, { Dispatch, SetStateAction } from "react";
-import { View, Pressable, Text, Animated } from "react-native";
+import React, { Dispatch, SetStateAction, useState } from "react";
+import { View, Pressable, Text, Animated, ToastAndroid } from "react-native";
 import FastImage from "react-native-fast-image";
 import { MaterialIcons } from '@expo/vector-icons';
+import { Swipeable } from "react-native-gesture-handler";
 import { AniMalType } from "../../../../Api/types";
 import { AnilistSVG, MalSVG } from "../../../../Components/svg/svgs";
 import { getMalScoreColor, getScoreColor, handleCopy, getTime } from "../../../../utils";
@@ -16,6 +17,38 @@ type Props = {
     scrollValue?: Animated.Value;
 }
 const OverViewHeader = ({data, colors, dark, setVisible, scrollValue}:Props) => {
+    const titles = [data?.anilist.title.userPreferred, data?.anilist.title.english, data?.anilist.title.romaji, data?.anilist.title.native];
+    
+    const SwipeTitle = () => {
+        const [textIdx, setTextIdx] = useState(0);
+        const filteredTitles = titles.filter(title => title !== titles[0] && title);
+        filteredTitles.unshift(titles[0]);
+
+        // const textType = (idx:number) => {
+        //     if (titles[idx] === filteredTitles[0]) return 'userPreferred';
+        //     if (titles[idx] === filteredTitles[1]) return 'english';
+        //     if (titles[idx] === filteredTitles[2]) return 'romaji';
+        //     if (titles[idx] === filteredTitles[3]) return 'native';
+        // }
+        const iterateTitles = () => {
+            if (textIdx === filteredTitles.length - 1) {
+                setTextIdx(0);
+            } else {
+                setTextIdx((prev) => prev +=1);
+            }
+        }
+        
+        return(
+            <Text
+                onPress={iterateTitles}
+                onLongPress={() => handleCopy(data?.anilist.title.userPreferred)}
+                style={{ fontSize: 20, fontWeight: 'bold', color: colors.text }}
+            >
+                {filteredTitles[textIdx]}
+            </Text>
+        );
+    }
+
     return (
         <View style={{ width: '100%', backgroundColor: 'transparent' }}>
             <View>
@@ -24,13 +57,13 @@ const OverViewHeader = ({data, colors, dark, setVisible, scrollValue}:Props) => 
                         <FastImage fallback source={{ uri: data.anilist.coverImage.extraLarge, priority: 'high' }} style={{ height: 200, width: 130, borderRadius: 8 }} resizeMode='cover' />
                     </Pressable>
                     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'flex-start', paddingLeft: 20 }}>
-                        <Text onLongPress={() => handleCopy(data?.anilist.title.userPreferred)} style={{ fontSize: 20, fontWeight: 'bold', color: colors.text }} >{data?.anilist.title.userPreferred}</Text>
+                        <SwipeTitle />
                         {(!data.anilist.isLicensed) ? <Text style={{ fontSize: 16, textTransform: 'capitalize', color: colors.text }}>{'Doujinshi'}</Text> : null}
                         <View style={{ flexDirection: 'row' }}>
                             {(data?.anilist.format !== null) ? <Text style={{ fontSize: 16, color: colors.text, textTransform: (data?.anilist.format !== 'TV') ? 'capitalize' : 'none' }}>{data?.anilist.format} ・ </Text> : null}
                             <Text style={{ fontSize: 16, textTransform: 'capitalize', color: colors.text }}>{data?.anilist.status.replace(/_/g, ' ')}</Text>
+                            {data?.anilist.season ? <Text style={{ fontSize: 16, color: colors.text, textTransform:'capitalize' }}> ・ {data?.anilist.season} {data.anilist.seasonYear ?? ''}</Text> : null}
                         </View>
-                        {/* {data?.anilist.season ? <Text style={{ fontSize: 16, color: colors.text, textTransform:'capitalize' }}>{data?.anilist.season} {data.anilist.seasonYear ?? ''}</Text> : null} */}
                         {(data?.anilist.averageScore !== null || data?.anilist.meanScore !== null || data?.mal.data?.score || data?.mal.data?.scored) ? <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             {(data?.anilist.averageScore !== null || data?.anilist.meanScore !== null) ? <>
                                 <AnilistSVG color={'rgb(60,180,242)'} height={18} width={18} />
@@ -68,8 +101,11 @@ const OverViewHeader = ({data, colors, dark, setVisible, scrollValue}:Props) => 
                         </View> : null}
                     </View>
                 </View>
-                <FastImage source={{ priority: 'high', uri: (data.anilist.bannerImage !== null) ? data.anilist.bannerImage : data.anilist.coverImage.extraLarge }} fallback style={{ position: 'absolute', zIndex: -1, height: 195, width: '100%' }} resizeMode='cover' />
-                <LinearGradient colors={(!dark) ? ['rgba(242, 242, 242, .4)', colors.background] : ['rgba(0, 0, 0, .3)', colors.background]} locations={[.2, .95]} style={{ position: 'absolute', height: 195, width: '100%' }} />
+                {/* <View style={{ position: 'absolute', zIndex: -1, height: 195, width: '100%' }}>
+                    <FastImage source={{ priority: 'high', uri: (data.anilist.bannerImage !== null) ? data.anilist.bannerImage : data.anilist.coverImage.extraLarge }} fallback style={{ height: 195, width: '100%' }} resizeMode='cover' />
+                    <LinearGradient colors={(!dark) ? ['rgba(242, 242, 242, .4)', colors.background] : ['rgba(0, 0, 0, .3)', colors.background]} locations={[.2, .95]} style={{ position: 'absolute', height: 195, width: '100%' }} />
+                </View> */}
+                
             </View>
         </View>
     );
