@@ -71,7 +71,7 @@ const OverViewHeader = ({data, colors, dark, setVisible, scrollValue}:Props) => 
                                     {data?.anilist.averageScore ?? data?.anilist.meanScore}%
                                 </Text>
                             </> : null}
-                            {((data?.anilist.averageScore !== null || data?.anilist.meanScore !== null) && (data?.mal.data?.score || data?.mal.data?.scored)) ? <Text style={{ fontSize: 16, fontWeight: 'bold', color: colors.text }}>・</Text> : null}
+                            {((data?.anilist.averageScore !== null || data?.anilist.meanScore !== null) && (data?.mal.data?.score || data?.mal.data?.scored)) ? <Text style={{ fontSize: 16, fontWeight: 'bold', color: colors.text }}> ・ </Text> : null}
                             {(data.mal.data?.score || data.mal.data?.scored) ?
                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                     <MalSVG color='#2A50A3' />
@@ -101,11 +101,6 @@ const OverViewHeader = ({data, colors, dark, setVisible, scrollValue}:Props) => 
                         </View> : null}
                     </View>
                 </View>
-                {/* <View style={{ position: 'absolute', zIndex: -1, height: 195, width: '100%' }}>
-                    <FastImage source={{ priority: 'high', uri: (data.anilist.bannerImage !== null) ? data.anilist.bannerImage : data.anilist.coverImage.extraLarge }} fallback style={{ height: 195, width: '100%' }} resizeMode='cover' />
-                    <LinearGradient colors={(!dark) ? ['rgba(242, 242, 242, .4)', colors.background] : ['rgba(0, 0, 0, .3)', colors.background]} locations={[.2, .95]} style={{ position: 'absolute', height: 195, width: '100%' }} />
-                </View> */}
-                
             </View>
         </View>
     );
