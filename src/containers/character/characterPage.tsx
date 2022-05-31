@@ -10,7 +10,7 @@ import { handleShare } from "../../utils";
 import { LinearGradient } from "expo-linear-gradient";
 import { getMalChar } from "../../Api/mal";
 import { HeaderBackButton, HeaderRightButtons } from "../../Components/header/headers";
-import { ImageViewer, LoadingView, CharacterHeaderImage, CharacterOverview, CharacterBody } from "../../Components";
+import { ImageViewer, LoadingView, CharacterHeaderImage, CharacterOverview, CharacterBody, EditButton } from "../../Components";
 import QrView from "../../Components/qrView";
 import { CharacterFeatured, CharacterImages } from "./components/views";
 const CharDetailScreen = ({ navigation, route }: CharDetailProps) => {
@@ -95,6 +95,7 @@ const CharDetailScreen = ({ navigation, route }: CharDetailProps) => {
                     <CharacterBody description={data.description} links={links} favorite={favorite} toggleLike={toggleLike} colors={colors} />
                     <CharacterFeatured data={data} parNav={parNav} colors={colors} />
                     <CharacterImages images={images} setSelectedImg={setSelectedImg} setVisible={setVisible} colors={colors} />
+                    <EditButton type="CHARACTER" id={data.id} colors={colors} />
                 </LinearGradient>
             </Animated.ScrollView>
             {(images !== undefined && images?.length > 0) ? <ImageViewer visible={visible} setVisible={setVisible} theme={{colors, dark}} imageIndex={selectedImg} images={images.map((image, idx) => { return ({ uri: image.jpg.image_url }); })} /> : null}

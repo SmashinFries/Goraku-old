@@ -16,7 +16,7 @@ import { ListEntryUI, Trailer, MediaInformation, CharStaffList, ExternalLinkList
 import RenderHtml from 'react-native-render-html';
 import { Portal } from 'react-native-paper';
 import QrView from "../../../Components/qrView";
-import { ImageViewer } from "../../../Components";
+import { EditButton, ImageViewer } from "../../../Components";
 
 const AnimGradient = Animated.createAnimatedComponent(LinearGradient);
 
@@ -210,6 +210,7 @@ const OverviewTab = ({ content, isList }: OverviewTabParams) => {
                     <View style={{ flex: 1 }}>
                         <ExternalLinkList data={data} colors={colors} />
                     </View>
+                    <EditButton type={data.anilist.type} id={data.anilist.id} colors={colors} />
                 </View>
             </Animated.View>
             <ImageViewer data={data} imageIndex={imageIndex} visible={visible} setVisible={setVisible} theme={{ colors, dark }} />
@@ -227,7 +228,7 @@ const MediaInfoScreen = ({ navigation, route }: OverviewProps) => {
     const { data, isList } = route.params;
     const { colors, dark } = useTheme();
     const headerOpacity = scrollY.interpolate({
-        inputRange: [0, 70],
+        inputRange: [20, 80],
         outputRange: [0, 1],
         extrapolate: 'clamp'
     });
