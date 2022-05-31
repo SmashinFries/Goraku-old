@@ -47,7 +47,7 @@ export const SearchScreen = ({ route, navigation }: SearchProps) => {
                     type: searchParams.type,
                     format: searchParams.format,
                     page: 1,
-                    perPage: 24,
+                    perPage: 30,
                     onList: (searchParams.onList === true) ? true : (searchParams.onList === false) ? false : undefined,
                     search: searchParams.search,
                     countryOfOrigin: searchParams.country,
@@ -179,7 +179,7 @@ export const SearchScreen = ({ route, navigation }: SearchProps) => {
 
     const renderItem = ({ item }) => {
         return (
-            <MediaTile titleType='userPreferred' data={item} colors={colors} sheetRef={sheetRef}  />
+            <MediaTile titleType='userPreferred' data={item} colors={colors} sheetRef={sheetRef} size={{height:210, width:130}} />
         );
     }
 
