@@ -58,7 +58,7 @@ const CharDetailScreen = ({ navigation, route }: CharDetailProps) => {
         setLoadingImages(res?.images?.data?.length > 0 ? false : null);
         setImages(res?.images?.data ?? []);
         setLinks({aniLink:aniLink, malLink:res?.link})
-        return res;
+        await new Promise(resolve => setTimeout(resolve, 500)).then(() =>setLoading(false));
     }
 
     useEffect(() => {
@@ -67,11 +67,7 @@ const CharDetailScreen = ({ navigation, route }: CharDetailProps) => {
             setData(res);
             setLoadingAni(false);
             setFavorite(res.isFavourite);
-            getMalCharImages(res.name.first, res.name.last, res.siteUrl).then(() =>
-                new Promise(resolve => setTimeout(resolve, 500)).then(() =>
-                    setLoading(false)
-                )
-            );
+            getMalCharImages(res.name.first, res.name.last, res.siteUrl);
         });
         
     }, [id])
