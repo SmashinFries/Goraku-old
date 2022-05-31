@@ -171,7 +171,7 @@ const CharacterFav = ({navigation, route}) => {
         if (isSelected) {
             setSelected(selected.filter(id => id !== item.node.id));
         } else {
-            navigation.navigate('UserCharDetail', {id:item.node.id, name:item.node.name.full, malId:null, type:null, inStack:false});
+            navigation.navigate('UserCharDetail', {id:item.node.id, name:item.node.name.full, malId:item.node.media.nodes[0].idMal, type:item.node.media.nodes[0].type, inStack:false});
         }
     }
 
