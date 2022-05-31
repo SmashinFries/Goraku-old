@@ -10,5 +10,5 @@ import MediaInformation from "./dataScroll";
 
 export {
     MediaInformation, ExternalLinkList, ListEntryUI, CharStaffList, 
-    RecommendationList, RelationsList, TagScroll, Trailer, OverViewHeader
+    RecommendationList, RelationsList, TagScroll, Trailer, OverViewHeader,
 };
