@@ -41,7 +41,7 @@ const CharacterTab = ({navigation, route}:CharacterProps) => {
                     <HeaderBackButton colors={colors} navigation={navigation} />
                 </Animated.View>,
         });
-    }, [navigation]);
+    }, [navigation, dark]);
 
     const toCharDetail = (charID:number, name:string) => {
         navigation.navigate('CharDetail', {id:charID, name:name, malId:data.anilist.idMal, type: data.anilist.type, inStack: true});
