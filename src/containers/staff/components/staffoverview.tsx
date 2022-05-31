@@ -3,7 +3,7 @@ import { View, Text, useWindowDimensions } from "react-native";
 import { StaffDataType } from "../../../Api/types";
 import { _openBrowserUrl } from "../../../utils";
 import { ThemeColors } from "../../../Components/types";
-import { CharacterBody, CharacterHeaderImage, CharacterOverview, PressableAnim } from "../../../Components";
+import { CharacterBody, CharacterHeaderImage, CharacterOverview, EditButton, PressableAnim } from "../../../Components";
 import { getDate } from "../../../utils/time/getTime";
 
 type LinkType = {title:string, url:string}[];
@@ -53,6 +53,7 @@ const StaffOverview = ({data, links, colors, liked, toggleLike}:Props) => {
                     )}
                 </View>
             : null}
+            <EditButton type="STAFF" id={data.id} colors={colors} />
             {(data.staffMedia.edges.length === 0 || data.primaryOccupations.includes('Voice Actor') || data.characterMedia.edges.length >  data.staffMedia.edges.length) ? <Text style={{fontSize:30, fontWeight:'bold', paddingHorizontal: 10, color:colors.text}}>Roles</Text> : null}
         </View>
     );
