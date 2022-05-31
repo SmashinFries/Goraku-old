@@ -70,6 +70,7 @@ export interface MediaTileType {
             id: number;
             status: string;
         }
+        siteUrl: string;
 }
 
 type TitleType = {
@@ -533,8 +534,8 @@ export type MoeData = {
     };
     filename: string;
     episode: number;
-    from: number;
-    to: number;
+    from: number; // seconds
+    to: number; // seconds
     similarity: number;
     video: string;
     image: string;
