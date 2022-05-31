@@ -892,6 +892,12 @@ query ($page: Int) {
 							month
 							day
 						}
+            media (sort:POPULARITY_DESC, perPage:1) {
+              nodes {
+                type
+                idMal
+              }
+            }
             favourites
           }
         }

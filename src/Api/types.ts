@@ -915,6 +915,12 @@ export type UserFavCharNode = {
         }
         dateOfBirth: DateType;
         favourites: number;
+        media: {
+            nodes: {
+                type: string;
+                idMal: number;
+            }[];
+        }
     }
 }
 
