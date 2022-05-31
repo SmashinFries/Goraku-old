@@ -28,6 +28,7 @@ export const StaffInfo = ({ navigation, route }:StaffInfoProps) => {
     const { id, name, inStack, isList } = route.params;
     const { colors, dark } = useTheme();
     const date = new Date();
+    const parNav = navigation.getParent();
 
     const qrOpen = () => setShowQr(true);
     const qrClose = () => setShowQr(false);
@@ -94,10 +95,25 @@ export const StaffInfo = ({ navigation, route }:StaffInfoProps) => {
         }).catch((err) => console.log(err));
     }, []);
 
+    const mediaNav = (type:'MEDIA'|'CHARACTER', params:Object) => {
+        if (type === 'MEDIA') {
+            (navigation.getState().type === 'drawer') ?
+            // @ts-ignore
+            navigation.push('DrawerInfo', params) :
+            navigation.push('Info', params);
+        }
+        if (type === 'CHARACTER') {
+            (parNav.getState().type === 'drawer') ?
+            // @ts-ignore
+            parNav.push('CharDetail', params) :
+            parNav.navigate('CharacterExplore', params);
+        }
+    }
+
     const renderItem = ({item}: {item: CharacterMediaType}) => {
         return(
             <View style={{width: 180}}>
-                <Pressable onPress={() => navigation.navigate('CharDetail', {id:item.characters[0].id, name:item.characters[0].name.full, malId:item.node.idMal, type:item.node.type, inStack:false})}>
+                <Pressable onPress={() => mediaNav('CHARACTER', {id:item.characters[0].id, name:item.characters[0].name.full, malId:item.node.idMal, type:item.node.type, inStack:false})}>
                     <FastImage fallback source={{ uri: item.characters[0].image.large }} style={{ height: 250, width: 180, borderRadius:8, borderBottomLeftRadius:0, borderBottomRightRadius:0 }} resizeMode={'cover'} />
                     <LinearGradient locations={[.7, 1]} colors={['transparent', (item.characters[0].isFavourite) ? 'rgba(255, 0, 0,.85)' : 'rgba(0,0,0,.8)']} style={{position:'absolute', borderRadius:8, borderBottomLeftRadius:0, borderBottomRightRadius:0, top:0, justifyContent:'flex-end', height: 250, width: 180,}}>
                         <Text style={{textAlign:'center', color:'#FFF'}}>{item.characterRole}</Text>
@@ -105,12 +121,12 @@ export const StaffInfo = ({ navigation, route }:StaffInfoProps) => {
                     </LinearGradient>
                 </Pressable>
                 {/* @ts-ignore */}
-                <Pressable onPress={() => navigation.push('DrawerInfo', {id:item.node.id})} style={{borderWidth:1, borderColor:colors.border}}>
+                <Pressable onPress={() => mediaNav('MEDIA', {id:item.node.id})} style={{borderWidth:1, borderColor:'black'}}>
                     <FastImage fallback source={{uri:item.node.bannerImage ?? item.node.coverImage.extraLarge}} resizeMode={'cover'} style={{height:50, width:'100%'}} />
                     <LinearGradient colors={['rgba(0,0,0,.3)', 'rgba(0,0,0,.8)']} style={{position:'absolute', justifyContent:'center', height:'100%', width:'100%'}}>
                         <Text numberOfLines={2} style={{color:'#FFF', textAlign:'center', textAlignVertical:'center'}}>{item.node.title.userPreferred}</Text>
                     </LinearGradient>
-                </Pressable>
+                </Pressable> 
             </View>
         );
     }
