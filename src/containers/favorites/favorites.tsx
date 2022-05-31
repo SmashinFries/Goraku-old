@@ -4,12 +4,11 @@ import React, { useEffect, useState } from "react";
 import { View, Pressable, Text, FlatList } from "react-native";
 import { Button, IconButton } from 'react-native-paper';
 import FastImage from "react-native-fast-image";
-import { FavoriteChar, FavoriteMedia, FavoriteStaff, FavoriteStudio, UserFavCharNode, UserFavList, UserFavMediaNode, UserFavStaffNode, UserFavStudioNode } from "../../Api/types";
-import { openURL } from "expo-linking";
+import { FavoriteChar, FavoriteMedia, FavoriteStaff, FavoriteStudio, UserFavCharNode, UserFavMediaNode, UserFavStaffNode, UserFavStudioNode } from "../../Api/types";
 import { getFavoriteChar, getFavoriteMedia, getFavoriteStaff, getFavoriteStudio } from "../../Api/anilist/anilist";
 import { LoadingView } from "../../Components";
 import { useListSearch } from "../../Storage/listStorage";
-import { dataTitleFilter, _openBrowserUrl } from "../../utils";
+import { checkBD, dataTitleFilter, handleCopy, _openBrowserUrl } from "../../utils";
 
 const dataPersonFilter = (search:string, data:any[]) => {
     if (search.length === 0) return data;
@@ -176,15 +175,6 @@ const CharacterFav = ({navigation, route}) => {
         }
     }
 
-    const checkBirthday = (month:number, day:number) => {
-        if (!month) return false;
-        if (month === (date.getMonth()+1) && day === date.getDate()) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     // for onLongPress (selectable) -> setSelected([...selected, item.node.id])
     const renderItem = ({item}:{item:UserFavCharNode}) => {
         return(
@@ -192,8 +182,8 @@ const CharacterFav = ({navigation, route}) => {
                 <Pressable onPress={() => onPress(item)} android_ripple={{ color: colors.primary }} style={{ padding: 10, borderRadius: 8, height: 200, width: 130, justifyContent: 'center', alignItems: 'center', backgroundColor: (selected.includes(item.node.id)) ? colors.primary : 'transparent' }}>
                     <FastImage source={{ uri: item.node.image.large }} style={{ height: 190, width: 120, borderRadius: 8, }} />
                     <LinearGradient colors={['transparent', 'rgba(0,0,0,.7)']} locations={[.65, .95]} style={{ position: 'absolute', height: 190, width: 120, justifyContent: 'flex-end', alignItems: 'center', borderRadius: 8 }}>
-                        <Text numberOfLines={2} style={{ color: '#FFF', textAlign: 'center', fontWeight: 'bold', paddingBottom: 5, paddingHorizontal: 5 }}>{item.node.name.userPreferred}</Text>
-                        {(checkBirthday(item.node.dateOfBirth.month, item.node.dateOfBirth.day)) && <IconButton icon={'cake-variant'} style={{ position: 'absolute', top: -5, right: -10 }} color={colors.primary} />}
+                        <Text numberOfLines={2} onLongPress={() => handleCopy(item.node.name.userPreferred)} style={{ color: '#FFF', textAlign: 'center', fontWeight: 'bold', paddingBottom: 5, paddingHorizontal: 5 }}>{item.node.name.userPreferred}</Text>
+                        {(checkBD(date, item.node.dateOfBirth)) && <IconButton icon={'cake-variant'} style={{ position: 'absolute', top: -5, right: -10 }} color={colors.primary} />}
                     </LinearGradient>
                 </Pressable>
             </View>
@@ -250,16 +240,18 @@ const MediaFav = ({navigation, route}) => {
     const { colors, dark } = useTheme();
     const { type } = route.params;
     const {search} = useListSearch();
-    const tileSize = {width: 190-40, height: 280-40}
 
     const renderItem = ({item}:{item:UserFavMediaNode}) => {
+
         return(
-            <Pressable onPress={() => navigation.navigate('UserListDetail', { id: item.node.id })} style={{ ...tileSize }}>
-                <FastImage source={{ uri: item.node.coverImage.extraLarge }} resizeMode={'cover'} style={{ ...tileSize, borderRadius: 8 }} />
-                <LinearGradient colors={['transparent', 'rgba(0,0,0,.7)']} locations={[.65, .95]} style={{ position: 'absolute', height: '100%', width: '100%', justifyContent: 'flex-end', alignItems: 'center', borderRadius: 8 }}>
-                    <Text numberOfLines={2} style={{ color: '#FFF', textAlign: 'center', fontWeight: 'bold', paddingBottom: 10, paddingHorizontal: 5 }}>{item.node.title.userPreferred}</Text>
-                </LinearGradient>
-            </Pressable>
+            <View style={{borderRadius:8, overflow:'hidden'}}>
+                <Pressable onPress={() => navigation.navigate('UserListDetail', { id: item.node.id })} android_ripple={{ color: colors.primary }} style={{ padding: 10, borderRadius: 8, height: 200, width: 130, justifyContent: 'center', alignItems: 'center' }}>
+                    <FastImage source={{ uri: item.node.coverImage.extraLarge }} style={{ height: 190, width: 120, borderRadius: 8, }} />
+                    <LinearGradient colors={['transparent', 'rgba(0,0,0,.7)']} locations={[.65, .95]} style={{ position: 'absolute', height: 190, width: 120, justifyContent: 'flex-end', alignItems: 'center', borderRadius: 8 }}>
+                        <Text numberOfLines={2} onLongPress={() => handleCopy(item.node.title.userPreferred)} style={{ color: '#FFF', textAlign: 'center', fontWeight: 'bold', paddingBottom: 5, paddingHorizontal: 5 }}>{item.node.title.userPreferred}</Text>
+                    </LinearGradient>
+                </Pressable>
+            </View>
         );
     }
 
