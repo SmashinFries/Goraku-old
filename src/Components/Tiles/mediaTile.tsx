@@ -4,6 +4,7 @@ import { View, Text, Pressable } from "react-native";
 import FastImage from "react-native-fast-image";
 import { Shadow } from "react-native-shadow-2";
 import { DrawerInfoNavProp } from "../../containers/types";
+import { handleCopy } from "../../utils";
 import { getScoreColor, listColor } from "../../utils/colors/scoreColors";
 import { MediaTileProps } from "../types";
 
@@ -49,7 +50,7 @@ export const MediaTile = (props: MediaTileProps) => {
                         </Pressable>
                     </View>
                 </Shadow>
-            <Text style={{textAlign:'center', marginTop:height+5, width:width, color:colors.text, fontSize:16}} numberOfLines={2}>{props.data.title[props.titleType]}</Text>
+            <Text style={{textAlign:'center', marginTop:height+5, width:width, color:colors.text, fontSize:16}} onLongPress={() => handleCopy(props.data.title[props.titleType])} numberOfLines={2}>{props.data.title[props.titleType]}</Text>
         </View>
     );
 }
