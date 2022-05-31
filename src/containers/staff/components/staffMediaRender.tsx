@@ -49,6 +49,7 @@ const StaffMediaRender = ({data, colors, isList, navigation}:Props) => {
                     horizontal
                     showsHorizontalScrollIndicator={false}
                     ItemSeparatorComponent={() => <View style={{width: 10}} />}
+                    contentContainerStyle={{marginBottom:10}}
                 />
             </View>}
             {manga.length > 0 && 
