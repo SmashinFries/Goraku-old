@@ -1,9 +1,10 @@
 import { useTheme } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import { View, Text } from "react-native";
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { getMediaInfo, getMalData } from "../../Api";
 import { AniMalType } from "../../Api/types";
-import { createDrawerNavigator } from "@react-navigation/drawer";
+import { createDrawerNavigator, DrawerContentComponentProps, DrawerContentScrollView, DrawerItem, DrawerItemList } from "@react-navigation/drawer";
 import { InfoProps } from "../../containers/types";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { getMalImages } from "../../Api/mal";
@@ -15,6 +16,8 @@ import { LoadingView } from "../../Components";
 import FollowingTab from "../../containers/mediadrawer/following/following";
 import { getIsAuth } from "../../Storage/authToken";
 import { HeaderBackButton, HeaderRightButtons } from "../../Components/header/headers";
+import { _openBrowserUrl } from "../../utils";
+import { openURL } from "expo-linking";
 
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();
@@ -28,6 +31,35 @@ export const InfoDrawer = ({ navigation, route }:InfoProps) => {
     const { auth } = getIsAuth();
     const { id } = route.params;
     const { colors, dark } = useTheme();
+
+    const CustomDrawerContent = (props:DrawerContentComponentProps) => {
+        if (!auth) return(
+            <DrawerContentScrollView {...props} >
+                <DrawerItemList {...props} />
+            </DrawerContentScrollView>
+        );
+        
+        return (
+          <DrawerContentScrollView {...props} contentContainerStyle={{flex: 1, justifyContent: 'space-between'}}>
+            <View style={{justifyContent: 'flex-start'}}>
+                <DrawerItemList {...props} />
+            </View>
+            <View style={{justifyContent: 'flex-end'}}>
+                <DrawerItem
+                label='Edit'
+                icon={({color, size}) => <MaterialCommunityIcons name="pencil" color={color} size={size} />}
+                onPress={() => openURL(`https://anilist.co/edit/${data.anilist.type}/${id}`)}
+                />
+                <DrawerItem
+                label='Manual'
+                style={{justifyContent:'flex-end'}}
+                icon={({color, size}) => <MaterialCommunityIcons name='book-open-page-variant' color={color} size={size} />}
+                onPress={() => _openBrowserUrl('https://submission-manual.anilist.co', colors.primary, colors.text)}
+                />
+            </View>
+          </DrawerContentScrollView>
+        );
+      }
 
     const fetchInfo = async () => {
         try{
@@ -65,7 +97,7 @@ export const InfoDrawer = ({ navigation, route }:InfoProps) => {
     if (loading) return <LoadingView titleData={[{title:'Anilist Data', loading:aniLoading}, {title:'MAL Data', loading:malLoading}, {title:'MAL Images', loading:imageLoading}]} colors={{colors, dark}} />;
     if (data === null) return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><Text style={{color:colors.text, fontSize:18}}>Error</Text></View>
     return (
-        <Drawer.Navigator useLegacyImplementation initialRouteName="Overview" backBehavior="firstRoute" screenOptions={({ navigation, route }) => ({
+        <Drawer.Navigator useLegacyImplementation drawerContent={(props) => <CustomDrawerContent {...props} />} initialRouteName="Overview" backBehavior="firstRoute" screenOptions={({ navigation, route }) => ({
             drawerPosition: 'right',
             drawerType: 'back',
             headerTransparent: true,
