@@ -18,7 +18,6 @@ export const TraceMoeScreen = ({navigation, route}) => {
     const [searchUrl, setSearchUrl] = useState<string>('');
     const [currentImage, setCurrentImage] = useState<string>('');
     const [loading, setLoading] = useState(false);
-    const [status, requestPermission] = ImagePicker.useCameraPermissions();
 
     const { colors, dark } = useTheme();
 
@@ -28,6 +27,7 @@ export const TraceMoeScreen = ({navigation, route}) => {
     }
 
     const openCamera = async () => {
+        const status = await ImagePicker.getCameraPermissionsAsync();
         if (status) {
             try {
                 let result = await ImagePicker.launchCameraAsync({
@@ -54,7 +54,6 @@ export const TraceMoeScreen = ({navigation, route}) => {
 
         } else {
             console.log('No perm');
-            await requestPermission();
         }
     };
 
@@ -95,10 +94,12 @@ export const TraceMoeScreen = ({navigation, route}) => {
     
     return(
         <ScrollView keyboardShouldPersistTaps='handled' contentContainerStyle={{flexGrow:1}}>
-            <View style={{flex:1, height:40, marginHorizontal:30, marginTop:15, justifyContent:'center'}}>
-                <TextInput keyboardType="url" value={searchUrl} placeholderTextColor={colors.text} onChangeText={(txt) => setSearchUrl(txt)} onSubmitEditing={({nativeEvent}) => handleURLTrace(nativeEvent.text)} placeholder="Enter image URL" style={{height:40, color:colors.text, backgroundColor:colors.card, borderWidth:1, borderRadius:12, paddingHorizontal:40}} />
-                <AntDesign name="search1" size={20} color={colors.primary} style={{position:'absolute', left:10}} />
-                {(searchUrl.length > 0) ? <AntDesign onPress={() => setSearchUrl('')} name="close" size={16} color="black" style={{position:'absolute', right:10}} /> : null}
+            <View>
+                <View style={{flex:1, height:40, marginHorizontal:30, marginTop:15, justifyContent:'center'}}>
+                    <TextInput keyboardType="url" value={searchUrl} placeholderTextColor={colors.text} onChangeText={(txt) => setSearchUrl(txt)} onSubmitEditing={({nativeEvent}) => handleURLTrace(nativeEvent.text)} placeholder="Enter image URL" style={{height:40, color:colors.text, backgroundColor:colors.card, borderWidth:1, borderRadius:12, paddingHorizontal:40}} />
+                    <AntDesign name="search1" size={20} color={colors.primary} style={{position:'absolute', left:10}} />
+                    {(searchUrl.length > 0) ? <AntDesign onPress={() => setSearchUrl('')} name="close" size={16} color={colors.text} style={{position:'absolute', right:10}} /> : null}
+                </View>
             </View>
             {(currentImage.length > 0) ? <CurrentImage /> : null}
             {(loading) ? 
