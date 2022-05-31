@@ -3,7 +3,7 @@ import { Pressable, View, Text } from "react-native";
 import FastImage from "react-native-fast-image";
 import { IconButton } from "react-native-paper";
 import { CharacterSearchTile } from "../../Api/types";
-import { checkBD } from "../../utils";
+import { checkBD, handleCopy } from "../../utils";
 
 type CharacterTile = {
     character: CharacterSearchTile;
@@ -19,7 +19,7 @@ export const CharacterTile = ({character, date, onPress, primaryColor}:Character
                 <Text style={{color:'#FFF', paddingBottom:5}} numberOfLines={2}>{character.name.userPreferred}</Text>
                 {(checkBD(date, character.dateOfBirth)) && <IconButton icon={'cake-variant'} color={primaryColor} style={{position:'absolute', top:-10, right:-5}} />}
             </LinearGradient>
-            <Pressable onPress={onPress} style={{position:'absolute', height:'100%', width:'100%', borderRadius:8}} android_ripple={{color:primaryColor}} />
+            <Pressable onPress={onPress} onLongPress={() => handleCopy(character.name.userPreferred)} style={{position:'absolute', height:'100%', width:'100%', borderRadius:8}} android_ripple={{color:primaryColor}} />
         </View>
     );
 }
