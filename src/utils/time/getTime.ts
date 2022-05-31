@@ -51,7 +51,8 @@ export const getDate = (dates:DateType) => {
 }
 
 export const checkBD = (date:Date, dateOfBirth:DateType) => {
+    const milDay = 86400000;
     const dobDate = new Date(Date.UTC(date.getFullYear(), dateOfBirth.month - 1, dateOfBirth.day, 14, 59));
-    const isBDA = (date.getTime() <= dobDate.getTime());
+    const isBDA = (date.getTime() <= dobDate.getTime() && date.getTime() >= dobDate.getTime()-milDay);
     return isBDA;
 }
