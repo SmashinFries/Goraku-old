@@ -1,12 +1,11 @@
 import React, { Dispatch, SetStateAction, useState } from "react";
 import { View, Pressable, Text, Animated, ToastAndroid } from "react-native";
 import FastImage from "react-native-fast-image";
-import { MaterialIcons } from '@expo/vector-icons';
-import { Swipeable } from "react-native-gesture-handler";
+import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 import { AniMalType } from "../../../../Api/types";
 import { AnilistSVG, MalSVG } from "../../../../Components/svg/svgs";
 import { getMalScoreColor, getScoreColor, handleCopy, getTime } from "../../../../utils";
-import { LinearGradient } from "expo-linear-gradient";
 import { ThemeColors } from "../../../../Components/types";
 
 type Props = {
@@ -41,12 +40,33 @@ const OverViewHeader = ({data, colors, dark, setVisible, scrollValue}:Props) => 
         return(
             <Text
                 onPress={iterateTitles}
-                onLongPress={() => handleCopy(data?.anilist.title.userPreferred)}
+                onLongPress={() => handleCopy(filteredTitles[textIdx])}
                 style={{ fontSize: 20, fontWeight: 'bold', color: colors.text }}
             >
                 {filteredTitles[textIdx]}
             </Text>
         );
+    }
+    const onSeasonPress = () => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        ToastAndroid.show(`${data?.anilist.season}`, ToastAndroid.SHORT);
+    }
+
+    const SeasonIcon = ({season}:{season:string}) => {
+        const seasons = {
+            'SPRING':'flower',
+            'SUMMER':'wb-sunny',
+            'FALL':'leaf-maple',
+            'WINTER':'snowflake',
+        }
+        if (season === 'SPRING' || season === 'FALL' || season === 'WINTER') {
+            // @ts-ignore
+            return(<MaterialCommunityIcons name={seasons[season]} size={16} color={colors.text} />);
+        }
+        if (season === 'SUMMER') {
+            return(<MaterialIcons name="wb-sunny" size={16} color={colors.text} />);
+        }
+        return null;
     }
 
     return (
@@ -56,13 +76,19 @@ const OverViewHeader = ({data, colors, dark, setVisible, scrollValue}:Props) => 
                     <Pressable onPress={() => setVisible(true)} style={{ height: 200, width: 130 }}>
                         <FastImage fallback source={{ uri: data.anilist.coverImage.extraLarge, priority: 'high' }} style={{ height: 200, width: 130, borderRadius: 8 }} resizeMode='cover' />
                     </Pressable>
-                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'flex-start', paddingLeft: 20 }}>
+                    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'flex-start', paddingLeft: 20, paddingRight:5 }}>
                         <SwipeTitle />
                         {(!data.anilist.isLicensed) ? <Text style={{ fontSize: 16, textTransform: 'capitalize', color: colors.text }}>{'Doujinshi'}</Text> : null}
                         <View style={{ flexDirection: 'row' }}>
                             {(data?.anilist.format !== null) ? <Text style={{ fontSize: 16, color: colors.text, textTransform: (data?.anilist.format !== 'TV') ? 'capitalize' : 'none' }}>{data?.anilist.format} ・ </Text> : null}
                             <Text style={{ fontSize: 16, textTransform: 'capitalize', color: colors.text }}>{data?.anilist.status.replace(/_/g, ' ')}</Text>
-                            {data?.anilist.season ? <Text style={{ fontSize: 16, color: colors.text, textTransform:'capitalize' }}> ・ {data?.anilist.season} {data.anilist.seasonYear ?? ''}</Text> : null}
+                            {(data.anilist.season) ?
+                                <Pressable onPress={onSeasonPress} style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <Text style={{ fontSize: 16, color: colors.text }}> ・ </Text>
+                                    <SeasonIcon season={data?.anilist.season} />
+                                    <Text style={{ fontSize: 16, textTransform: 'capitalize', color: colors.text }}>{' ' + data?.anilist.seasonYear ?? ''}</Text>
+                                </Pressable>
+                            : null}
                         </View>
                         {(data?.anilist.averageScore !== null || data?.anilist.meanScore !== null || data?.mal.data?.score || data?.mal.data?.scored) ? <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             {(data?.anilist.averageScore !== null || data?.anilist.meanScore !== null) ? <>
