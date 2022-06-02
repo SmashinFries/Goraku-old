@@ -11,6 +11,7 @@ import { UserList } from "../../containers/list/userList";
 import { FavoritesTabs } from "./favoritesTab";
 import { ListFilter } from "../../containers/bottomsheets/ListFilter";
 import { ListTabProp } from "../../containers/types";
+import { CharacterFav, MediaFav, StaffFav, StudioFav } from "../../containers/favorites";
 
 const Tabs = createMaterialTopTabNavigator();
 export const ListTabs = ({navigation, route}:ListTabProp) => {
@@ -82,15 +83,23 @@ export const ListTabs = ({navigation, route}:ListTabProp) => {
         <View style={{ height:'100%' }}>
             <TagLayoutProvider>
                 {/* @ts-ignore */}
-                {(type !== 'FAVORITES') ? <Tabs.Navigator screenOptions={{ tabBarScrollEnabled: true, swipeEnabled: true, }}>
+                <Tabs.Navigator screenOptions={{ tabBarScrollEnabled: true, swipeEnabled: true, }}>
+                    {(type !== 'FAVORITES') ? <>
                     <Tabs.Screen name="Current" component={UserList} options={{ tabBarLabel: `Current` }} initialParams={initialParams('Current')} />
                     <Tabs.Screen name="Planning" component={UserList} options={{ tabBarLabel: `Planning` }} initialParams={initialParams('Planning')} />
                     <Tabs.Screen name="Completed" component={UserList} options={{ tabBarLabel: `Completed` }} initialParams={initialParams('Completed')} />
                     <Tabs.Screen name="Paused" component={UserList} options={{ tabBarLabel: `Paused` }} initialParams={initialParams('Paused')} />
                     <Tabs.Screen name="Repeating" component={UserList} options={{ tabBarLabel: `Repeating` }} initialParams={initialParams('Repeating')} />
                     <Tabs.Screen name="Dropped" component={UserList} options={{ tabBarLabel: `Dropped` }} initialParams={initialParams('Dropped')} />
+                    </> : 
+                    <>
+                    <Tabs.Screen name="CharacterFav" component={CharacterFav} options={{ tabBarLabel: `Characters` }} initialParams={{type:'CHARACTERS'}} />
+                    <Tabs.Screen name="AnimeFav" component={MediaFav} options={{ tabBarLabel: `Anime` }} initialParams={{type:'ANIME'}} />
+                    <Tabs.Screen name="MangaFav" component={MediaFav} options={{ tabBarLabel: `Manga` }} initialParams={{type:'MANGA'}} />
+                    <Tabs.Screen name="StaffFav" component={StaffFav} options={{ tabBarLabel: `Staff` }} initialParams={{type:'STAFF'}} />
+                    <Tabs.Screen name="StudiosFav" component={StudioFav} options={{ tabBarLabel: `Studios` }} initialParams={{type:'STUDIO'}} />
+                    </>}
                 </Tabs.Navigator>
-                    : <FavoritesTabs />}
                 <ListFilter sheetRef={sheetRef} type={type} format={format} navigation={navigation} />
             </TagLayoutProvider>
         </View>
