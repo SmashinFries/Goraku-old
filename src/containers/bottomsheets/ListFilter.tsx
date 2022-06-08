@@ -16,6 +16,7 @@ type TypeButton = {
     icon: string;
     iconActive: string;
     layout?: string;
+    isFavorite?: boolean;
 }
 type ListFilterProps = {
     sheetRef: React.MutableRefObject<BottomSheet>;
@@ -38,8 +39,13 @@ export const ListFilter = ({sheetRef, type, format, navigation}:ListFilterProps)
             return false;
         } 
     }
+
+    const onPress = (params:{type:string; format:string}) => {
+        // @ts-ignore
+        navigation.replace('UserList', params);
+    }
     
-    const TypeButton = ({title, icon, iconActive}:TypeButton) => {
+    const TypeButton = ({title, icon, iconActive, isFavorite}:TypeButton) => {
         const state = selectedType(title);
         const params = {
             type: (title === 'Novel') ? 'MANGA' : title.toUpperCase(),
@@ -50,9 +56,9 @@ export const ListFilter = ({sheetRef, type, format, navigation}:ListFilterProps)
             <View>
                 {(title === 'Novel') ? 
                 // @ts-ignore
-                <IconButton icon={(state) ? 'book-open' : icon} onPress={() => navigation.replace('UserList', params)} size={38} color={(state) ? colors.primary : colors.text} />
+                <IconButton icon={(state) ? 'book-open' : icon} onPress={() => onPress(params)} size={38} color={(state) ? colors.primary : colors.text} />
                 // @ts-ignore
-                : <IconButton icon={(state) ? iconActive : icon} onPress={() => navigation.replace('UserList', params)} size={38} color={(state) ? colors.primary : colors.text} />
+                : <IconButton icon={(state) ? iconActive : icon} onPress={() => (isFavorite) ? navigation.replace('Favorites') : onPress(params)} size={38} color={(state) ? colors.primary : colors.text} />
                 }
                 <Text style={{ color: colors.text, textAlign:'center' }}>{title}</Text>
             </View>
@@ -61,10 +67,9 @@ export const ListFilter = ({sheetRef, type, format, navigation}:ListFilterProps)
 
     const reorderFavs = async () => {
         const url = `https://anilist.co/user/${userId}/favorites`;
-        const params = {type: 'FAVORITES', format: 'Any'};
         await _openBrowserUrl(url, colors.primary, colors.text);
         // @ts-ignore
-        navigation.replace('UserList', params);
+        navigation.replace('Favorites');
     }
 
     const TagCheckBoxes = () => {
@@ -92,7 +97,8 @@ export const ListFilter = ({sheetRef, type, format, navigation}:ListFilterProps)
                     <TypeButton title={'Anime'} icon='video-outline' iconActive='video' />
                     <TypeButton title={'Manga'} icon='book-outline' iconActive='book' />
                     <TypeButton title={'Novel'} icon='book-open-outline' iconActive='book-open' />
-                    <TypeButton title={'Favorites'} icon='heart-outline' iconActive='heart' />
+                    {/* @ts-ignore */}
+                    <TypeButton title={'Favorites'} icon='heart-outline' iconActive='heart' isFavorite />
                 </BottomSheetView>
                 {(type === 'FAVORITES') &&
                     <Button
