@@ -16,7 +16,7 @@ const TagScroll = ({genres, tags, colors}:Props) => {
 
     const closeDialog = () => setVisible({vis:false, idx:null});
     return (
-        <View>
+        <View style={{marginTop:10}}>
             <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
                 {genres.map((genre, idx) =>
                     <Pressable key={idx} style={{ padding: 5, height: 35, alignItems: 'flex-start', justifyContent: 'center', paddingHorizontal: 10, marginHorizontal: 5, marginVertical: 10, backgroundColor: colors.primary, borderRadius: 12 }}>
