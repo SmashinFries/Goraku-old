@@ -47,7 +47,8 @@ export const convertUnixTime = (unixTime:number) => {
 export const getDate = (dates:DateType) => {
     const months = ['', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     if (!dates.year) return `${months[dates.month]} ${dates.day}`;
-    return `${dates.month}/${dates.day}/${dates.year}`;
+    if (!dates.day) return `${months[dates.month]} ${dates.year}`;
+    return `${dates.month}/${dates.day ?? '??'}/${dates.year}`;
 }
 
 export const checkBD = (date:Date, dateOfBirth:DateType) => {
