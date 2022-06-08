@@ -948,14 +948,15 @@ export type FavoriteStudio = {
     pageInfo: FavoritePageInfo;
     edges: UserFavStudioNode[];
 }
+export type Favorites = {
+    anime: FavoriteMedia;
+    manga: FavoriteMedia;
+    staff: FavoriteStaff;
+    studios: FavoriteStudio;
+    characters: FavoriteChar;
+}
 export type UserFavList = {
-    favourites: {
-        anime: FavoriteMedia;
-        manga: FavoriteMedia;
-        staff: FavoriteStaff;
-        studios: FavoriteStudio;
-        characters: FavoriteChar;
-    }
+    favourites: Favorites;
 };
 export type UserFavoritesType = {
     data: {
