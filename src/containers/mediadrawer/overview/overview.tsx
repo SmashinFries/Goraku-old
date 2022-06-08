@@ -228,7 +228,7 @@ const MediaInfoScreen = ({ navigation, route }: OverviewProps) => {
     const { data, isList } = route.params;
     const { colors, dark } = useTheme();
     const headerOpacity = scrollY.interpolate({
-        inputRange: [20, 80],
+        inputRange: [40, 110],
         outputRange: [0, 1],
         extrapolate: 'clamp'
     });
