@@ -1,5 +1,5 @@
 import { MaterialTopTabNavigationProp } from '@react-navigation/material-top-tabs';
-import { Theme } from '@react-navigation/native';
+import { Theme, useTheme } from '@react-navigation/native';
 import React, { useEffect } from 'react';
 import { View, FlatList } from 'react-native';
 import { MediaCollectionEntries } from '../../Api/types';
@@ -22,29 +22,30 @@ type ListProps = {
     route: RouteProp;
 }
 export const UserList = ({navigation, route}:ListProps) => {
-    const { data, colors, type, listStatus } = route.params;
+    const { data, listStatus } = route.params;
     const {search} = useListSearch();
     const { tags, listLayout } = useTagLayout();
+    const { colors, dark } = useTheme();
 
     useEffect(() => {
         navigation.setOptions({
             tabBarLabel: `${listStatus} (${(search) ? dataTitleFilter(data, search).length : data.length})`,
         });
-    },[navigation, search]);
+    },[navigation, dark, search]);
 
     const renderCompactItem = ({item}) => {
         return(
-            <ListTile item={item} listStatus={listStatus} navigation={navigation} colors={colors} tags={tags} />
+            <ListTile item={item} listStatus={listStatus} navigation={navigation} colors={{colors, dark}} tags={tags} />
         );
     }
 
     const renderRowItem = ({item}) => {
         return(
-            <RowTile item={item} listStatus={listStatus} navigation={navigation} colors={colors} tags={tags} />
+            <RowTile item={item} listStatus={listStatus} navigation={navigation} colors={{colors, dark}} tags={tags} />
         );
     }
 
-    if (!listLayout || listLayout === 'none') return <LoadingView colors={colors} />;
+    if (!listLayout || listLayout === 'none') return <LoadingView colors={{colors, dark}} />;
 
     return ( (listLayout === 'compact') ? 
             <FlatList
