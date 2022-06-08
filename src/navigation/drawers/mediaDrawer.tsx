@@ -52,8 +52,8 @@ export const InfoDrawer = ({ navigation, route }:InfoProps) => {
                 />
                 <DrawerItem
                 label='Manual'
+                labelStyle={{textAlign:'center'}}
                 style={{justifyContent:'flex-end'}}
-                icon={({color, size}) => <MaterialCommunityIcons name='book-open-page-variant' color={color} size={size} />}
                 onPress={() => _openBrowserUrl('https://submission-manual.anilist.co', colors.primary, colors.text)}
                 />
             </View>
