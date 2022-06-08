@@ -861,168 +861,152 @@ query staff($id:Int,$sort:[MediaSort],$characterPage:Int,$staffPage:Int,$onList:
 }
 `;
 
-export const favoriteCharacters_q = `
-query ($page: Int) {
-	Viewer {
-    favourites {
-      characters (page:$page) {
-        pageInfo {
-          currentPage
-          lastPage
-          hasNextPage
-          perPage
-          total
-        }
-        edges {
-          node {
-            id
-            isFavourite
-            image {
-              large
-            }
-            name {
-              full
-              userPreferred
-              native
-              first
-              last
-            }
-            dateOfBirth {
-							year
-							month
-							day
-						}
-            media (sort:POPULARITY_DESC, perPage:1) {
-              nodes {
-                type
-                idMal
-              }
-            }
-            favourites
-          }
+
+export const fav_anime_frag = `
+anime (page:$animePage) {
+  pageInfo {
+    currentPage
+    lastPage
+    hasNextPage
+    perPage
+    total
+  }
+  edges {
+    node {
+      id
+      idMal
+      bannerImage
+      episodes
+      type
+      format
+      isAdult
+      isFavourite
+      synonyms
+      ${title_Q}
+      ${coverImage_Q}
+      ${score_Q}
+      ${media_tile_listEntry_q}
+    }
+  }
+}
+`;
+export const fav_manga_frag = `
+manga (page:$mangaPage) {
+  pageInfo {
+    currentPage
+    lastPage
+    hasNextPage
+    perPage
+    total
+  }
+  edges {
+    node {
+      id
+      idMal
+      bannerImage
+      type
+      chapters
+      format
+      isAdult
+      synonyms
+      isFavourite
+      ${title_Q}
+      ${coverImage_Q}
+      ${score_Q}
+      ${media_tile_listEntry_q}
+    }
+  }
+}
+`;
+export const fav_staff_frag = `
+staff (page:$staffPage) {
+  pageInfo {
+    currentPage
+    lastPage
+    hasNextPage
+    perPage
+    total
+  }
+  edges {
+    node {
+      id
+    name {
+      userPreferred
+    }
+    image {
+      large
+    }
+    isFavourite
+    }
+  }
+}
+`;
+export const fav_studio_frag = `
+studios (page:$studioPage) {
+  pageInfo {
+    currentPage
+    lastPage
+    hasNextPage
+    perPage
+    total
+  }
+  edges {
+    node {
+      id
+      name
+      siteUrl
+    }
+  }
+}
+`;
+export const fav_char_frag = `
+characters (page:$charPage) {
+  pageInfo {
+    currentPage
+    lastPage
+    hasNextPage
+    perPage
+    total
+  }
+  edges {
+    node {
+      id
+      isFavourite
+      image {
+        large
+      }
+      name {
+        full
+        userPreferred
+        native
+        first
+        last
+      }
+      dateOfBirth {
+        year
+        month
+        day
+      }
+      media (sort:POPULARITY_DESC, perPage:1) {
+        nodes {
+          type
+          idMal
         }
       }
+      favourites
     }
   }
 }
 `;
-export const favoriteAnime_q = `
-query ($page: Int) {
+export const favorites_q = `
+query ($animePage: Int, $mangaPage: Int, $staffPage: Int, $studioPage: Int, $charPage: Int) {
 	Viewer {
-		favourites {
-      anime (page:$page) {
-        pageInfo {
-					currentPage
-					lastPage
-					hasNextPage
-					perPage
-					total
-				}
-				edges {
-					node {
-						id
-            idMal
-            bannerImage
-            episodes
-            type
-            format
-            isAdult
-            isFavourite
-            synonyms
-            ${title_Q}
-            ${coverImage_Q}
-            ${score_Q}
-            ${media_tile_listEntry_q}
-					}
-				}
-			}
-    }
-  }
-}
-`;
-export const favoriteManga_q = `
-query ($page: Int) {
-	Viewer {
-		favourites {
-      manga (page:$page) {
-        pageInfo {
-					currentPage
-					lastPage
-					hasNextPage
-					perPage
-					total
-				}
-				edges {
-					node {
-						id
-            idMal
-            bannerImage
-            type
-            chapters
-            format
-            isAdult
-            synonyms
-            isFavourite
-            ${title_Q}
-            ${coverImage_Q}
-            ${score_Q}
-            ${media_tile_listEntry_q}
-					}
-				}
-			}
-    }
-  }
-}
-`;
-export const favoriteStaff_q = `
-query ($page: Int) {
-	Viewer {
-		favourites {
-      staff (page:$page) {
-        pageInfo {
-					currentPage
-					lastPage
-					hasNextPage
-					perPage
-					total
-				}
-				edges {
-					node {
-						id
-          name {
-            userPreferred
-          }
-          image {
-            large
-          }
-          isFavourite
-					}
-				}
-			}
-    }
-  }
-}
-`;
-export const favoriteStudio_q = `
-query ($page: Int) {
-	Viewer {
-		favourites {
-      studios (page:$page) {
-        pageInfo {
-					currentPage
-					lastPage
-					hasNextPage
-					perPage
-					total
-				}
-				edges {
-					node {
-						id
-						name
-						siteUrl
-					}
-				}
-			}
+    favourites {
+      ${fav_anime_frag}
+      ${fav_manga_frag}
+      ${fav_staff_frag}
+      ${fav_studio_frag}
+      ${fav_char_frag}
     }
   }
 }
