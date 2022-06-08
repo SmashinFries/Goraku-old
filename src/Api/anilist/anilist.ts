@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from "axios";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
 import { changeAdultContent_M, changeLanguage_M, changeNotifications_M, quickAdd_M, quickRemove_M, rateReview_M, removeActivity_M, saveRecommendation_M, toggleLike_M } from "./mutations";
-import { account_options_q, activity_q, alsofollowing_media_q, character_search_q, charDetail_Q, favoriteAnime_q, favoriteCharacters_q, favoriteManga_q, favoriteStaff_q, favoriteStudio_q, fullInfo_Q, mediaListEntryFull_q, mediaTile_Q, notification_q, random_q, recommendations_full_q, reviewUserRating_q, staff_info_q, staff_search_q, studio_list_q, TagCollection_Q, user_list_q, user_statistics_q } from "./query";
+import { account_options_q, activity_q, alsofollowing_media_q, character_search_q, charDetail_Q, favorites_q, fav_anime_frag, fav_char_frag, fav_manga_frag, fav_staff_frag, fav_studio_frag, fullInfo_Q, mediaListEntryFull_q, mediaTile_Q, notification_q, random_q, recommendations_full_q, reviewUserRating_q, staff_info_q, staff_search_q, studio_list_q, TagCollection_Q, user_list_q, user_statistics_q } from "./query";
 import { ActivityData, ActivityPage, CharFullType, CharSearchType, HomePageFetchParams, MediaEntryInfoType, MediaFollowing, MediaListCollectionType, MediaQueryRoot, RandomContent, RecommendationsFullType, ReviewRating, StaffFullType, StudioListType, TagArrangedType, TagCollectionType, UserFavoritesType, UserNotificationData, UserOptions, userRatingReview, UserStats } from "../types";
 import { useEffect, useState } from "react";
 import { HomeType } from "../../Components/types";
@@ -268,12 +268,20 @@ export const getUserOptions = async() => {
 export const getUserMediaList = async(type:string, sort:string[] = undefined) => {
     const header = await getHeader();
     const userID = await AsyncStorage.getItem('@userID');
+    const nsfw = await getNSFW();
     const variable = {userId: userID ?? undefined, type: type, sort:sort};
     try {
-        const res = await axios.post<MediaListCollectionType>(_URL, {
+        let res = await axios.post<MediaListCollectionType>(_URL, {
             query:user_list_q,
             variables: variable
         }, {headers: header});
+        if (nsfw === false) {
+            const data = res.data.data.MediaListCollection.lists.map((list, index) => {
+                list.entries = list.entries.filter(entry => {return(entry.media.isAdult === false)})
+                return list;
+            });
+            res.data.data.MediaListCollection.lists = data;
+        }
         return res.data;
     } catch (e) {
         console.log('UserMediaList:', e);
@@ -337,68 +345,59 @@ export const getMediaFollowing = async(id:number, page:number) => {
     }
 }
 
-export const getFavoriteChar = async(page=1) => {
+type favoriteType = 'ALL' | 'ANIME' | 'MANGA' | 'CHARACTER' | 'STAFF' | 'STUDIO';
+type pageNameType = 'animePage' | 'mangaPage' | 'staffPage' | 'studioPage' | 'charPage';
+export const getFavoriteContent = async(type:favoriteType, pageName?:pageNameType, page=1) => {
         const header = await getHeader();
+        
+        const getQuery = () => {
+            let frag = '';
+            // Using a switch would always cycle through all the possible values of the type variable. Not sure why.
+            if (type === 'ANIME') {
+                console.log('ANIME');
+                frag = fav_anime_frag;
+            } else if (type === 'MANGA') {
+                console.log('MANGA');
+                frag = fav_manga_frag;
+            } else if (type === 'CHARACTER') {
+                console.log('CHARACTER');
+                frag = fav_char_frag;
+            } else if (type === 'STAFF') {
+                console.log('STAFF');
+                frag = fav_staff_frag;
+            } else if (type === 'STUDIO') {
+                console.log('STUDIO');
+                frag = fav_studio_frag;
+            } else if (type === 'ALL') {
+                return(favorites_q);
+            }
+
+            const qry = `
+            query ($${pageName}: Int) {
+                Viewer {
+                favourites {
+                    ${frag}
+                }
+                }
+            }
+            `;
+
+            return qry;
+        }
+
+        let variable = {};
+        variable[pageName] = page;
+
         try {
             const res = await axios.post<UserFavoritesType>(_URL, {
-                query:favoriteCharacters_q,
-                variables: {
-                    page: page
-                }
+                query:getQuery(),
+                variables: variable
             }, {headers: header});
             return res.data;
         } catch (e) {
-            console.warn('User_Characters:', e);
+            console.log('favorites:', e);
             return null;
         }
-}
-
-export const getFavoriteMedia = async(page=1, type:string) => {
-    const header = await getHeader();
-        try {
-            const res = await axios.post<UserFavoritesType>(_URL, {
-                query:type === 'ANIME' ? favoriteAnime_q : favoriteManga_q,
-                variables: {
-                    page: page
-                }
-            }, {headers: header});
-            return res.data;
-        } catch (e) {
-            console.warn('User_MediaFav:', e);
-            return null;
-        }
-}
-
-export const getFavoriteStaff = async(page=1) => {
-    const header = await getHeader();
-    try {
-        const res = await axios.post<UserFavoritesType>(_URL, {
-            query: favoriteStaff_q,
-            variables: {
-                page: page
-            }
-        }, { headers: header });
-        return res.data;
-    } catch (e) {
-        console.warn('User_StaffFav:', e);
-        return null;
-    }
-}
-
-export const getFavoriteStudio = async(page=1) => {
-    const header = await getHeader();
-    try {
-        const res = await axios.post<UserFavoritesType>(_URL, {
-            query:favoriteStudio_q,
-            variables: {
-                page: page
-            }
-        }, {headers: header});
-        return res.data;
-    } catch (e) {
-        console.warn('User_StudioFav:', e);
-        return null;
-    }
 }
 
 export const fetchActivity = async(page=1) => {
