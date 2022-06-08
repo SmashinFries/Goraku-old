@@ -164,7 +164,7 @@ export const SearchScreen = ({ route, navigation }: SearchProps) => {
 
     useEffect(() => {
         navigation.setOptions({
-            headerStyle: { backgroundColor: (dark) ? colors.background : colors.card },
+            headerStyle: { backgroundColor: colors.card },
             headerRight: () =>
                 <View style={{ flexDirection: 'row' }}>
                     <IconButton icon={'camera-outline'} size={26} onPress={() => { navigation.navigate('Image'); sheetRef.current.close() }} color={colors.text} rippleColor={colors.primary} />
