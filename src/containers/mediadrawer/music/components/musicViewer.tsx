@@ -1,7 +1,8 @@
+import { Video } from "expo-av";
 import { openURL } from "expo-linking";
-import React from "react";
-import { View, Text } from "react-native";
-import { Card, IconButton } from "react-native-paper";
+import React, { useState } from "react";
+import { View, Text, Alert } from "react-native";
+import { Button, Card, IconButton } from "react-native-paper";
 import { AnimeThemes } from "../../../../Api/types";
 import { ThemeColors } from "../../../../Components/types";
 import { handleCopy, _openBrowserUrl } from "../../../../utils";
@@ -21,6 +22,7 @@ type ViewerProps = {
 }
 const MusicViewer = ({ track, animeTitle, colors }:ViewerProps) => {
     const openLink = (link:string) => _openBrowserUrl(link, colors.primary, colors.text);
+    const [viewVid, setViewVid] = useState(false);
     return(
         <View key={track.id} style={{ flex: 1, width: '95%', padding: 10, marginVertical: 15, alignItems: 'center', justifyContent: 'space-between', borderWidth: 0, borderRadius: 0, backgroundColor: 'transparent' }}>
             <Card style={{width:'100%', backgroundColor:colors.primary}}>
@@ -45,6 +47,11 @@ const MusicViewer = ({ track, animeTitle, colors }:ViewerProps) => {
                             }
                         />
                     )}
+                    {(viewVid) ? 
+                    <Video onError={() => Alert.alert('Video could not load!')} source={{uri:track.animethemeentries[track.animethemeentries.length - 1].videos[0].link}} useNativeControls resizeMode="contain" style={{height:200, width:'100%'}} shouldPlay={false} />
+                    : <Button onPress={() => setViewVid(true)}>View Video</Button>
+                    }
+                    
                 </Card.Content>
             </Card>
         </View>
