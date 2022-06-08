@@ -22,11 +22,12 @@ export const TagLayoutProvider = ({children}) => {
 
     useEffect(() => {
         AsyncStorage.getItem('@list_layout').then(value => {
-            if (value !== listLayout && value !== null) {
+            if (value) {
                 // @ts-ignore
                 setListLayout(value);
             } else if (!value) {
                 updateLayout('compact');
+                setListLayout('compact');
             }
         }).catch(error => console.log(error));
 
