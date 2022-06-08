@@ -5,7 +5,7 @@ import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { AniMalType } from "../../../../Api/types";
 import { AnilistSVG, MalSVG } from "../../../../Components/svg/svgs";
-import { getMalScoreColor, getScoreColor, handleCopy, getTime } from "../../../../utils";
+import { getMalScoreColor, getScoreColor, handleCopy, getTime, getDate } from "../../../../utils";
 import { ThemeColors } from "../../../../Components/types";
 
 type Props = {
@@ -18,6 +18,8 @@ type Props = {
 const OverViewHeader = ({data, colors, dark, setVisible, scrollValue}:Props) => {
     const titles = [data?.anilist.title.userPreferred, data?.anilist.title.english, data?.anilist.title.romaji, data?.anilist.title.native];
     
+    const status = (data?.anilist.status === 'NOT_YET_RELEASED') ? 'UNRELEASED' :  data?.anilist.status.replace(/_/g, ' ');
+
     const SwipeTitle = () => {
         const [textIdx, setTextIdx] = useState(0);
         const filteredTitles = titles.filter(title => title !== titles[0] && title);
@@ -80,8 +82,8 @@ const OverViewHeader = ({data, colors, dark, setVisible, scrollValue}:Props) => 
                         <SwipeTitle />
                         {(!data.anilist.isLicensed) ? <Text style={{ fontSize: 16, textTransform: 'capitalize', color: colors.text }}>{'Doujinshi'}</Text> : null}
                         <View style={{ flexDirection: 'row' }}>
-                            {(data?.anilist.format !== null) ? <Text style={{ fontSize: 16, color: colors.text, textTransform: (data?.anilist.format !== 'TV') ? 'capitalize' : 'none' }}>{data?.anilist.format} ・ </Text> : null}
-                            <Text style={{ fontSize: 16, textTransform: 'capitalize', color: colors.text }}>{data?.anilist.status.replace(/_/g, ' ')}</Text>
+                            {(data?.anilist.format !== null) ? <Text style={{ fontSize: 16, color: colors.text, textTransform: (data?.anilist.format !== 'TV') ? 'capitalize' : 'none' }}>{data?.anilist.format.replace(/_/g, ' ')} ・ </Text> : null}
+                            <Text style={{ fontSize: 16, textTransform: 'capitalize', color: colors.text }}>{status}</Text>
                             {(data.anilist.season) ?
                                 <Pressable onPress={onSeasonPress} style={{ flexDirection: 'row', alignItems: 'center' }}>
                                     <Text style={{ fontSize: 16, color: colors.text }}> ・ </Text>
@@ -111,7 +113,12 @@ const OverViewHeader = ({data, colors, dark, setVisible, scrollValue}:Props) => 
                             <MaterialIcons name="access-time" size={16} style={{ alignSelf: 'center' }} color={colors.text} />
                             <Text style={{ fontSize: 16, marginLeft: 5, color: colors.text }}>EP {data?.anilist.nextAiringEpisode.episode}・</Text>
                             {(data?.anilist.nextAiringEpisode !== null) ? <Text style={{ fontSize: 16, color: colors.primary, fontWeight: 'bold' }}>{getTime(data?.anilist.nextAiringEpisode?.timeUntilAiring)}</Text> : null}
-                        </View> : null}
+                        </View> : (data.anilist.startDate.month) ? 
+                        <View style={{ flexDirection: 'row' }}>
+                            <MaterialIcons name="date-range" size={16} style={{ alignSelf: 'center' }} color={colors.text} />
+                            <Text style={{ fontSize: 16, color: colors.primary, fontWeight: 'bold' }}> {getDate(data?.anilist.startDate)}</Text>
+                        </View>
+                        : null}
 
                         {(data?.anilist.episodes) ? <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <MaterialIcons name="personal-video" size={16} color={colors.text} />
