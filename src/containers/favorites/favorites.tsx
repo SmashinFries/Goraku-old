@@ -5,10 +5,11 @@ import { View, Pressable, Text, FlatList } from "react-native";
 import { Button, IconButton } from 'react-native-paper';
 import FastImage from "react-native-fast-image";
 import { FavoriteChar, FavoriteMedia, FavoriteStaff, FavoriteStudio, UserFavCharNode, UserFavMediaNode, UserFavStaffNode, UserFavStudioNode } from "../../Api/types";
-import { getFavoriteChar, getFavoriteMedia, getFavoriteStaff, getFavoriteStudio } from "../../Api/anilist/anilist";
+import { getFavoriteContent } from "../../Api/anilist/anilist";
 import { LoadingView } from "../../Components";
 import { useListSearch } from "../../Storage/listStorage";
 import { checkBD, dataTitleFilter, handleCopy, _openBrowserUrl } from "../../utils";
+import { uniqueItems, uniqueNodes } from "../../utils/filters/uniqueItems";
 
 const dataPersonFilter = (search:string, data:any[]) => {
     if (search.length === 0) return data;
@@ -33,8 +34,8 @@ const dataStudioFilter = (search:string, data:UserFavStudioNode[]) => {
 }
 
 const StudioFav = ({navigation, route}) => {
-    const [data, setData] = useState<FavoriteStudio>(undefined);
-    const [loading, setLoading] = useState<boolean>(true);
+    const [data, setData] = useState<FavoriteStudio>(route.params.data);
+    const [loading, setLoading] = useState<boolean>(false);
     const [refreshing, setRefreshing] = useState<boolean>(false);
     const { colors, dark } = useTheme();
     const {search} = useListSearch();
@@ -45,25 +46,19 @@ const StudioFav = ({navigation, route}) => {
         );
     }
 
-    const fetchMore = async(page:number) => {
-        const resp = await getFavoriteChar(page);
-        let init_data = resp.data.Viewer.favourites.studios;
-        init_data = {...init_data, edges: [...data.edges, ...init_data.edges]};
-        setData({...init_data});
+    const fetchMore = async() => {
+        if (data.pageInfo.hasNextPage) {
+            const resp = await getFavoriteContent('STUDIO', 'studioPage', data.pageInfo.currentPage + 1);
+            const unique = uniqueNodes([...data.edges, ...resp.data.Viewer.favourites.studios.edges]);
+            setData({...data, edges: unique, pageInfo: resp.data.Viewer.favourites.studios.pageInfo});
+        }
     }
 
     const onRefresh = async() => {
-        const resp = await getFavoriteStudio();
+        const resp = await getFavoriteContent('STUDIO', 'studioPage', 1);
         setData(resp.data.Viewer.favourites.studios);
         setRefreshing(false);
     }
-
-    useEffect(() => {
-        getFavoriteStudio().then(data => {
-            setData(data.data.Viewer.favourites.studios);
-            setLoading(false);
-        })
-    },[]);
 
     if (loading) return <LoadingView colors={{colors, dark}} />;
 
@@ -76,7 +71,7 @@ const StudioFav = ({navigation, route}) => {
                 keyExtractor={item => item.node.id.toString()}
                 ItemSeparatorComponent={() => <View style={{height:10}} />}
                 contentContainerStyle={{paddingBottom:50, paddingTop:10, paddingHorizontal:10}}
-                onEndReached={() => data.pageInfo.hasNextPage && fetchMore(data.pageInfo.currentPage + 1)}
+                onEndReached={fetchMore}
                 onEndReachedThreshold={0.5}
                 refreshing={refreshing}
                 onRefresh={onRefresh}
@@ -86,8 +81,8 @@ const StudioFav = ({navigation, route}) => {
 }
 
 const StaffFav = ({navigation, route}) => {
-    const [data, setData] = useState<FavoriteStaff>();
-    const [loading, setLoading] = useState<boolean>(true);
+    const [data, setData] = useState<FavoriteStaff>(route.params.data);
+    const [loading, setLoading] = useState<boolean>(false);
     const [selected, setSelected] = useState([]);
     const [refreshing, setRefreshing] = useState<boolean>(false);
     const {search} = useListSearch();
@@ -114,26 +109,20 @@ const StaffFav = ({navigation, route}) => {
         );
     }
 
-    const fetchMore = async(page:number) => {
-        const resp = await getFavoriteChar(page);
-        let init_data = resp.data.Viewer.favourites.staff;
-        init_data = {...init_data, edges: [...data.edges, ...init_data.edges]};
-        setData({...init_data});
+    const fetchMore = async() => {
+        if (data.pageInfo.hasNextPage) {
+            const resp = await getFavoriteContent('STAFF', 'staffPage', data.pageInfo.currentPage + 1);
+            const unique = uniqueNodes([...data.edges, ...resp.data.Viewer.favourites.staff.edges]);
+            setData({...data, edges: unique, pageInfo: resp.data.Viewer.favourites.staff.pageInfo});
+        }
     }
 
     const onRefresh = async() => {
         setRefreshing(true);
-        const resp = await getFavoriteStaff();
+        const resp = await getFavoriteContent('STAFF', 'staffPage', 1);
         setData(resp.data.Viewer.favourites.staff);
         setRefreshing(false);
     }
-
-    useEffect(() => {
-        getFavoriteStaff().then(data => {
-            setData(data.data.Viewer.favourites.staff);
-            setLoading(false);
-        });
-    },[]);
 
     if (loading) return <LoadingView colors={{colors, dark}} />;
 
@@ -148,7 +137,7 @@ const StaffFav = ({navigation, route}) => {
                 columnWrapperStyle={{justifyContent:'space-evenly', paddingHorizontal:5}}
                 contentContainerStyle={{paddingBottom:50, paddingTop:10}}
                 numColumns={3}
-                onEndReached={() => data.pageInfo.hasNextPage && fetchMore(data.pageInfo.currentPage + 1)}
+                onEndReached={fetchMore}
                 onEndReachedThreshold={0.5}
                 refreshing={refreshing}
                 onRefresh={onRefresh}
@@ -158,8 +147,8 @@ const StaffFav = ({navigation, route}) => {
 }
 
 const CharacterFav = ({navigation, route}) => {
-    const [data, setData] = useState<FavoriteChar>();
-    const [loading, setLoading] = useState<boolean>(true);
+    const [data, setData] = useState<FavoriteChar>(route.params.data);
+    const [loading, setLoading] = useState<boolean>(false);
     const [refreshing, setRefreshing] = useState<boolean>(false);
     const { colors, dark } = useTheme();
     const [selected, setSelected] = useState([]);
@@ -192,24 +181,18 @@ const CharacterFav = ({navigation, route}) => {
 
     const onRefresh = async() => {
         setRefreshing(true);
-        const resp = await getFavoriteChar();
+        const resp = await getFavoriteContent('CHARACTER', 'charPage', 1);
         setData(resp.data.Viewer.favourites.characters);
         setRefreshing(false);
     }
 
-    const fetchMore = async(page:number) => {
-        const resp = await getFavoriteChar(page);
-        let init_data = resp.data.Viewer.favourites.characters;
-        init_data = {...init_data, edges: [...data.edges, ...init_data.edges]};
-        setData({...init_data});
+    const fetchMore = async() => {
+        if (data.pageInfo.hasNextPage) {
+            const resp = await getFavoriteContent('CHARACTER', 'charPage', data.pageInfo.currentPage+1);
+            const unique = uniqueNodes([...data.edges, ...resp.data.Viewer.favourites.characters.edges]);
+            setData({...data, edges: unique, pageInfo: resp.data.Viewer.favourites.characters.pageInfo});
+        }
     }
-
-    useEffect(() => {
-        getFavoriteChar().then(res => {
-            setData(res.data.Viewer.favourites.characters);
-            setLoading(false);
-        });
-    },[]);
 
     if (loading) return <LoadingView colors={{colors, dark}} />
 
@@ -224,7 +207,7 @@ const CharacterFav = ({navigation, route}) => {
                 columnWrapperStyle={{justifyContent:'space-evenly', paddingHorizontal:5}}
                 contentContainerStyle={{paddingBottom:50, paddingTop:10}}
                 numColumns={3}
-                onEndReached={() => data.pageInfo.hasNextPage && fetchMore(data.pageInfo.currentPage + 1)}
+                onEndReached={fetchMore}
                 onEndReachedThreshold={0.7}
                 refreshing={refreshing}
                 onRefresh={onRefresh}
@@ -234,12 +217,12 @@ const CharacterFav = ({navigation, route}) => {
 }
 
 const MediaFav = ({navigation, route}) => {
-    const [data, setData] = useState<FavoriteMedia>();
-    const [loading, setLoading] = useState<boolean>(true);
+    const [data, setData] = useState<FavoriteMedia>(route.params.data);
+    const [loading, setLoading] = useState<boolean>(false);
     const [refreshing, setRefreshing] = useState<boolean>(false);
     const { colors, dark } = useTheme();
-    const { type } = route.params;
     const {search} = useListSearch();
+    const type:'ANIME'|'MANGA' = route.params.type;
 
     const renderItem = ({item}:{item:UserFavMediaNode}) => {
 
@@ -255,27 +238,21 @@ const MediaFav = ({navigation, route}) => {
         );
     }
 
-    const fetchMore = async(page:number) => {
-        console.log('Ran:', type);
-        const resp = await getFavoriteMedia(page, type);
-        let init_data = resp.data.Viewer.favourites.anime ?? resp.data.Viewer.favourites.manga;
-        init_data = {...init_data, edges: [...data.edges, ...init_data.edges]};
-        setData({...init_data});
+    const fetchMore = async() => {
+        if (data.pageInfo.hasNextPage) {
+            const resp = await getFavoriteContent(type, (type === 'ANIME') ? 'animePage' : 'mangaPage', data.pageInfo.currentPage + 1);
+            let init_data = resp.data.Viewer.favourites.anime ?? resp.data.Viewer.favourites.manga;
+            const unique = uniqueNodes([...data.edges, ...init_data.edges]);
+            setData({...data, edges: unique, pageInfo: init_data.pageInfo});
+        }
     }
 
     const onRefresh = async() => {
         setRefreshing(true);
-        const resp = await getFavoriteMedia(1, type);
+        const resp = await getFavoriteContent(type, (type === 'ANIME') ? 'animePage' : 'mangaPage', 1);
         setData(resp.data.Viewer.favourites.anime ?? resp.data.Viewer.favourites.manga);
         setRefreshing(false);
     }
-
-    useEffect(() => {
-        getFavoriteMedia(1, type).then(res => {
-            setData(res.data?.Viewer.favourites?.anime ?? res.data.Viewer.favourites?.manga);
-            setLoading(false);
-        }).catch(err => console.log('err', err));
-    },[]);
 
     if (loading) return <LoadingView colors={{colors, dark}} />
 
@@ -290,7 +267,7 @@ const MediaFav = ({navigation, route}) => {
                 columnWrapperStyle={{justifyContent:'space-evenly', paddingHorizontal:5}}
                 contentContainerStyle={{paddingBottom:50, paddingTop:10}}
                 numColumns={3}
-                onEndReached={() => data.pageInfo.hasNextPage && fetchMore(data.pageInfo.currentPage + 1)}
+                onEndReached={fetchMore}
                 onEndReachedThreshold={0.3}
                 refreshing={refreshing}
                 onRefresh={onRefresh}
