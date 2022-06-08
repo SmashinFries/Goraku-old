@@ -39,6 +39,8 @@ const LoadingView = ({titleData, colors, mode='Gif'}:LoadingViewProps) => {
                 case 'MAL News':
                     if (loading === null) return 'No news found';
                     return title;
+                default:
+                    return title;
             }
         }
     
