@@ -1,8 +1,8 @@
 const _SEASONS = {
-    'WINTER': [11, 0, 1],
-    'SPRING': [2, 3, 4],
-    'SUMMER': [5, 6, 7],
-    'FALL': [8, 9, 10],
+    'WINTER': [0, 1, 2],
+    'SPRING': [3, 4, 5],
+    'SUMMER': [6, 7, 8],
+    'FALL': [9, 10, 11],
 }
 
 export const getYear = ():number => {
