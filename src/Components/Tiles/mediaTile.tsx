@@ -3,8 +3,9 @@ import React, { useState } from "react";
 import { View, Text, Pressable } from "react-native";
 import FastImage from "react-native-fast-image";
 import { Shadow } from "react-native-shadow-2";
+import { MaterialIcons } from '@expo/vector-icons';
 import { DrawerInfoNavProp } from "../../containers/types";
-import { handleCopy } from "../../utils";
+import { getDate, getTime, handleCopy } from "../../utils";
 import { getScoreColor, listColor } from "../../utils/colors/scoreColors";
 import { MediaTileProps } from "../types";
 
@@ -46,6 +47,11 @@ export const MediaTile = (props: MediaTileProps) => {
                             <View style={{overflow: 'hidden', borderRadius:8}}>
                                 <FastImage fallback source={{uri: props.data.coverImage.extraLarge}} style={{height:height-6, width:width-6, borderRadius:8, alignSelf:'center'}} resizeMode='cover' />
                                 <ScoreTag score={score} />
+                                {(props.data.nextAiringEpisode?.timeUntilAiring) ? 
+                                <View style={{position:'absolute', flexDirection:'row', justifyContent:'center', bottom:0, width:'100%', backgroundColor:'rgb(60,180,242)'}}>
+                                    <MaterialIcons name="access-time" size={16} style={{ alignSelf: 'center' }} color={colors.text} />
+                                    <Text style={{fontWeight:'bold'}}> {getTime(props.data.nextAiringEpisode.timeUntilAiring)}</Text>
+                                </View> : null}
                             </View>
                         </Pressable>
                     </View>
