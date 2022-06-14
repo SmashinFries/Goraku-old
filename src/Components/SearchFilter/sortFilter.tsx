@@ -7,6 +7,7 @@ import { SortCheckBox } from "./sortCheckBox";
 import { SortDropDown } from "./sortDropdown";
 import { SliderFilter } from "./sortSlider";
 import { countryOrigins, formats_anime, formats_manga, onList, sort_anime, sort_manga, status_anime, status_manga, streaming_services } from "./sortDict";
+import { getYear, range } from "../../utils";
 
 const getKeyValue = (obj, value) => {
     return Object.keys(obj).find(key => obj[key] === value);
@@ -48,6 +49,8 @@ const SortFilterUI = ({ searchParams, colors, dark, isAuth, setType }:SortFilter
         status: checkUndefined(searchParams.status),
         sort: searchParams.sort,
         type: searchParams.type,
+        season: searchParams.season,
+        seasonYear: searchParams.seasonYear,
     });
     const [sliderState, setSliderState] = useState({
         score: (searchParams.averageScore[0] === undefined) ? [0, 100] : searchParams.averageScore,
@@ -55,6 +58,9 @@ const SortFilterUI = ({ searchParams, colors, dark, isAuth, setType }:SortFilter
         episodes: (dropDownState.type === 'ANIME') ? [0, 150] : [0, 50], 
         chapters: (searchParams.chapters[0] === undefined) ? [0, 500] : searchParams.chapters,
     });
+
+    const years = range(1940, getYear()+1).reverse().map(String);
+    years.unshift('Any');
 
     const compareArrays = (state=[], defaultRange=[]) => {
         if (state[0] === defaultRange[0] && state[1] === defaultRange[1]) {
@@ -109,6 +115,8 @@ const SortFilterUI = ({ searchParams, colors, dark, isAuth, setType }:SortFilter
         searchParams.status = stat;
         searchParams.sort = sort;
         searchParams.type = (dropDownState.type === 'NOVEL') ? 'MANGA' : dropDownState.type;
+        searchParams.season = dropDownState.season;
+        searchParams.seasonYear = dropDownState.seasonYear;
         // searchParams.type = (dropDownState.type === 'ANIME') ? 'ANIME' : (dropDownState.type === 'CHARACTERS') ? 'CHARACTERS' : (dropDownState.type === 'STAFF') ? 'STAFF' : 'MANGA';
     }, [dropDownState]);
 
@@ -196,6 +204,22 @@ const SortFilterUI = ({ searchParams, colors, dark, isAuth, setType }:SortFilter
                     textColor={colors.text}
                     buttonColor={colors.card}
                 />
+                {(dropDownState.type === 'ANIME') && <SortDropDown
+                    data={['Any', 'SPRING', 'SUMMER', 'FALL', 'WINTER']}
+                    onSelect={(text) => { setDropDownState({...dropDownState, season: (text === 'Any') ? undefined : text}) }}
+                    header='Season'
+                    defaultText={(dropDownState.season) ? dropDownState.season : 'Any'}
+                    textColor={colors.text}
+                    buttonColor={colors.card}
+                />}
+                {(dropDownState.type === 'ANIME') && <SortDropDown
+                    data={years}
+                    onSelect={(text) => { setDropDownState({...dropDownState, seasonYear: (text === 'Any') ? undefined : Number(text)})}}
+                    header='Season Year'
+                    defaultText={(dropDownState.seasonYear) ? dropDownState.seasonYear.toString() : 'Any'}
+                    textColor={colors.text}
+                    buttonColor={colors.card}
+                />}
 
                 {/* Sliders */}
                 <SliderFilter 
