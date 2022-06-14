@@ -113,7 +113,7 @@ const OverViewHeader = ({data, colors, dark, setVisible, scrollValue}:Props) => 
                             <MaterialIcons name="access-time" size={16} style={{ alignSelf: 'center' }} color={colors.text} />
                             <Text style={{ fontSize: 16, marginLeft: 5, color: colors.text }}>EP {data?.anilist.nextAiringEpisode.episode}・</Text>
                             {(data?.anilist.nextAiringEpisode !== null) ? <Text style={{ fontSize: 16, color: colors.primary, fontWeight: 'bold' }}>{getTime(data?.anilist.nextAiringEpisode?.timeUntilAiring)}</Text> : null}
-                        </View> : (data.anilist.startDate.month) ? 
+                        </View> : (data.anilist.startDate.month && data.anilist.status === 'NOT_YET_RELEASED') ? 
                         <View style={{ flexDirection: 'row' }}>
                             <MaterialIcons name="date-range" size={16} style={{ alignSelf: 'center' }} color={colors.text} />
                             <Text style={{ fontSize: 16, color: colors.primary, fontWeight: 'bold' }}> {getDate(data?.anilist.startDate)}</Text>
