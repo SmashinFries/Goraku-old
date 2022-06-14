@@ -72,7 +72,7 @@ export const InfoDrawer = ({ navigation, route }:InfoProps) => {
             const images = (result.res.data.data.Media.idMal) ? await getMalImages(result.res.data.data.Media.idMal, result.res.data.data.Media.type) : null;
             setImageLoading(images ? false : null);
 
-            await new Promise(resolve => setTimeout(resolve, 500));
+            // await new Promise(resolve => setTimeout(resolve, 500));
 
             return {anilist: result.res.data.data.Media, mal: maldata.data !== null ? maldata.data : {data: null}, images: images, isAuth: result.isAuth};
         } catch(err) {
