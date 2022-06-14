@@ -411,6 +411,7 @@ media(${media_params}) {
     ${coverImage_Q}
     ${score_Q}
     ${media_tile_listEntry_q}
+    ${nextAiring}
     siteUrl
 }
 `;

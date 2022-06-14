@@ -70,6 +70,7 @@ export interface MediaTileType {
             id: number;
             status: string;
         }
+        nextAiringEpisode: nextAiringType;
         siteUrl: string;
 }
 
