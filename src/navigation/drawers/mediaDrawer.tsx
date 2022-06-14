@@ -46,14 +46,12 @@ export const InfoDrawer = ({ navigation, route }:InfoProps) => {
             </View>
             <View style={{justifyContent: 'flex-end'}}>
                 <DrawerItem
-                label='Edit'
-                icon={({color, size}) => <MaterialCommunityIcons name="pencil" color={color} size={size} />}
+                label={`Edit ${data?.anilist?.type}`}
+                labelStyle={{textTransform:'capitalize'}}
                 onPress={() => openURL(`https://anilist.co/edit/${data.anilist.type}/${id}`)}
                 />
                 <DrawerItem
                 label='Manual'
-                labelStyle={{textAlign:'center'}}
-                style={{justifyContent:'flex-end'}}
                 onPress={() => _openBrowserUrl('https://submission-manual.anilist.co', colors.primary, colors.text)}
                 />
             </View>
