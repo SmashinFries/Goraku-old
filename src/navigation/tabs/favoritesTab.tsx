@@ -3,7 +3,7 @@ import { createMaterialTopTabNavigator } from "@react-navigation/material-top-ta
 import { useTheme } from "@react-navigation/native";
 import { Favorites } from "../../Api/types";
 import { CharacterFav, MediaFav, StaffFav, StudioFav } from "../../containers/favorites";
-import { Keyboard, View } from "react-native";
+import { Keyboard, useWindowDimensions, View } from "react-native";
 import { HeaderRightButtons } from "../../Components/header/headers";
 import { getFavoriteContent } from "../../Api/anilist/anilist";
 import { TagLayoutProvider, useListSearch } from "../../Storage/listStorage";
@@ -58,7 +58,7 @@ const FavTabs = ({navigation, route}) => {
     if (favLoad) return <LoadingView colors={{ colors, dark }} titleData={[{ title: 'Fetching Favorites', loading: favLoad }]} />
 
     return (
-        <View style={{ height: '100%' }}>
+        <View style={{ flex:1 }}>
             <TagLayoutProvider>
                 <Tabs.Navigator screenOptions={{ tabBarScrollEnabled: true, swipeEnabled: true, }}>
                     <Tabs.Screen name="CharacterFav" component={CharacterFav} options={{ tabBarLabel: `Characters` }} initialParams={{ data: favs.characters }} />
