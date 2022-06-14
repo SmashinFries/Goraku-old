@@ -10,11 +10,11 @@ export const getYear = ():number => {
     return year;
 }
 
-export const getSeason = ():string => {
+export const getSeason = (next = false):string => {
     const month = new Date().getMonth();
     let current_season = '';
     for (let season in _SEASONS) {
-        if (_SEASONS[season].includes(month)) {
+        if (_SEASONS[season].includes((next) ? month+1 : month)) {
             current_season = season
             break;
         }
