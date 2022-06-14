@@ -33,7 +33,7 @@ export const ListTabs = ({ navigation, route }: ListTabProp) => {
                 disableBackButtonOverride: false,
                 onSearchButtonPress: (event) => Keyboard.dismiss(),
                 onChangeText: (event) => updateSearch(event.nativeEvent.text),
-                placeholder: 'Search your sauce...',
+                placeholder: 'Search...',
                 onCancelButtonPress: () => { updateSearch(''); Keyboard.dismiss(); }
             }
         });
