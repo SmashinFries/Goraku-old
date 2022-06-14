@@ -1,5 +1,5 @@
-import React, { useLayoutEffect, useEffect, useState } from "react";
-import {  View, Text, ActivityIndicator } from "react-native";
+import React, { useEffect, useState } from "react";
+import {  View, Text } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { ScrollView, GestureHandlerRootView } from "react-native-gesture-handler";
 import { AntDesign } from '@expo/vector-icons';
@@ -19,12 +19,12 @@ export const ExploreScreen = ({navigation, route}:ExploreProps) => {
     const { colors, dark } = useTheme();
     const { searchParams } = route.params;
     
-    useLayoutEffect(() => {
+    useEffect(() => {
         navigation.setOptions({
-            headerRight: ({tintColor}) => 
+            headerRight: () => 
             <View style={{flexDirection:'row'}}>
                 <IconButton icon='dice-3-outline' size={26} color={colors.text} onPress={() => navigation.navigate('RandomExplore')} />
-                <IconButton icon={'filter-outline'} size={26} onPress={() => navigation.navigate('Search', {searchParams})} color={colors.text} rippleColor={colors.primary} />
+                <IconButton icon={'magnify'} size={26} onPress={() => navigation.navigate('Search', {searchParams})} color={colors.text} rippleColor={colors.primary} />
             </View>,
             headerTitleAlign:'left',
             headerTitle: () =>
@@ -63,6 +63,8 @@ export const ExploreScreen = ({navigation, route}:ExploreProps) => {
                     <CategoryList titleType={"userPreferred"} type={TYPE} format={format} noFormat={noFormat} sort={'TRENDING_DESC'} season={undefined} year={undefined} />
                     {type === 'ANIME' ? <Text style={{ fontSize: 36, fontWeight: 'bold', color:colors.text, alignSelf: 'flex-start', marginLeft: 10, }}>This Season</Text> : null}
                     {type === 'ANIME' ? <CategoryList titleType='userPreferred' type='ANIME' format={undefined} sort={'POPULARITY_DESC'} season={getSeason()} year={getYear()} /> : null}
+                    {type === 'ANIME' ? <Text style={{ fontSize: 36, fontWeight: 'bold', color:colors.text, alignSelf: 'flex-start', marginLeft: 10, }}>Next Season</Text> : null}
+                    {type === 'ANIME' ? <CategoryList titleType='userPreferred' type='ANIME' format={undefined} sort={'POPULARITY_DESC'} season={getSeason(true)} year={getYear()} /> : null}
                     <Text style={{ fontSize: 36, fontWeight: 'bold', alignSelf: 'flex-start', color:colors.text, marginLeft: 10,}}>Popular</Text>
                     <CategoryList titleType='userPreferred' type={TYPE} format={format} noFormat={noFormat} sort={'POPULARITY_DESC'} season={undefined} year={undefined} />
                     <Text style={{ fontSize: 36, fontWeight: 'bold', alignSelf: 'flex-start', color:colors.text, marginLeft: 10,}}>Top Rated</Text>
