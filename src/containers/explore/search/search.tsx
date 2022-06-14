@@ -63,6 +63,8 @@ export const SearchScreen = ({ route, navigation }: SearchProps) => {
                     minimumTagRank: searchParams.minTagRank,
                     status: searchParams.status,
                     licensedBy_in: (typeof (searchParams.licensedBy_in[0]) === 'string') ? searchParams.licensedBy_in : undefined,
+                    season: (searchParams.type === 'MANGA') ? undefined : searchParams.season,
+                    seasonYear: (searchParams.type === 'MANGA') ? undefined : searchParams.seasonYear,
                 });
                 setCharData(undefined);
                 setStaffData(undefined);
@@ -168,7 +170,7 @@ export const SearchScreen = ({ route, navigation }: SearchProps) => {
             headerRight: () =>
                 <View style={{ flexDirection: 'row' }}>
                     <IconButton icon={'camera-outline'} size={26} onPress={() => { navigation.navigate('Image'); sheetRef.current.close() }} color={colors.text} rippleColor={colors.primary} />
-                    <IconButton icon={'magnify'} size={26} onPress={handleModalOpen} color={colors.text} rippleColor={colors.primary} />
+                    <IconButton icon={'filter-outline'} size={26} onPress={handleModalOpen} color={colors.text} rippleColor={colors.primary} />
                 </View>
         });
     }, [navigation, dark]);
