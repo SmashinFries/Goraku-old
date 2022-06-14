@@ -3,8 +3,9 @@ import 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
 import * as Notifications from 'expo-notifications';
 import * as Linking from 'expo-linking';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Appearance } from 'react-native';
+import * as SplashScreen from 'expo-splash-screen';
 import { LinkingOptions, NavigationContainer, PathConfigMap } from '@react-navigation/native';
 import { BottomNav } from './src/navigation/root/bottomNav';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
@@ -71,9 +72,10 @@ const config: PathConfigMap<ReactNavigation.RootParamList> = {
 
 const App = () => {
   const systemTheme = Appearance.getColorScheme();
+  const [appReady, setAppReady] = useState<boolean>(false);
   const [theme, setTheme] = useState((systemTheme === 'light') ? 'Light' : 'Dark');
   const [refresh, setRefresh] = useState();
-  const [showDialog, setShowDialog] = useState(false);
+  const [showDialog, setShowDialog] = useState<boolean>(false);
   const { newVersion } = useRelease();
   const { isAuth, setIsAuth } = useAnilistAuth();
   // const {receivedSubscription, responseSubscription} = useNotification(isAuth);
@@ -86,6 +88,22 @@ const App = () => {
     config: { screens: config },
   }
 
+  const prepare = async() => {
+    try{
+      await SplashScreen.preventAutoHideAsync();
+    } catch(e) {
+      console.log('Start Error:', e);
+    } finally {
+      setAppReady(true);
+    }
+  }
+
+  const onLayoutRoot = useCallback(async() => {
+    if (appReady) {
+      await SplashScreen.hideAsync();
+    }
+  }, [appReady]);
+
   useEffect(() => {
     getTheme().then(theme => { (theme !== null) ? setTheme(theme) : setTheme((systemTheme === 'light') ? 'Light' : 'Dark'); });
   }, [isAuth]);
@@ -96,12 +114,17 @@ const App = () => {
     }
   }, [newVersion.isNew]);
 
-  // useEffect(() => {
-  //   return () => {
-  //     receivedSubscription.remove();
-  //     responseSubscription.remove();
-  //   }
-  // }, []);
+  useEffect(() => {
+    prepare();
+    // return () => {
+    //   receivedSubscription.remove();
+    //   responseSubscription.remove();
+    // }
+  }, []);
+
+  if (!appReady) {
+    return null;
+  }
 
   return (
     <PaperProvider>
@@ -113,7 +136,7 @@ const App = () => {
               <AccountContext.Provider value={valueAuth}>
                 <BottomSheetModalProvider>
                   {/* @ts-ignore */}
-                  <NavigationContainer linking={linking} theme={themeSwitch(theme)}>
+                  <NavigationContainer onReady={onLayoutRoot} linking={linking} theme={themeSwitch(theme)}>
                     <BottomNav isAuth={isAuth} />
                     <StatusBar style={(theme.toLowerCase().includes('dark')) ? "light" : "dark"} translucent />
                     <Portal>
