@@ -63,6 +63,8 @@ export interface FilterRef {
     licensedBy_in: string[];
     onList: boolean;
     chapters: number[];
+    season?: string;
+    seasonYear?: number;
 }
 
 export type ExploreScreenNavigationProp = NativeStackNavigationProp<ExploreStackParamList,'Explore'>;
