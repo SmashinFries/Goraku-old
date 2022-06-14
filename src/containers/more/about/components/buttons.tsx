@@ -111,6 +111,7 @@ type MediaLinksProps = {
 }
 const MediaLinks = ({colors}:MediaLinksProps) => {
     const portfolio_url = 'https://kuzutech.com';
+    const blog_url = 'https://blog.kuzutech.com';
     const github_url = 'https://github.com/SmashinFries';
     const merch_url = 'https://kuzumerch.bigcartel.com';
     const instagram_url = 'https://www.instagram.com/smashinfries/';
@@ -118,9 +119,10 @@ const MediaLinks = ({colors}:MediaLinksProps) => {
     return(
         <View style={{ flexDirection: 'row', marginHorizontal: 20, marginTop: 15, justifyContent: 'space-evenly' }}>
             <IconButton icon={'web'} color={colors.primary} size={36} onPress={() => openURL(portfolio_url)} />
+            <IconButton icon={'book-open-page-variant'} color={colors.primary} size={36} onPress={() => _openBrowserUrl(blog_url, colors.primary, colors.text)} />
             <IconButton icon={'github'} color={colors.primary} size={36} onPress={() => openURL(github_url)} />
             <IconButton icon={'instagram'} color={colors.primary} size={36} onPress={() => openURL(instagram_url)} />
-            <IconButton icon={'storefront-outline'} color={colors.primary} size={36} onPress={() => openURL(merch_url)} />
+            {/* <IconButton icon={'storefront-outline'} color={colors.primary} size={36} onPress={() => openURL(merch_url)} /> */}
         </View>
     );
 }
