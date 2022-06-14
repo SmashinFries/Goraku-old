@@ -40,7 +40,6 @@ const StatisticsScreen = ({navigation, route}) => {
 
     useEffect(() => {
         if (!animeData && !mangaData) {
-            console.log('ran');
             fetchStats();
         }
     },[]);
