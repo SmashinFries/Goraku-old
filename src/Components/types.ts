@@ -1,4 +1,3 @@
-import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import { Dispatch, MutableRefObject, SetStateAction } from "react";
 import { MediaTileType } from "../Api/types";
