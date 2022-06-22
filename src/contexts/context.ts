@@ -21,10 +21,14 @@ export const ThemeContext = createContext<ThemeContextType>({
 type AccountContextType = {
     isAuth: boolean;
     setIsAuth: Dispatch<SetStateAction<boolean>>;
+    isDevArtAuth?: boolean;
+    setIsDevArtAuth?: Dispatch<SetStateAction<boolean>>;
 }
 export const AccountContext = createContext<AccountContextType>({
     isAuth: false, 
-    setIsAuth: () => {}
+    setIsAuth: () => {},
+    // isDevArtAuth: false,
+    // setIsDevArtAuth: () => {},
 });
 
 type NotificationContextType = {
