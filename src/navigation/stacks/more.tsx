@@ -1,20 +1,16 @@
-import { useTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import React from "react";
-import { View, Text, Pressable, StatusBar, Image } from "react-native";
-import { MaterialIcons } from '@expo/vector-icons';
+import { View } from "react-native";
 import { MoreScreen } from "../../containers/more/moreUI";
 import { SettingsStack } from "../../containers/more/settings";
 import { MoreStackProps } from "../../containers/types";
 import AccountStack from "./account";
 import About from "../../containers/more/about/about";
 import DataSources from "../../containers/more/datasources";
-import { openURL } from "expo-linking";
 
 const Stack = createNativeStackNavigator();
 
 export const MoreStack = ({ navigation, route }: MoreStackProps) => {
-    const { colors, dark } = useTheme();
     return (
         // This View fixes blank screen
         <View style={{ flex: 1 }} collapsable={false}>
