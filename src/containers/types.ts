@@ -67,6 +67,8 @@ export interface FilterRef {
     seasonYear?: number;
 }
 
+export type AccountType = 'Anilist' | 'DeviantArt';
+
 export type ExploreScreenNavigationProp = NativeStackNavigationProp<ExploreStackParamList,'Explore'>;
 export type DrawerInfoNavProp = DrawerNavigationProp<ExploreStackParamList, 'Info'>
 export type ListTabProp = NativeStackScreenProps<ListParamList, 'UserList'>;
@@ -120,7 +122,7 @@ export type SettingsStackParamList = {
 }
 export type MoreStackParamList = {
     MoreHome: undefined;
-    Account: undefined;
+    AccountStack: undefined;
     SettingsStack: SettingsStackParamList;
     About: undefined;
     DataSources: undefined;
