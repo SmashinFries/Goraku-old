@@ -27,8 +27,7 @@ export const InfoDrawer = ({ navigation, route }:InfoProps) => {
     const [loading, setLoading] = useState(true);
     const [aniLoading, setAniLoading] = useState(true);
     const [malLoading, setMalLoading] = useState(true);
-    const [imageLoading, setImageLoading] = useState(true);
-    const { auth } = getIsAuth();
+    const { auth, daAuth } = getIsAuth();
     const { id } = route.params;
     const { colors, dark } = useTheme();
 
@@ -67,12 +66,10 @@ export const InfoDrawer = ({ navigation, route }:InfoProps) => {
             const maldata = (result.res.data.data.Media.idMal) ? await getMalData(result.res.data.data.Media.idMal, result.res.data.data.Media.type) : {data:null};
             setMalLoading(maldata.data?.data ? false : null);
 
-            const images = (result.res.data.data.Media.idMal) ? await getMalImages(result.res.data.data.Media.idMal, result.res.data.data.Media.type) : null;
-            setImageLoading(images ? false : null);
-
+            // const devartAuth = await getDAToken();
             // await new Promise(resolve => setTimeout(resolve, 500));
 
-            return {anilist: result.res.data.data.Media, mal: maldata.data !== null ? maldata.data : {data: null}, images: images, isAuth: result.isAuth};
+            return {anilist: result.res.data.data.Media, mal: maldata.data !== null ? maldata.data : {data: null}, images: [], isAuth: result.isAuth};
         } catch(err) {
             console.log('Drawer Fetch:', err);
             return null;
@@ -92,7 +89,7 @@ export const InfoDrawer = ({ navigation, route }:InfoProps) => {
         }
     }, []);
 
-    if (loading) return <LoadingView titleData={[{title:'Anilist Data', loading:aniLoading}, {title:'MAL Data', loading:malLoading}, {title:'MAL Images', loading:imageLoading}]} colors={{colors, dark}} />;
+    if (loading) return <LoadingView titleData={[{title:'Anilist Data', loading:aniLoading}, {title:'MAL Data', loading:malLoading}]} colors={colors} />;
     if (data === null) return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><Text style={{color:colors.text, fontSize:18}}>Error</Text></View>
     return (
         <Drawer.Navigator useLegacyImplementation drawerContent={(props) => <CustomDrawerContent {...props} />} initialRouteName="Overview" backBehavior="firstRoute" screenOptions={({ navigation, route }) => ({
