@@ -605,6 +605,7 @@ export type AniMalType = {
     mal: MALType;
     images: MalImages[];
     isAuth: boolean;
+    isDaAuth?: boolean;
 }
 
 export type MalCharType = {
