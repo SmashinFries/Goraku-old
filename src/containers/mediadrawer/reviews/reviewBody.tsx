@@ -13,7 +13,7 @@ import { customHTMLElementModel } from "./elements/customElements";
 
 const ReviewBody = ({ navigation, route }) => {
     const review:ReviewsNode = route.params.review;
-    const auth = getAuthContext();
+    const {auth} = getAuthContext();
     const [visible, setVisible] = useState(false);
     const [userRating, setUserRating] = useState<userRatingReview>();
     const { colors, dark } = useTheme();
