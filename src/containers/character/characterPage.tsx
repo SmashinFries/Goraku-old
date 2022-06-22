@@ -55,10 +55,9 @@ const CharDetailScreen = ({ navigation, route }: CharDetailProps) => {
     const getMalCharImages = async (first: string, last: string, aniLink:string) => {
         const fullName = (last) ? last + ', ' + first : first;
         const res = await getMalChar(malId, fullName, type);
-        setLoadingImages(res?.images?.data?.length > 0 ? false : null);
         setImages(res?.images?.data ?? []);
         setLinks({aniLink:aniLink, malLink:res?.link})
-        await new Promise(resolve => setTimeout(resolve, 500)).then(() =>setLoading(false));
+        setLoadingImages(res?.images?.data?.length > 0 ? false : null);
     }
 
     useEffect(() => {
@@ -67,12 +66,13 @@ const CharDetailScreen = ({ navigation, route }: CharDetailProps) => {
             setData(res);
             setLoadingAni(false);
             setFavorite(res.isFavourite);
+            setLoading(false);
             getMalCharImages(res.name.first, res.name.last, res.siteUrl);
         });
         
     }, [id])
 
-    if (loading) return <LoadingView colors={{colors, dark}} titleData={[{title:'Anilist Data', loading:loadingAni}, {title:'MAL Images', loading:loadingImages}]} />
+    if (loading) return <LoadingView colors={colors} titleData={[{title:'Anilist Data', loading:loadingAni}]} />
 
     return (
         <View style={{ flex: 1 }}>
@@ -90,7 +90,7 @@ const CharDetailScreen = ({ navigation, route }: CharDetailProps) => {
                     </View>
                     <CharacterBody description={data.description} links={links} favorite={favorite} toggleLike={toggleLike} colors={colors} />
                     <CharacterFeatured data={data} parNav={parNav} colors={colors} />
-                    <CharacterImages images={images} setSelectedImg={setSelectedImg} setVisible={setVisible} colors={colors} />
+                    <CharacterImages images={images} loading={loadingImages} setSelectedImg={setSelectedImg} setVisible={setVisible} colors={colors} />
                     <EditButton type="CHARACTER" id={data.id} colors={colors} />
                 </LinearGradient>
             </Animated.ScrollView>
