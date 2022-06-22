@@ -11,3 +11,13 @@ export const useAnilistAuth = () => {
     return {isAuth, setIsAuth};
 
 }
+
+// export const useDevArtAuth = () => {
+//     const [isDevArtAuth, setIsDevArtAuth] = useState(false);
+
+//     useEffect(() => {
+//         getDAToken().then(token => (token) ? setIsDevArtAuth(true) : setIsDevArtAuth(false));
+//     },[]);
+
+//     return {isDevArtAuth, setIsDevArtAuth};
+// }
