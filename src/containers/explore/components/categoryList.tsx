@@ -27,7 +27,7 @@ export const CategoryList = (props:CategoryProps) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<AxiosError>(null);
     const { colors, dark } = useTheme();
-    const isAuth = getAuthContext();
+    const {auth} = getAuthContext();
     const actionSheet = useRef<BottomSheetModal>(null);
 
     const ShowError = () => {
@@ -112,7 +112,7 @@ export const CategoryList = (props:CategoryProps) => {
 
     useEffect(() => {
         setData(undefined);
-    },[isAuth]);
+    },[auth]);
 
     useEffect(() => {
         let isMounted = true;
@@ -132,7 +132,7 @@ export const CategoryList = (props:CategoryProps) => {
         }
     },[data]);
 
-    if (loading) return <View style={{height:335}}><LoadingView colors={{colors, dark}} mode='Circle' /></View>
+    if (loading) return <View style={{height:335}}><LoadingView colors={colors} mode='Circle' /></View>
     
     return(
         <View style={{flex:1, height:335}}>
