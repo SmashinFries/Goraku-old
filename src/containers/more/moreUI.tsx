@@ -25,9 +25,9 @@ export const MoreScreen = ({navigation, route}:MoreHomeScreenProps) => {
             </View>
             <Divider style={{backgroundColor:colors.border}} />
             {/* @ts-ignore */}
-            <List.Item title="Account" titleStyle={{color:colors.text}} rippleColor={colors.border} onPress={() => navigation.push('AccountStack')} left={props => <List.Icon {...props} icon="account-cog-outline" color={colors.primary} />} />
-            <List.Item title="Settings" titleStyle={{color:colors.text}} rippleColor={colors.border} onPress={() => navigation.push('SettingsStack')} left={props => <List.Icon {...props} icon="cog-outline" color={colors.primary} />} />
-            <List.Item title="About" titleStyle={{color:colors.text}} rippleColor={colors.border} onPress={() => navigation.push('About')} left={props => <List.Icon {...props} icon="information-outline" color={colors.primary} />} />
+            <List.Item title="Account" titleStyle={{color:colors.text}} rippleColor={colors.border} onPress={() => navigation.navigate('AccountStack')} left={props => <List.Icon {...props} icon="account-cog-outline" color={colors.primary} />} />
+            <List.Item title="Settings" titleStyle={{color:colors.text}} rippleColor={colors.border} onPress={() => navigation.navigate('SettingsStack')} left={props => <List.Icon {...props} icon="cog-outline" color={colors.primary} />} />
+            <List.Item title="About" titleStyle={{color:colors.text}} rippleColor={colors.border} onPress={() => navigation.navigate('About')} left={props => <List.Icon {...props} icon="information-outline" color={colors.primary} />} />
         </ScrollView>
     );
 }

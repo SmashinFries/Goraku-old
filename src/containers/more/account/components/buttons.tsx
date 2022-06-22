@@ -54,7 +54,7 @@ const MLMenuButton = ({userData, navigation, colors}:MLMenuProps) => {
             rippleColor={colors.border} 
             titleStyle={{color:colors.text}} 
             left={props => <List.Icon {...props} icon="earth" color={colors.primary} />} 
-            onPress={() => navigation.push('Languages', {title: userData?.options.titleLanguage, staffName: userData?.options.staffNameLanguage})} 
+            onPress={() => navigation.navigate('Languages', {title: userData?.options.titleLanguage, staffName: userData?.options.staffNameLanguage})} 
         /> 
     );
 }
