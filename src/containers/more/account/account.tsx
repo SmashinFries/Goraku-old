@@ -1,77 +1,51 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { View, Text, ToastAndroid, useWindowDimensions, ScrollView, Image } from "react-native";
 import { useFocusEffect, useTheme } from "@react-navigation/native";
-import { List, Portal, Dialog, Button, Caption, ActivityIndicator } from 'react-native-paper';
+import { List, Portal, Dialog, Button, Caption, ActivityIndicator, IconButton } from 'react-native-paper';
 import { checkTokenExpiration, getAuth, removeToken } from "../../../Storage/authToken";
-import { changeLanguage, changeNSFW, getUserOptions } from "../../../Api/anilist/anilist";
-import { RefreshContext, AccountContext, NotificationContext } from "../../../contexts/context";
-import useNotification from "../../../Notifications/notifications";
-import {  UserOptionViewer } from "../../../Api/types";
-import { storeNSFW } from "../../../Storage/nsfw";
+import { changeLanguage, changeNSFW } from "../../../Api/anilist/anilist";
+import { RefreshContext, AccountContext } from "../../../contexts/context";
 import { ADULT_ALLOW } from "../../../constants";
 import { RadioButton } from "../../../Components/buttons/radio";
 import { _openAuthBrowser, _openBrowserUrl } from "../../../utils";
-import UserHeader from "./components/userHeading";
-import { LoginButton, LogoutButton, MLMenuButton, NSFWswitch, ProfileMenuButton } from "./components/buttons";
+import { AccountSettings, LoginButton, LogoutButton } from "./components/buttons";
+import { LoadingView } from "../../../Components";
+import { AccountType } from "../../types";
+import { fetchPopular, fetchDevArtToken } from "../../../Api/deviantArt/devart";
+import { DEVART_KEY } from '@env';
 
 export const AccountHome = ({navigation, route}) => {
-    const { isAuth, setIsAuth } = useContext(AccountContext);
-    const { isAllowed, toggleFetchTask } = useNotification(isAuth);
-    const [ userData, setUserData ] = useState<UserOptionViewer>(undefined);
+    const { isAuth, setIsAuth, isDevArtAuth, setIsDevArtAuth } = useContext(AccountContext);
     const { colors, dark } = useTheme();
-    const [isPressed, setIsPressed] = useState(false);
+    const [isAniPressed, setIsAniPressed] = useState(false);
+    const [isDevArtPressed, setIsDevArtPressed] = useState(false);
     const [tokenExp, setTokenExp] = useState<string>();
-    const [loading, setLoading] = useState<boolean>(false);
-    const token = route.params?.token;
-    const { width, height } = useWindowDimensions();
+    const [aniLoading, setAniLoading] = useState<boolean>(false);
+    const [devartLoading, setDevartLoading] = useState<boolean>(false);
+    const token:string = route.params?.token;
 
-    const handleLogin = async() => {
-        await _openAuthBrowser();
-        setLoading(true);
-        setIsPressed(true);
+    const handleLogin = async(type:AccountType) => {
+        if (type === 'Anilist') {
+            await _openAuthBrowser('Anilist');
+            setAniLoading(true);
+            setIsAniPressed(true);
+        }
+        if (type === 'DeviantArt') {
+            const token = await 
+            setDevartLoading(true);
+            setIsDevArtPressed(true);
+        }
     };
 
-    const value =  useMemo(() => ({ isAllowed, toggleFetchTask }), [isAllowed]);
-
-    const logout = async() => {
-        const success = await removeToken();
+    const logout = async(type:AccountType) => {
+        const success = await removeToken(type);
         if(success) {
             // @ts-ignore
-            setIsAuth(false);
-            changeNSFW(ADULT_ALLOW);
+            (type === 'Anilist') ? setIsAuth(false) : setIsDevArtAuth(false);
+            (type === 'Anilist') && setTokenExp(null);
             ToastAndroid.show('Logged out', ToastAndroid.SHORT);
         }
     }
-
-    const adultContentWarning = () => {
-        return 'The uncensored version on Github is required.';
-    }
-
-    const handleNSFW = async() => {
-        await changeNSFW(!userData.options.displayAdultContent);
-        setUserData({...userData, options: {...userData.options, displayAdultContent: !userData.options.displayAdultContent}});        
-    }
-
-    const editProfile = async() => {
-        await _openBrowserUrl('https://anilist.co/settings', colors.primary, colors.text);
-        setLoading(true);
-        const data = await getUserOptions()
-        setUserData(data);
-        storeNSFW(data.options.displayAdultContent);
-        setLoading(false);
-    }
-
-    useEffect(() => {
-        if (!isAuth && isPressed) {
-            // @ts-ignore
-            getAuth(token).then(auth => {setIsAuth(auth); ToastAndroid.show('Logged In', ToastAndroid.SHORT);});
-            getUserOptions().then(data => {
-                setUserData(data);
-                storeNSFW(data.options.displayAdultContent);
-            });
-            setLoading(false);
-        }
-    },[token]);
 
     useFocusEffect(
         React.useCallback(() => {
@@ -80,59 +54,48 @@ export const AccountHome = ({navigation, route}) => {
                     setTokenExp(exp);
                 });
             }
-        },[isAuth])
-      );
-
-    useEffect(() => {
-        if (isAuth) {
-            getUserOptions().then(data => {
-                setUserData(data);
-                storeNSFW(data.options.displayAdultContent);
-            });
-        }
-    },[]);
-
-    if (loading) return(
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <Image source={require('../../../assets/login.png')} style={{ resizeMode: 'contain', width: width, height: 250, alignSelf: 'center' }} />
-            <Text style={{ color: colors.text, paddingBottom: 10 }}> Yui is signing you in! </Text>
-            <ActivityIndicator size={'small'} color={colors.primary} />
-        </View>
+        }, [isAuth])
     );
 
+    useEffect(() => {
+        if (!isAuth && isAniPressed) {
+            console.log('AniList');
+            getAuth('Anilist', token).then(auth => {setIsAuth(auth); setAniLoading(false); ToastAndroid.show('Logged In', ToastAndroid.SHORT);});
+            setIsAniPressed(false);
+        }
+        // if (!isDevArtAuth && isDevArtPressed) {
+        //     getAuth('DeviantArt', token).then(auth => {setIsDevArtAuth(auth); setDevartLoading(false); ToastAndroid.show('Logged In', ToastAndroid.SHORT);}).catch(err => {console.log(err); setDevartLoading(false)});
+        //     setIsDevArtPressed(false);
+        // }
+    },[token]);
+
     return (
-        <NotificationContext.Provider value={value}>
             <ScrollView style={{flex:1, backgroundColor:(dark) ? colors.background : colors.card}}>
-                {(userData && isAuth) && 
-                    <UserHeader userData={userData} colors={colors} />
-                }
-                {(!isAuth) ? 
-                    <LoginButton handleLogin={handleLogin} colors={colors} />
-                    : <LogoutButton colors={colors} tokenExp={tokenExp} logout={logout} />
-                }
-                {(isAuth) &&
-                    <View>
-                        <MLMenuButton userData={userData} navigation={navigation} colors={colors} />
-                        <ProfileMenuButton 
-                            userData={userData}
-                            onPress={editProfile} 
-                            colors={colors}
-                        />
-                        <NSFWswitch userData={userData} adultContentWarning={adultContentWarning} handleNSFW={handleNSFW} colors={colors} />
+                <List.Section>
+                    <List.Subheader>Anilist</List.Subheader>
+                    {(!aniLoading) ? 
+                    <>
+                        {(isAuth) && <AccountSettings colors={colors} onPress={() => navigation.navigate('AnilistAccount', {auth: isAuth})} />}
+                        {(!isAuth) ? 
+                            <LoginButton handleLogin={() => handleLogin('Anilist')} colors={colors} />
+                            : <LogoutButton colors={colors} tokenExp={tokenExp} description logout={() => logout('Anilist')} />
+                        }
                         {(tokenExp) && <Caption onPress={() => checkTokenExpiration().then(txt => setTokenExp(txt))} style={{color:colors.text, paddingLeft:10}}>{`Login Expires in:\n${tokenExp}`}</Caption>}
-                    </View>
-                }
-                {/* Disabling Notifications */}
-                {/* {(isAuth) && 
-                    <List.Item 
-                        title="Notifications" 
-                        titleStyle={{color:colors.text}} 
-                        left={props => <List.Icon {...props} icon="bell" color={colors.primary} />}
-                        right={() => <Switch value={isAllowed} onValueChange={toggleFetchTask} color={colors.primary} />}
-                    /> 
-                } */}
+                    </> : <LoadingView colors={colors} mode='Circle' titleData={[{title:'AnilistLoading', loading:aniLoading}]} />}
+                </List.Section>
+            
+                {/* <List.Section>
+                    <List.Subheader>DeviantArt</List.Subheader>
+                    {(!devartLoading) ? 
+                    <>
+                        {(!isDevArtAuth) ?
+                            <LoginButton handleLogin={() => handleLogin('DeviantArt')} colors={colors} />
+                            : <LogoutButton colors={colors} logout={() => logout('DeviantArt')} />
+                        }
+                    </>: <LoadingView colors={colors} mode='Circle' titleData={[{title:'DevArtLoading', loading:devartLoading}]} />}
+                <List.Item title='Test' onPress={() => fetchDevArtToken()} />
+                </List.Section> */}
             </ScrollView>
-        </NotificationContext.Provider>
     );
 }
 
