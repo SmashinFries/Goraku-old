@@ -56,3 +56,5 @@ dist/
 
 # Scripts
 *.bat
+
+.env
