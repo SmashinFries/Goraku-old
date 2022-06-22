@@ -10,8 +10,9 @@ import SortFilterUI from './SearchFilter/sortFilter';
 import ImageViewer from './imageViewer';
 import UserModal from './dialogs/userModal';
 import {CharacterHeaderImage, CharacterOverview, CharacterBody} from './imageViews/primCharPers';
+import DeviantArtImages from './imageViews/daImages';
 import EditButton from './buttons/editContent';
 
 export { FilterGenre, LoadingView, ImageViewer, FilterTags, MediaTile, SearchBar, 
     SortFilterUI, TraceMoeUI, SpoilerButton, PressableAnim, FlatListAnim, UserModal, 
-    CharacterHeaderImage, CharacterOverview, CharacterBody, EditButton };
+    CharacterHeaderImage, CharacterOverview, CharacterBody, EditButton, DeviantArtImages };
