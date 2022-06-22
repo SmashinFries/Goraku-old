@@ -1,5 +1,5 @@
 import * as React from "react"
-import Svg, { SvgProps, Path, SvgUri, UriProps } from "react-native-svg"
+import Svg, { SvgProps, Path, SvgUri } from "react-native-svg"
 
 export const AnilistSVG = (props: SvgProps) => (
   <Svg
