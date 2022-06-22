@@ -100,6 +100,7 @@ export const StaffInfo = ({ navigation, route }:StaffInfoProps) => {
             (navigation.getState().type === 'drawer') ?
             // @ts-ignore
             navigation.push('DrawerInfo', params) :
+            // @ts-ignore
             navigation.push('Info', params);
         }
         if (type === 'CHARACTER') {
@@ -131,7 +132,7 @@ export const StaffInfo = ({ navigation, route }:StaffInfoProps) => {
         );
     }
 
-    if (loading) return <LoadingView colors={{colors, dark}} />;
+    if (loading) return <LoadingView colors={colors} />;
 
     return (
         <View style={{flex:1}}>
