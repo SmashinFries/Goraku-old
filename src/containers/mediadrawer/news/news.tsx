@@ -113,7 +113,7 @@ const NewsTab = ({navigation, route}) => {
         );
     }
 
-    if (loading) return <LoadingView colors={{colors, dark}} titleData={[{title:'MAL News', loading:newsLoading}]} />;
+    if (loading) return <LoadingView colors={ colors } titleData={[{title:'MAL News', loading:newsLoading}]} />;
 
     return(
         <View style={{flex:1}}>

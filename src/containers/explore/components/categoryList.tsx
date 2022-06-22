@@ -132,7 +132,7 @@ export const CategoryList = (props:CategoryProps) => {
         }
     },[data]);
 
-    if (loading) return <View style={{height:335}}><LoadingView colors={{colors, dark}} mode='Circle' /></View>
+    if (loading) return <View style={{height:335}}><LoadingView colors={colors} mode='Circle' /></View>
     
     return(
         <View style={{flex:1, height:335}}>

@@ -103,7 +103,7 @@ export const TraceMoeScreen = ({navigation, route}) => {
             </View>
             {(currentImage.length > 0) ? <CurrentImage /> : null}
             {(loading) ? 
-                    <LoadingView colors={{colors, dark}} />
+                    <LoadingView colors={colors} />
             : null}
             {(moeImage && !loading) ? <TraceMoeUI data={moeImage.result} /> : null}
             <Portal>
