@@ -46,9 +46,9 @@ export const ListTabs = ({ navigation, route }: ListTabProp) => {
 
     const filterData = (status: string) => {
         const statusData = data?.lists.filter((item) => item.status === status);
-        let formattedData = (statusData.length > 0) ? statusData[0].entries : [];
-        if (format === 'NOVEL' || format === 'MANGA') {
-            formattedData = statusData[0].entries.filter((item: MediaCollectionEntries) => {
+        let formattedData = (statusData.length > 0 && statusData[0].entries !== undefined) ? statusData[0].entries : [];
+        if (format === 'NOVEL' || format === 'MANGA' && formattedData.length > 0) {
+            formattedData = formattedData.filter((item: MediaCollectionEntries) => {
                 if (format === 'MANGA') return(item.media.format !== 'NOVEL');
                 return (item.media.format === format);
             });
@@ -72,7 +72,7 @@ export const ListTabs = ({ navigation, route }: ListTabProp) => {
         return ({ data: filterData(listStatus.toUpperCase()), listStatus: listStatus, colors: { colors, dark } });
     }
 
-    if (listLoad) return <LoadingView colors={{ colors, dark }} titleData={[{ title: 'Fetching List', loading: listLoad }]} />
+    if (listLoad) return <LoadingView colors={colors} titleData={[{ title: 'Fetching List', loading: listLoad }]} />
 
     return (
         <View style={{ height: '100%' }} collapsable={false}>
