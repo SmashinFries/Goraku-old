@@ -5,10 +5,10 @@ import { ScrollView } from "react-native-gesture-handler";
 import { LinearGradient } from "expo-linear-gradient";
 import FastImage from 'react-native-fast-image';
 import { IconButton } from 'react-native-paper';
-import { AniMalType } from "../../../Api/types";
+import { AniMalType, MalImages } from "../../../Api/types";
 import { OverviewNav, OverviewProps } from "../../types";
 import { handleCopy, handleShare } from "../../../utils";
-import { getMediaListEntry, quickRemove, toggleFav, updateMediaListEntry } from "../../../Api";
+import { getMalImages, getMediaListEntry, quickRemove, toggleFav, updateMediaListEntry } from "../../../Api";
 import { ListEntryDialog } from "../../explore/components/entryModals";
 import { PressableAnim } from "../../../Components/animated/AnimPressable";
 import { HeaderBackButton, HeaderBackground, HeaderRightButtons } from "../../../Components/header/headers";
@@ -16,7 +16,8 @@ import { ListEntryUI, Trailer, MediaInformation, CharStaffList, ExternalLinkList
 import RenderHtml from 'react-native-render-html';
 import { Portal } from 'react-native-paper';
 import QrView from "../../../Components/qrView";
-import { EditButton, ImageViewer } from "../../../Components";
+import { DeviantArtImages, EditButton, ImageViewer, LoadingView } from "../../../Components";
+import { getIsAuth } from "../../../Storage/authToken";
 
 const AnimGradient = Animated.createAnimatedComponent(LinearGradient);
 
@@ -27,6 +28,8 @@ type OverviewTabParams = {
 
 const OverviewTab = ({ content, isList }: OverviewTabParams) => {
     const [data, setData] = useState(content);
+    const [images, setImages] = useState<MalImages[]>();
+    const [imageLoading, setImageLoading] = useState<boolean>(true);
     const [dates, setDates] = useState({ start: content.anilist.mediaListEntry?.startedAt ?? { year: null, month: null, day: null }, end: content.anilist.mediaListEntry?.completedAt ?? { year: null, month: null, day: null } });
     const [descVis, setDescVis] = useState(false);
     const [listEntryVis, setListEntryVis] = useState(false);
@@ -143,17 +146,18 @@ const OverviewTab = ({ content, isList }: OverviewTabParams) => {
     }
 
     const ImageList = () => {
-        if (!data.images) return null;
+        if (!images && !imageLoading) return null;
         return (
             <View>
-                <Text style={{ marginLeft: 10, marginTop: 20, fontSize: 28, fontWeight: 'bold', color: colors.text }}>Images</Text>
-                <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-                    {data?.images.map((img, index) =>
-                        <Pressable key={index} onPress={() => { setImageIndex(index); setVisible(true) }}>
+                <Text style={{ marginLeft: 10, marginTop: 20, fontSize: 28, fontWeight: 'bold', color: colors.text }}>Mal Images</Text>
+                {(imageLoading) && <View style={{height:190}}><LoadingView colors={colors} mode='Circle' /></View>}
+                {(!imageLoading) && <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+                    {images.map((img, index) =>
+                        <Pressable key={index} onPress={() => { setImageIndex(index); console.log(index, img.jpg.image_url); setVisible(true) }}>
                             <FastImage fallback source={{ uri: img.jpg.image_url }} resizeMode='contain' style={{ width: 130, height: 190, marginHorizontal: 10 }} />
                         </Pressable>
                     )}
-                </ScrollView>
+                </ScrollView>}
             </View>
         );
     }
@@ -180,6 +184,22 @@ const OverviewTab = ({ content, isList }: OverviewTabParams) => {
         );
     }
 
+    useEffect(() => {
+        let isMounted = true;
+        const fetchImages = async() => {
+            const images = (data?.anilist.idMal) ? await getMalImages(data?.anilist.idMal, data?.anilist.type) : null;
+            return images
+        }
+
+        if (isMounted && !images) {
+            fetchImages().then((malimages) => {setImages(malimages); setData({...data, images:malimages}); setImageLoading(false)});
+        }
+
+        return () => {
+            isMounted = false;
+        }
+    },[])
+    
     return (
         <View style={{ backgroundColor: colors.background }}>
             <AuthDataUI />
@@ -199,6 +219,7 @@ const OverviewTab = ({ content, isList }: OverviewTabParams) => {
                     <CharStaffList data={data} setData={setData} colors={colors} navigation={navigation} staffData={data?.anilist.staff.edges} title='Staff' navLocation={'Staff'} gradBottomLoc={[.1, .9]} rolePosition='Top' />
                     <Trailer trailer={data.anilist.trailer ?? null} width={width} colors={colors} />
                     <ImageList />
+                    <DeviantArtImages query={data.anilist.title.romaji} colors={colors} />
                     <RecommendationList data={data} navigation={navigation} colors={colors} />
                     <BackgroundInfo />
                     <SynonymsDisplay />
