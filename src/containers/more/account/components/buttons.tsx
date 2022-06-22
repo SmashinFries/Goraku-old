@@ -23,18 +23,31 @@ const LoginButton = ({colors, handleLogin}:LoginProps) => {
     );
 }
 
+const AccountSettings = ({colors, onPress}:{colors:ThemeColors; onPress:() => void}) => {
+    return(
+        <List.Item 
+            rippleColor={colors.border} 
+            title="Account Settings"
+            titleStyle={{color:colors.text}} 
+            onPress={onPress} 
+            left={props => <List.Icon {...props} icon="account-settings-outline" color={colors.primary} />} 
+        />
+    );
+}
+
 type LogoutProps = {
     colors: ThemeColors;
-    tokenExp: string;
     logout: () => Promise<void>;
+    tokenExp?: string;
+    description?: boolean;
 }
-const LogoutButton = ({colors, tokenExp, logout}:LogoutProps) => {
+const LogoutButton = ({colors, tokenExp, logout, description}:LogoutProps) => {
     return(
         <List.Item 
             rippleColor={colors.border} 
             title="Logout" 
             titleStyle={{color:colors.text}} 
-            description={(tokenExp === null) && 'Token expired! Please re-login'} 
+            description={(tokenExp === null && description) && 'Token expired! Please re-login'} 
             descriptionStyle={{color:'red'}} 
             onPress={() => logout()} 
             left={props => <List.Icon {...props} icon="logout" color={colors.primary} />} 
@@ -95,4 +108,4 @@ const NSFWswitch = ({userData, adultContentWarning, handleNSFW, colors}:NSFWswit
     );
 }
 
-export { LoginButton, LogoutButton, MLMenuButton, ProfileMenuButton, NSFWswitch };
+export { LoginButton, LogoutButton, AccountSettings, MLMenuButton, ProfileMenuButton, NSFWswitch };
