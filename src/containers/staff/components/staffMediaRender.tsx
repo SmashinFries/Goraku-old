@@ -58,7 +58,7 @@ const StaffMediaRender = ({data, colors, isList, navigation}:Props) => {
                 <FlatList 
                     data={manga}
                     renderItem={contentRender}
-                    keyExtractor={(item) => item.node.id.toString()}
+                    keyExtractor={(item) => item.id.toString()}
                     horizontal
                     showsHorizontalScrollIndicator={false}
                     ItemSeparatorComponent={() => <View style={{width: 10}} />}
