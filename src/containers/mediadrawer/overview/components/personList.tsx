@@ -2,6 +2,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import React, { Dispatch, useState } from "react";
 import { View, Text, ScrollView, Pressable, ToastAndroid } from "react-native";
 import FastImage from "react-native-fast-image";
+import { Button } from "react-native-paper";
 import { toggleFav } from "../../../../Api";
 import { AniMalType, CharacterItemType, StudioItemType } from "../../../../Api/types";
 import { ThemeColors } from "../../../../Components/types";
@@ -60,6 +61,9 @@ const CharStaffList = ({charData, staffData, data, setData, navigation, title, c
                     // @ts-ignore
                     <PersonItem key={index} person={person} />
                 )}
+                {(charData?.length > 10) ? <Pressable onPress={() => navigation.jumpTo('CharacterStack')} style={{alignItems:'center',justifyContent:'center', width:120, height:180}}>
+                    <Text style={{color:colors.primary}}>View More</Text>
+                </Pressable> : null}
             </ScrollView>
         </View>
     );
