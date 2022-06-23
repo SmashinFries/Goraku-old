@@ -142,7 +142,7 @@ export const RecommendationScreen = ({navigation, route}:RecommendationProps) =>
         );
     }
 
-    if (loading) return <LoadingView colors={{colors, dark}} />
+    if (loading) return <LoadingView colors={ colors } />
     
     const RecView = ({item, index}:RenderItem) => {
         const [visible, setVisible] = useState<boolean>(false);

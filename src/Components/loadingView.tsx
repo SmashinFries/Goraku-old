@@ -22,6 +22,7 @@ type LoadingViewProps = {
 };
 
 const LoadingView = ({titleData, colors, mode='Gif'}:LoadingViewProps) => {
+    const gifSize = {width:90, height:90}
     const LoadingDescription = ({title, loading, loadingColor, textColor}:Props) => {
         const getTitle = () => {
             switch (title) {
@@ -58,7 +59,7 @@ const LoadingView = ({titleData, colors, mode='Gif'}:LoadingViewProps) => {
     
     if (!titleData) return((mode === 'Gif') ?
         <View style={{height:'100%', width:'100%', justifyContent:'center', alignItems:'center'}}>
-            <Image source={require('../assets/loading.gif')} style={{ width: 120, height: 120 }} resizeMode='contain' />
+            <Image source={require('../assets/loading.gif')} style={ gifSize } resizeMode='contain' />
         </View>
         :
         <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
@@ -69,7 +70,7 @@ const LoadingView = ({titleData, colors, mode='Gif'}:LoadingViewProps) => {
     return(
         <View style={{ flex:1, justifyContent: 'center', alignItems: 'center' }}>
             {(mode === 'Gif') ? <View style={{ alignItems:'flex-start'}}>
-                <FastImage fallback source={{ uri: 'https://giffiles.alphacoders.com/698/69845.gif' }} style={{ width: 120, height: 120, alignSelf:'center' }} resizeMode='contain' />
+                <FastImage fallback source={{ uri: 'https://giffiles.alphacoders.com/698/69845.gif' }} style={{ width: gifSize.width, height: gifSize.height, alignSelf:'center' }} resizeMode='contain' />
                 {titleData.map((data, index) =>
                     <LoadingDescription key={index} title={data.title} loading={data.loading} loadingColor={colors.primary} textColor={colors.text} />
                 )}

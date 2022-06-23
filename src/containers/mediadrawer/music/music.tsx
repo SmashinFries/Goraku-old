@@ -54,7 +54,7 @@ const MusicTab = ({ navigation, route }: MusicProps) => {
         fetchMusic().then(res => { setData(res?.anime[0]); setMusicLoad(res.anime[0]?.animethemes?.length > 0 ? false : null); new Promise(resolve => setTimeout(resolve, 500)).then(() => setLoading((res) ? false : null));}).catch(err => console.log(err));
     }, []);
 
-    if (loading) return <LoadingView colors={{colors, dark}} titleData={[{title:'Tracks', loading:musicLoad}]} />
+    if (loading) return <LoadingView colors={colors} titleData={[{title:'Tracks', loading:musicLoad}]} />
 
     return ( 
         <View style={{flex:1}}>

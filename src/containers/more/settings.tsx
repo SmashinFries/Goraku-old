@@ -15,7 +15,7 @@ export const SettingsScreen = ({navigation, route}:SettingsScreenProps) => {
 
     return(
         <ScrollView style={{flex:1, backgroundColor:(dark) ? colors.background : colors.card}}>
-            <List.Item rippleColor={colors.border} title="Themes" titleStyle={{color:colors.text}} onPress={() => navigation.push('Themes')} left={props => <List.Icon {...props} icon="theme-light-dark" color={colors.primary} />} />
+            <List.Item rippleColor={colors.border} title="Themes" titleStyle={{color:colors.text}} onPress={() => navigation.navigate('Themes')} left={props => <List.Icon {...props} icon="theme-light-dark" color={colors.primary} />} />
         </ScrollView>
     );
 }

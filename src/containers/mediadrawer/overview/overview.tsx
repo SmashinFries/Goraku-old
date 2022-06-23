@@ -192,7 +192,7 @@ const OverviewTab = ({ content, isList }: OverviewTabParams) => {
         }
 
         if (isMounted && !images) {
-            fetchImages().then((malimages) => {setImages(malimages); setData({...data, images:malimages}); setImageLoading(false)});
+            fetchImages().then((malimages) => { (isMounted) && setImages(malimages); setData({...data, images:malimages}); setImageLoading(false)});
         }
 
         return () => {

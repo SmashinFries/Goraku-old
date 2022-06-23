@@ -44,7 +44,7 @@ const StatisticsScreen = ({navigation, route}) => {
         }
     },[]);
 
-    if (loading) return <LoadingView colors={{colors, dark}} />
+    if (loading) return <LoadingView colors={colors} />
     
     return(
         <ScrollView refreshControl={<RefreshControl refreshing={refresh} onRefresh={onRefresh} />} contentContainerStyle={{paddingVertical:10}}> 

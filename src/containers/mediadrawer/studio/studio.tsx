@@ -48,7 +48,7 @@ const StudioInfo = ({navigation, route}:StudioInfoProps) => {
         handleStudioFetch().then(data => {setStudio(data); setIsLiked(data.data.Studio.isFavourite)}).then(() => setLoading(false)).catch((err) => console.log(err));
     },[]);
 
-    if (loading) return <LoadingView colors={{colors, dark}} />
+    if (loading) return <LoadingView colors={ colors } />
 
     return(
         <View>

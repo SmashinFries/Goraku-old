@@ -60,7 +60,7 @@ const StudioFav = ({navigation, route}) => {
         setRefreshing(false);
     }
 
-    if (loading) return <LoadingView colors={{colors, dark}} />;
+    if (loading) return <LoadingView colors={colors} />;
 
     return(
         <View style={{flex:1}}>
@@ -124,7 +124,7 @@ const StaffFav = ({navigation, route}) => {
         setRefreshing(false);
     }
 
-    if (loading) return <LoadingView colors={{colors, dark}} />;
+    if (loading) return <LoadingView colors={colors} />;
 
     return(
         <View style={{flex:1}}>
@@ -194,7 +194,7 @@ const CharacterFav = ({navigation, route}) => {
         }
     }
 
-    if (loading) return <LoadingView colors={{colors, dark}} />
+    if (loading) return <LoadingView colors={colors} />
 
     return (
         <View style={{flex:1}}>
@@ -254,7 +254,7 @@ const MediaFav = ({navigation, route}) => {
         setRefreshing(false);
     }
 
-    if (loading) return <LoadingView colors={{colors, dark}} />
+    if (loading) return <LoadingView colors={colors} />
 
     return(
         <View style={{flex:1}}>

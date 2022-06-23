@@ -6,6 +6,7 @@ import FastImage from "react-native-fast-image";
 import { Button } from "react-native-paper";
 import RenderHtml from "react-native-render-html";
 import { CharDetailShort, CharFullEdge, MalCharImagesShort } from "../../../Api/types";
+import { LoadingView } from "../../../Components";
 import { SiteButton } from "../../../Components/buttons/siteButtons";
 import { ThemeColors } from "../../../Components/types";
 import { _openBrowserUrl } from "../../../utils";
@@ -95,9 +96,10 @@ type CharacterImagesProps = {
     images: MalCharImagesShort[];
     setSelectedImg: Dispatch<SetStateAction<number>>;
     setVisible: Dispatch<SetStateAction<boolean>>;
+    loading: boolean;
     colors: ThemeColors;
 }
-const CharacterImages = ({images, setSelectedImg, setVisible, colors}:CharacterImagesProps) => {
+const CharacterImages = ({images, setSelectedImg, setVisible, loading, colors}:CharacterImagesProps) => {
     const imageSize = [120, 180];
 
     type imageProp = {
@@ -116,13 +118,16 @@ const CharacterImages = ({images, setSelectedImg, setVisible, colors}:CharacterI
     return(
         <View style={{ flex: 1, marginTop: 30, marginBottom: 20 }}>
             <Text style={{ fontSize: 34, fontWeight: 'bold', paddingHorizontal: 10, color: colors.text }}>Images</Text>
-            <FlatList
-                data={images}
-                renderItem={({ item, index }) => <ImageItem image={item} index={index} />}
-                keyExtractor={(item, index) => index.toString()}
-                horizontal={true}
-                showsHorizontalScrollIndicator={false}
-            />
+            {(loading) ? 
+            <LoadingView mode='Circle' colors={colors} titleData={[{title:'imageLoading', loading:loading}]} />
+            :<FlatList
+                    data={images}
+                    renderItem={({ item, index }) => <ImageItem image={item} index={index} />}
+                    keyExtractor={(item, index) => index.toString()}
+                    horizontal={true}
+                    showsHorizontalScrollIndicator={false}
+                />
+            }
         </View>
     );
 }

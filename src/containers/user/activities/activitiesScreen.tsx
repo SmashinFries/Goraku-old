@@ -56,7 +56,7 @@ const ActivitiesScreen = ({navigation, route}:UserStackProps) => {
         );
     }
 
-    if (loading) return <LoadingView colors={{colors, dark}} />
+    if (loading) return <LoadingView colors={colors} />
 
     return (
         <FlatList 

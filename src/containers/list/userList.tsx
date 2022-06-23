@@ -45,7 +45,7 @@ export const UserList = ({navigation, route}:ListProps) => {
         );
     }
 
-    if (!listLayout || listLayout === 'none') return <LoadingView colors={{colors, dark}} />;
+    if (!listLayout || listLayout === 'none') return <LoadingView colors={colors} />;
 
     return ( (listLayout === 'compact') ? 
             <FlatList

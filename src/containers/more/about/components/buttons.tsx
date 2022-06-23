@@ -101,7 +101,7 @@ const ShowDataSources = ({navigation, colors}:{navigation:any, colors:ThemeColor
             title="Data sources" 
             titleStyle={{color:colors.text}} 
             rippleColor={colors.border} 
-            onPress={() => navigation.push('DataSources')} 
+            onPress={() => navigation.navigate('DataSources')} 
         />
     );
 }

@@ -197,7 +197,7 @@ export const SearchScreen = ({ route, navigation }: SearchProps) => {
         )
     }
 
-    if (loading) return <LoadingView colors={{ colors, dark }} />
+    if (loading) return <LoadingView colors={colors} />
 
     return (
         <View >

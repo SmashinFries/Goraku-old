@@ -55,7 +55,7 @@ const FavTabs = ({navigation, route}) => {
         }
     },[]);
 
-    if (favLoad) return <LoadingView colors={{ colors, dark }} titleData={[{ title: 'Fetching Favorites', loading: favLoad }]} />
+    if (favLoad) return <LoadingView colors={ colors } titleData={[{ title: 'Fetching Favorites', loading: favLoad }]} />
 
     return (
         <View style={{ flex:1 }}>

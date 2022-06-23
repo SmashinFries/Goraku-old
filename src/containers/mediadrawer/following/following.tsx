@@ -41,7 +41,7 @@ const FollowingTab = ({ navigation, route }) => {
         fetchFollowing().then((resp) => {setData(resp); setLoading(false);});
     },[]);
 
-    if (loading) return <LoadingView colors={{colors, dark}}/>
+    if (loading) return <LoadingView colors={colors} />
 
     return (
         <FlatList
