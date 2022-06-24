@@ -8,10 +8,12 @@ import ActivityTile from "./components/activityTile";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { ActivityPage } from "../../../Api/types";
 import { useUserId } from "../../../Storage/authToken";
+import { ActivityIndicator } from "react-native-paper";
 
 const ActivitiesScreen = ({navigation, route}:UserStackProps) => {
     const [data, setData] = useState<ActivityPage>();
     const [loading, setLoading] = useState<boolean>(true);
+    const [loadingMore, setLoadingMore] = useState<boolean>(false);
     const [refresh, setRefresh] = useState<boolean>(false);
     const { colors, dark } = useTheme();
     const userId = useUserId();
@@ -25,8 +27,10 @@ const ActivitiesScreen = ({navigation, route}:UserStackProps) => {
 
     const loadMore = async() => {
         if (data.pageInfo.hasNextPage) {
+            setLoadingMore(true);
             const response = await fetchActivity(data.pageInfo.currentPage + 1);
             setData({...data, activities: [...data.activities, ...response.activities], pageInfo: response.pageInfo});
+            setLoadingMore(false);
         }
     }
 
@@ -69,6 +73,8 @@ const ActivitiesScreen = ({navigation, route}:UserStackProps) => {
             onRefresh={onRefresh}
             onEndReached={(data?.pageInfo.hasNextPage) && loadMore}
             onEndReachedThreshold={0.4}
+            ListFooterComponent={() => (loadingMore) && <ActivityIndicator size={'large'} color={colors.primary} />}
+            ListFooterComponentStyle={{justifyContent:'center', marginTop:10}}
         />
     );
 }

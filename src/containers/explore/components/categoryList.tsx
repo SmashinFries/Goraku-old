@@ -10,6 +10,7 @@ import { uniqueItems } from "../../../utils/filters/uniqueItems";
 import { getAuthContext } from "../../../Storage/authToken";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { LoadingView } from "../../../Components";
+import { ActivityIndicator } from "react-native-paper";
 
 type CategoryProps = { 
     titleType:Titles;
@@ -24,7 +25,8 @@ export const CategoryList = (props:CategoryProps) => {
     const [data, setData] = useState<MediaType>();
     const [page, setPage] = useState<PageInfoType>();
     const [activeId, setActiveId] = useState<{id:number, index:number}>({id:undefined, index:undefined});
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [loadingMore, setLoadingMore] = useState<boolean>(false);
     const [error, setError] = useState<AxiosError>(null);
     const { colors, dark } = useTheme();
     const isAuth = getAuthContext();
@@ -79,6 +81,7 @@ export const CategoryList = (props:CategoryProps) => {
 
     const handleMore = async() => {
         try {
+            setLoadingMore(true);
             const result = await getHomeData({ 
                 sort:props.sort, 
                 type:props.type, 
@@ -105,6 +108,7 @@ export const CategoryList = (props:CategoryProps) => {
             const unique = uniqueItems([...data, ...init_data.data.Page.media]);
             setData([...unique]);
             setPage(init_data.data.Page.pageInfo);
+            setLoadingMore(false);
         } catch (error) {
             setError(error);
         }
@@ -132,6 +136,12 @@ export const CategoryList = (props:CategoryProps) => {
         }
     },[data]);
 
+    const renderItem = ({item, index}) => {
+        return(
+            <MediaTile data={item} index={index} sheetControl={actionSheet} setActiveId={setActiveId} titleType={props.titleType} colors={colors} size={{width:160, height:250}} />
+        );
+    }
+
     if (loading) return <View style={{height:335}}><LoadingView colors={colors} mode='Circle' /></View>
     
     return(
@@ -140,13 +150,16 @@ export const CategoryList = (props:CategoryProps) => {
             <FlatList
                 style={{flex:1}}
                 data={data !== undefined ? data : []}
-                renderItem={({ item, index }) => <MediaTile data={item} index={index} sheetControl={actionSheet} setActiveId={setActiveId} titleType={props.titleType} colors={colors} size={{width:160, height:250}} />}
+                renderItem={renderItem}
                 keyExtractor={item => item.id.toString()}
                 horizontal={true}
+                getItemLayout={(data, index) => ({length:250+65, offset:(250+65) * index, index})}
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={{paddingRight:10}}
                 onEndReached={() => (page.hasNextPage === true) ? handleMore() : null}
                 onEndReachedThreshold={0.75}
+                // ListFooterComponent={() => (loadingMore) && <View style={{justifyContent:'center', height:250+65, width:160}}><ActivityIndicator size={'large'} color={colors.primary} /></View>}
+                // ListFooterComponentStyle={{justifyContent:'center', marginLeft:10}}
             />: <ShowError />}
             {/* <ActionSheet actionSheetRef={actionSheet} id={activeId.id} index={activeId.index} info={typeof(activeId.index) !== undefined ? data[activeId.index] : null} setData={setData} /> */}
         </View>
