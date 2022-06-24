@@ -81,18 +81,27 @@ export const StaffInfo = ({ navigation, route }:StaffInfoProps) => {
     }, [navigation, route, dark, loading]);
 
     useEffect(() => {
-        fetchInfo().then((res) => {
-            if (res.description) {
-                const {description, links} = filterDescription(res.description);
-                setLinks(links);
-                setData(res);
-                setIsLiked(res.isFavourite);
-                setLoading(false);
-            } else {
-                setData(res);
-                setLoading(false);
-            }
-        }).catch((err) => console.log(err));
+        let isMounted = true;
+        if (isMounted) {
+            fetchInfo().then((res) => {
+                if (isMounted) {
+                    if (res.description) {
+                        const { description, links } = filterDescription(res.description);
+                        setLinks(links);
+                        setData(res);
+                        setIsLiked(res.isFavourite);
+                        setLoading(false);
+                    } else {
+                        setData(res);
+                        setLoading(false);
+                    }
+                }
+            }).catch((err) => console.log(err));
+        }
+
+        return () => {
+            isMounted = false;
+        }
     }, []);
 
     const mediaNav = (type:'MEDIA'|'CHARACTER', params:Object) => {
