@@ -19,7 +19,7 @@ const StaffMediaRender = ({data, colors, isList, navigation}:Props) => {
     const contentRender = ({item}:{item:StaffMediaEdge}) => {
         return(
             // @ts-ignore
-            <Pressable onPress={() => navigation.push((isList) ? 'DrawerInfo' : 'Info', {id: item.node.id})}>
+            <Pressable onPress={() => navigation.push((isList) ? 'UserListDetail' : 'Info', {id: item.node.id})}>
                 <FastImage source={{ uri: item.node.coverImage.extraLarge }} style={{ height: 180, width: 120, borderRadius:8 }} resizeMode={'cover'} />
                 <LinearGradient 
                     colors={['transparent', 'rgba(0,0,0,.8)']} 
