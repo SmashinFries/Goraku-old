@@ -55,6 +55,10 @@ export const UserList = ({navigation, route}:ListProps) => {
                 keyExtractor={(item) => item.media.id.toString()}
                 renderItem={renderCompactItem}
                 numColumns={2}
+                getItemLayout={(data, index) => (
+                    {length: 110, offset: 110 * index, index}
+                )}
+                windowSize={10}
                 ItemSeparatorComponent={() => <View style={{height:10}} />}
                 columnWrapperStyle={{justifyContent:'space-evenly'}}
                 contentContainerStyle={{paddingBottom:30, paddingTop:15}}
@@ -66,6 +70,10 @@ export const UserList = ({navigation, route}:ListProps) => {
                 data={(search) ? dataTitleFilter(data, search) : data}
                 contentInsetAdjustmentBehavior="automatic"
                 renderItem={renderRowItem}
+                getItemLayout={(data, index) => (
+                    {length: 280, offset: 280 * index, index}
+                )}
+                windowSize={10}
                 keyExtractor={(item) => item.media.id.toString()}
                 contentContainerStyle={{paddingBottom:30}}
                 showsVerticalScrollIndicator={false}
