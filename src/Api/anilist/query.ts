@@ -706,6 +706,7 @@ query ($userId: Int, $type: MediaType, $sort: [MediaListSort]) {
           status (version:2)
           nextAiringEpisode {
 						timeUntilAiring
+            episode
 					}
 					title {
             userPreferred

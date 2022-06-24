@@ -666,6 +666,10 @@ export type RecommendationsFullType = {
     }
 }
 
+export type nextAiringEpisodeType = {
+    timeUntilAiring: number;
+    episode: number;
+}
 export type MediaCollectionEntries = {
     customLists: JSON;
     progress: number;
@@ -685,9 +689,7 @@ export type MediaCollectionEntries = {
         isAdult: boolean;
         status: string;
         synonyms: string[];
-        nextAiringEpisode: {
-            timeUntilAiring: number;
-        }
+        nextAiringEpisode: nextAiringEpisodeType;
         title: {
             userPreferred: string;
 			english: string;
