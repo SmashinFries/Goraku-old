@@ -94,7 +94,7 @@ const StaffFav = ({navigation, route}) => {
         if (isSelected) {
             // setSelected(selected.filter(id => id !== item.node.id));
         } else {
-            navigation.navigate('UserStaffDetail', {id:item.node.id, name:item.node.name.userPreferred, inStack:false})
+            navigation.navigate('UserStaffDetail', {id:item.node.id, name:item.node.name.userPreferred})
         }
     }
 

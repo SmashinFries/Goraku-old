@@ -19,7 +19,7 @@ export const ListStack = ({navigation}) => {
                     <Stack.Screen name='Favorites' component={FavTabs} options={{headerShown:true,}} />
                     <Stack.Screen name="UserListDetail" component={DrawerStack} initialParams={{isList:true}} />
                     <Stack.Screen name='UserCharDetail' component={CharDetailScreen} options={{ headerShown:true, headerTintColor:'#FFF' }} />
-                    <Stack.Screen name='UserStaffDetail' component={StaffInfo} options={{ headerShown:true, headerTransparent:true }} />
+                    <Stack.Screen name='UserStaffDetail' component={StaffInfo} options={{ headerShown:true }} />
                 </Stack.Navigator>
             </ListSearchProvider>
         </View>
