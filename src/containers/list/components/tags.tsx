@@ -1,16 +1,19 @@
 import { Theme } from "@react-navigation/native";
 import { View, Text } from "react-native";
+import { nextAiringEpisodeType } from "../../../Api/types";
+import { MaterialIcons } from '@expo/vector-icons';
+import { getTime } from "../../../utils";
 
 type ProgressTagType = {
     progress: number;
-    total: number;
     colors: Theme;
 }
-const ProgressTag = ({progress, total, colors}:ProgressTagType) => {
+const ProgressTag = ({progress, colors}:ProgressTagType) => {
+    if (progress === 0) return null;
     return(
         <View style={{height:22, borderRadius:6, paddingHorizontal:5, backgroundColor:colors.colors.primary}}>
             <Text style={{textAlign:'center'}}>
-                {total - progress}
+                {progress}
             </Text>
         </View>
     );
@@ -18,17 +21,27 @@ const ProgressTag = ({progress, total, colors}:ProgressTagType) => {
 
 type StatusTagProps = {
     mediaStatus: string;
+    nextAiringEpisode: nextAiringEpisodeType;
 }
-const StatusTag = ({mediaStatus}:StatusTagProps) => {
+const StatusTag = ({mediaStatus, nextAiringEpisode}:StatusTagProps) => {
     const status = (mediaStatus === 'RELEASING') ? 'Ongoing' 
         : (mediaStatus === 'FINISHED') ? 'Completed' 
         : (mediaStatus === 'NOT_YET_RELEASED') ? 'Upcoming' : mediaStatus;
 
     return(
         <View style={{height:22, borderRadius:6, paddingHorizontal:5, backgroundColor:'rgba(138, 240, 134,1)'}}>
-            <Text style={{textTransform:'capitalize', textAlign:'center'}}>
-                {status}
-            </Text>
+            {(status === 'Ongoing') ? 
+                <Text style={{ textAlign: 'center' }}>
+                    <Text style={{ textAlign: 'center', fontWeight:'bold' }}>
+                        {nextAiringEpisode.episode + ' '} 
+                    </Text>
+                     | {getTime(nextAiringEpisode.timeUntilAiring)}
+                </Text>
+                :
+                <Text style={{ textAlign: 'center' }}>
+                    {status}
+                </Text>
+            }
         </View>
     );
 }
