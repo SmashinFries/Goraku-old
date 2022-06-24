@@ -9,7 +9,7 @@ type ProgressTagType = {
     colors: Theme;
 }
 const ProgressTag = ({progress, colors}:ProgressTagType) => {
-    if (progress === 0) return null;
+    if (progress <= 0) return null;
     return(
         <View style={{height:22, borderRadius:6, paddingHorizontal:5, backgroundColor:colors.colors.primary}}>
             <Text style={{textAlign:'center'}}>
@@ -30,7 +30,7 @@ const StatusTag = ({mediaStatus, nextAiringEpisode}:StatusTagProps) => {
 
     return(
         <View style={{height:22, borderRadius:6, paddingHorizontal:5, backgroundColor:'rgba(138, 240, 134,1)'}}>
-            {(status === 'Ongoing') ? 
+            {(status === 'Ongoing' && nextAiringEpisode) ? 
                 <Text style={{ textAlign: 'center' }}>
                     <Text style={{ textAlign: 'center', fontWeight:'bold' }}>
                         {nextAiringEpisode.episode + ' '} 
