@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig } from "axios";
-import { PopularDevArtData } from "./types";
+import { DownloadData, MetaDatas, PopularDevArtData } from "./types";
 import { DEVART_KEY, DEVART_ID} from '@env';
 import * as SecureStore from 'expo-secure-store';
 import { getNSFW } from "../../Storage/nsfw";
@@ -19,11 +19,9 @@ export const fetchDevArtToken = async () => {
 
 export const getDAToken = async() => {
     let token = await SecureStore.getItemAsync('authDevArt');
-    console.log('First:', token);
     if (token) {
         try {
             const valid = await axios.post('https://www.deviantart.com/api/v1/oauth2/placebo?access_token=' + token);
-            console.log(valid.data);
             if (valid.status === 200 && valid.data.status === 'success') {
                 return token;
             }
@@ -34,22 +32,44 @@ export const getDAToken = async() => {
         }
     } else {
         const newToken = await fetchDevArtToken();
-        console.log(newToken);
         SecureStore.setItemAsync('authDevArt', newToken)
         return newToken
     }
 }
 
-export const fetchPopular = async(search:string, page=1, limit=15) => {
+export const fetchPopular = async(search:string, mode:'popular'|'recommended', page=0, limit=25) => {
     try {
         const allowNSFW = await getNSFW();
         const token = await getDAToken();
         const url = encodeURI(`${DEVART_URL}browse/popular?q=${search}&mature_content=true&timerange=alltime&offset=${page}&limit=${limit}&access_token=${token}`);
         let resp = await axios.post<PopularDevArtData>(url);
-        const visual_art = (allowNSFW) ? resp.data.results.filter((item) => item.category === 'Visual Art' || item.category === 'Drawings') : resp.data.results.filter((item) => (item.category === 'Visual Art' || item.category === 'Drawings') && item.is_mature === false);
+        const visual_art = (allowNSFW) ? resp.data.results : resp.data.results.filter((item) => item.is_mature === false);
         resp.data = {...resp.data, results: visual_art};
         return resp.data;
     } catch (e) {
-        console.log('Fetch Failed:', e);
+        console.log('Popular Fetch Failed:', e);
+    }
+}
+
+export const fetchMetaData = async(id:string) => {
+    try {
+        const token = await getDAToken();
+        const url = encodeURI(`${DEVART_URL}deviation/metadata?deviationids=${id}&ext_stats=true&ext_submission=true&with_session=false&mature_content=true&access_token=${token}`);
+        const resp = await axios.get<MetaDatas>(url);
+        return resp.data.metadata[0];
+    } catch (e) {
+        console.log('MetaData Fetch Failed:', e);
+    }
+}
+
+export const fetchDownload = async(id:string) => {
+    try {
+        const token = await getDAToken();
+        const url = encodeURI(`${DEVART_URL}deviation/download/${id}?mature_content=true&access_token=${token}`);
+        const resp = await axios.get<DownloadData>(url);
+        return resp.data;
+    } catch (e) {
+        console.log('Download Fetch Failed:', e);
+        return null;
     }
 }

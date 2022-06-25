@@ -3,6 +3,7 @@ import { DrawerNavigationProp, DrawerScreenProps } from "@react-navigation/drawe
 import { CompositeNavigationProp, CompositeScreenProps } from "@react-navigation/native";
 import { NativeStackNavigationProp, NativeStackScreenProps } from "@react-navigation/native-stack";
 import { AniMalType, MediaAnimeSort, MediaMangaSort, ReviewsNode } from "../Api/types";
+import { PopularDevArtData } from "../Api/deviantArt/types";
 
 export type BottomTabParamList = {
     ExploreStack: undefined;
@@ -87,6 +88,7 @@ export type CharStackParamList = {
     Character: { data: AniMalType };
     CharDetail: { id: number, malId:number, name:string, type:string, inStack:boolean };
     StaffDetail: { id: number, name:string, inStack:boolean };
+    DeviantArt: {query:string, data:PopularDevArtData};
 }
 
 export type OverviewNav = CompositeNavigationProp<
@@ -106,6 +108,7 @@ export type MusicProps = DrawerScreenProps<DrawerParamList, 'Music'>;
 export type CharStackProps = NativeStackScreenProps<DrawerParamList, 'CharacterStack'>;
 export type CharacterProps = DrawerScreenProps<CharStackParamList, 'Character'>;
 export type CharDetailProps = DrawerScreenProps<CharStackParamList, 'CharDetail'>;
+export type DevArtPageProps = NativeStackScreenProps<CharStackParamList, 'DeviantArt'>;
 export type WatchProps = DrawerScreenProps<DrawerParamList, 'Watch'>;
 export type StudioInfoProps = DrawerScreenProps<DrawerParamList, 'StudioInfo'>;
 export type ReviewProps = DrawerScreenProps<DrawerParamList, 'Reviews'>;

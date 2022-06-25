@@ -17,7 +17,7 @@ export type PopularResult = {
     is_published:       boolean;
     is_blocked:         boolean;
     author:             Author;
-    stats:              Stats;
+    stats:              StatsDA;
     published_time:     string;
     allows_comments:    boolean;
     preview:            Content;
@@ -54,7 +54,67 @@ export type Content = {
     filesize?:    number;
 }
 
-export type Stats = {
+export type StatsDA = {
     comments:   number;
     favourites: number;
+}
+
+// METADATA
+
+export type MetaDatas = {
+    metadata: MetadataDA[];
+}
+
+export type MetadataDA = {
+    deviationid:      string;
+    printid:          null;
+    author:           Author;
+    is_watching:      boolean;
+    title:            string;
+    description:      string;
+    license:          string;
+    allows_comments:  boolean;
+    tags:             MDTag[];
+    is_favourited:    boolean;
+    is_mature:        boolean;
+    can_post_comment: boolean;
+    submission:       SubmissionDA;
+    stats:            MetaDataStatsDA;
+}
+
+export type MDTag = {
+    tag_name:  string;
+    sponsored: boolean;
+    sponsor:   string;
+}
+
+export type SubmissionDA = {
+    creation_time: string;
+    category: string;
+    file_size: string;
+    resolution: string;
+    submitted_with: {
+        app: string;
+        url: string;
+    };
+}
+
+export type MetaDataStatsDA = {
+    views: number;
+    views_today: number;
+    favourites: number;
+    comments: number;
+    downloads: number;
+    downloads_today: number;
+}
+
+
+// DOWNLOAD
+
+export type DownloadData = {
+	src: string;
+	filename: string;
+	width: number;
+	height: number;
+	filesize: number;
 }
