@@ -18,6 +18,8 @@ import { getIsAuth } from "../../Storage/authToken";
 import { HeaderBackButton, HeaderRightButtons } from "../../Components/header/headers";
 import { _openBrowserUrl } from "../../utils";
 import { openURL } from "expo-linking";
+import DeviantArtPage from "../../containers/deviantArt/devartPage";
+import DevArtDetail from "../../containers/deviantArt/devartDetail";
 
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();
@@ -128,6 +130,8 @@ export const DrawerStack = ({navigation, route}) => {
             <Stack.Screen name='Character' component={CharDetailScreen} options={{ headerTransparent:false}} />
             <Stack.Screen name="Staff" component={StaffInfo} options={{ headerTransparent:false}} initialParams={{isList:isList}} />
             <Stack.Screen name="ReviewBody" component={ReviewBody} options={{ headerTransparent:false}} />
+            <Stack.Screen name="DeviantArt" component={DeviantArtPage} initialParams={{inStack: true}}/>
+            <Stack.Screen name="DeviantArtDetail" component={DevArtDetail} initialParams={{inStack: true}}/>
         </Stack.Navigator>
     );
 }
