@@ -219,7 +219,7 @@ const OverviewTab = ({ content, isList }: OverviewTabParams) => {
                     <CharStaffList data={data} setData={setData} colors={colors} navigation={navigation} staffData={data?.anilist.staff.edges} title='Staff' navLocation={'Staff'} gradBottomLoc={[.1, .9]} rolePosition='Top' />
                     <Trailer trailer={data.anilist.trailer ?? null} width={width} colors={colors} />
                     <ImageList />
-                    <DeviantArtImages query={data.anilist.title.romaji} colors={colors} />
+                    {/* <DeviantArtImages query={data.anilist.title.romaji} colors={colors} /> */}
                     <RecommendationList data={data} navigation={navigation} colors={colors} />
                     <BackgroundInfo />
                     <SynonymsDisplay />
