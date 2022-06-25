@@ -10,7 +10,7 @@ import { handleShare } from "../../utils";
 import { LinearGradient } from "expo-linear-gradient";
 import { getMalChar } from "../../Api/mal";
 import { HeaderBackButton, HeaderRightButtons } from "../../Components/header/headers";
-import { ImageViewer, LoadingView, CharacterHeaderImage, CharacterOverview, CharacterBody, EditButton } from "../../Components";
+import { ImageViewer, LoadingView, CharacterHeaderImage, CharacterOverview, CharacterBody, EditButton, DeviantArtImages } from "../../Components";
 import QrView from "../../Components/qrView";
 import { CharacterFeatured, CharacterImages } from "./components/views";
 const CharDetailScreen = ({ navigation, route }: CharDetailProps) => {
@@ -97,6 +97,7 @@ const CharDetailScreen = ({ navigation, route }: CharDetailProps) => {
                     </View>
                     <CharacterBody description={data.description} links={links} favorite={favorite} toggleLike={toggleLike} colors={colors} />
                     <CharacterFeatured data={data} parNav={parNav} colors={colors} />
+                    <DeviantArtImages query={data.name.full} navigation={navigation} colors={colors} />
                     <CharacterImages images={images} loading={loadingImages} setSelectedImg={setSelectedImg} setVisible={setVisible} colors={colors} />
                     <EditButton type="CHARACTER" id={data.id} colors={colors} />
                 </LinearGradient>
