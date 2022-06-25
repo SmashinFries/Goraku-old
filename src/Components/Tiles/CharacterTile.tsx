@@ -13,7 +13,7 @@ type CharacterTile = {
 }
 export const CharacterTile = ({character, date, onPress, primaryColor}:CharacterTile) => {
     return(
-        <View style={{borderRadius:8}}>
+        <View style={{height:210, width:130, borderRadius:8}}>
             <FastImage fallback source={{uri: character.image.large}} style={{height:210, width:130, borderRadius:8}}  resizeMode='cover' />
             <LinearGradient colors={['transparent', (character.isFavourite) ? 'rgba(255, 0, 0,.85)' : 'rgba(0,0,0,.8)']} locations={[.75, 1]} style={{position:'absolute', borderRadius:8, justifyContent:'flex-end', alignItems:'center', width:'100%', height:'100%'}}>
                 <Text style={{color:'#FFF', paddingBottom:5}} numberOfLines={2}>{character.name.userPreferred}</Text>

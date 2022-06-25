@@ -20,6 +20,9 @@ import { themeSwitch } from './src/Themes/themes';
 import DownloadDialog from './src/Components/dialogs/downloadDialog';
 import { useRelease } from './src/Api/github/github';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { enableFreeze } from 'react-native-screens';
+
+enableFreeze(true);
 
 const prefix = Linking.createURL('/');
 const config: PathConfigMap<ReactNavigation.RootParamList> = {

@@ -61,14 +61,21 @@ const CharDetailScreen = ({ navigation, route }: CharDetailProps) => {
     }
 
     useEffect(() => {
-        setLoading(true);
-        getData().then(res => {
-            setData(res);
-            setLoadingAni(false);
-            setFavorite(res.isFavourite);
-            setLoading(false);
-            getMalCharImages(res.name.first, res.name.last, res.siteUrl);
-        });
+        let isMounted = true;
+        if (isMounted) {
+            setLoading(true);
+            getData().then(res => {(isMounted) &&
+                setData(res);
+                setLoadingAni(false);
+                setFavorite(res.isFavourite);
+                setLoading(false);
+                getMalCharImages(res.name.first, res.name.last, res.siteUrl);
+            });
+        }
+
+        return () => {
+            isMounted = false;
+        }
         
     }, [id])
 

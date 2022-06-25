@@ -77,15 +77,20 @@ export const InfoDrawer = ({ navigation, route }:InfoProps) => {
     }
 
     useEffect(() => {
-        if (data === undefined) {
+        let isMounted = true;
+        if (data === undefined && isMounted) {
             fetchInfo().then(res => {
-                if (res !== null) {
+                if (res !== null && isMounted) {
                     setData(res);
                     setLoading(false);
                 } else {
                     setData(null);
                 }
             });
+        }
+
+        return () => {
+            isMounted = false;
         }
     }, []);
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { View, FlatList } from "react-native";
-import { IconButton } from 'react-native-paper';
+import { ActivityIndicator, IconButton } from 'react-native-paper';
 import { useTheme } from "@react-navigation/native";
 import { LoadingView, MediaTile } from "../../../Components";
 import { getHomeData } from "../../../Api";
@@ -18,6 +18,7 @@ export const SearchScreen = ({ route, navigation }: SearchProps) => {
     const [charData, setCharData] = useState<CharSearchType>();
     const [staffData, setStaffData] = useState<StaffSearchType>();
     const [loading, setLoading] = useState(false);
+    const [loadingMore, setLoadingMore] = useState(false);
     const sheetRef = useRef<BottomSheetModal>(null);
     const { searchParams } = route.params;
     const { colors, dark } = useTheme();
@@ -92,6 +93,7 @@ export const SearchScreen = ({ route, navigation }: SearchProps) => {
 
     const fetchMore = async () => {
         try {
+            setLoadingMore(true);
             const result = await getHomeData({
                 sort: searchParams.sort,
                 type: searchParams.type,
@@ -118,6 +120,7 @@ export const SearchScreen = ({ route, navigation }: SearchProps) => {
             const newData = [...data.data.Page.media, ...result.data.data.Page.media];
             const filtedData = uniqueItems(newData);
             setData({ ...data, data: { ...data.data, Page: { ...data.data.Page, media: filtedData, pageInfo:result.data.data.Page.pageInfo } } });
+            setLoadingMore(false);
         } catch (e) {
             console.log(e);
         }
@@ -126,6 +129,7 @@ export const SearchScreen = ({ route, navigation }: SearchProps) => {
     const fetchMoreChar = async () => {
         try {
             if (searchParams.type === 'CHARACTERS') {
+                setLoadingMore(true);
                 const resp = await getCharacterSearch('CHARACTER', searchParams.search ?? undefined, charData.data.Page.pageInfo.currentPage + 1, 20, (searchParams.search?.length > 0) ? undefined : true);
                 setCharData({
                     ...charData,
@@ -141,7 +145,9 @@ export const SearchScreen = ({ route, navigation }: SearchProps) => {
                         }
                     }
                 });
+                setLoadingMore(false);
             } else if (searchParams.type === 'STAFF') {
+                setLoadingMore(true);
                 const resp = await getCharacterSearch('STAFF', searchParams.search ?? undefined, staffData.data.Page.pageInfo.currentPage + 1, 20, (searchParams.search?.length > 0) ? undefined : true);
                 setStaffData({
                     ...charData,
@@ -158,6 +164,7 @@ export const SearchScreen = ({ route, navigation }: SearchProps) => {
                         }
                     }
                 });
+                setLoadingMore(false);
             }
         } catch (error) {
             console.log('Could not fetch more characters:', error);
@@ -176,7 +183,14 @@ export const SearchScreen = ({ route, navigation }: SearchProps) => {
     }, [navigation, dark]);
 
     useEffect(() => {
-        handleSearch();
+        let isMounted = true;
+        if (isMounted) {
+            handleSearch();
+        }
+
+        return () => {
+            isMounted = false;
+        }
     }, []);
 
     const renderItem = ({ item }) => {
@@ -210,6 +224,12 @@ export const SearchScreen = ({ route, navigation }: SearchProps) => {
                     columnWrapperStyle={{ marginVertical: 5, justifyContent: 'space-evenly' }}
                     onEndReached={() => (data.data.Page.pageInfo.hasNextPage) ? fetchMore() : null}
                     onEndReachedThreshold={0.7}
+                    getItemLayout={(data, index) => (
+                        {length: 210+65, offset: (210+65) * index, index}
+                    )}
+                    windowSize={10}
+                    ListFooterComponent={() => (loadingMore) && <ActivityIndicator size={'large'} color={colors.primary} />}
+                    ListFooterComponentStyle={{justifyContent:'center', alignItems:'center', marginTop:10}}
                 /> :
                 (charData) ?
                     <FlatList
@@ -221,6 +241,12 @@ export const SearchScreen = ({ route, navigation }: SearchProps) => {
                         ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
                         onEndReached={() => (charData.data.Page.pageInfo.hasNextPage) ? fetchMoreChar() : null}
                         onEndReachedThreshold={0.7}
+                        getItemLayout={(data, index) => (
+                            {length: 210, offset: 210 * index, index}
+                        )}
+                        windowSize={10}
+                        ListFooterComponent={() => (loadingMore) && <ActivityIndicator size={'large'} color={colors.primary} />}
+                        ListFooterComponentStyle={{justifyContent:'center', alignItems:'center', marginTop:10}}
                     /> :
                     <FlatList
                         data={(staffData !== undefined) ? staffData.data.Page.staff : []}
@@ -231,6 +257,12 @@ export const SearchScreen = ({ route, navigation }: SearchProps) => {
                         ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
                         onEndReached={() => (staffData.data.Page.pageInfo.hasNextPage) ? fetchMoreChar() : null}
                         onEndReachedThreshold={0.7}
+                        getItemLayout={(data, index) => (
+                            {length: 210, offset: 210 * index, index}
+                        )}
+                        windowSize={10}
+                        ListFooterComponent={() => (loadingMore) && <ActivityIndicator size={'large'} color={colors.primary} />}
+                        ListFooterComponentStyle={{justifyContent:'center', alignItems:'center', marginTop:10}}
                     />
             }
             <FilterSheet sheetRef={sheetRef} searchParams={searchParams} handleSearch={() => handleSearch()} />
