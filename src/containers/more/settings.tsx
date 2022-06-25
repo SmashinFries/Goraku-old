@@ -1,21 +1,29 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
 import { Pressable, View, Text, ScrollView } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { SettingsScreenProps, ThemesScreenProps } from "../types";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { IconButton, List, Switch } from 'react-native-paper';
+import { Button, Card, Divider, IconButton, List, Modal, Portal, RadioButton, Switch } from 'react-native-paper';
 import { storeTheme } from "../../Storage/themeStorage";
 import { ThemeContext } from "../../contexts/context";
 import { AvailableThemes } from "../../Themes/themes";
+import { ThemeColors } from "../../Components/types";
+import { getImgType, getSaveImgType, storeSaveImgType } from "../../Storage/generalSettings";
 
 const Stack = createNativeStackNavigator();
 
 export const SettingsScreen = ({navigation, route}:SettingsScreenProps) => {
     const { colors, dark } = useTheme();
+    const {imgType, setImgType} = getImgType();
+    const [saveimgVis, setSaveimgVis] = useState(false);
+
+    const hideSaveImgModal = () => setSaveimgVis(false);
 
     return(
         <ScrollView style={{flex:1, backgroundColor:(dark) ? colors.background : colors.card}}>
             <List.Item rippleColor={colors.border} title="Themes" titleStyle={{color:colors.text}} onPress={() => navigation.navigate('Themes')} left={props => <List.Icon {...props} icon="theme-light-dark" color={colors.primary} />} />
+            <List.Item rippleColor={colors.border} title="Save Image Type" titleStyle={{color:colors.text}} onPress={() => setSaveimgVis(true)} right={props => <View style={{justifyContent:'center', paddingRight:10}}><Text style={{color:props.color}}>{imgType}</Text></View>} left={props => <List.Icon {...props} icon="image" color={colors.primary} />} />
+            <SavedImageModal visible={saveimgVis} hideModal={hideSaveImgModal} setType={setImgType} colors={colors} />
         </ScrollView>
     );
 }
@@ -73,6 +81,63 @@ const Themes = ({navigation, route}:ThemesScreenProps) => {
             </List.Section>
             {/* <List.Item titleStyle={{color:colors.text}} title="Use Profile Color" right={() => <Switch value={(theme === 'Light') ? true : false} color={colors.primary} />} /> */}
         </ScrollView>
+    );
+}
+
+type ImageModalProps = {
+    visible: boolean;
+    hideModal: () => void;
+    setType: Dispatch<SetStateAction<string>>;
+    colors: ThemeColors;
+}
+const SavedImageModal = ({visible, hideModal, setType, colors}:ImageModalProps) => {
+    const [saveImgType, setSaveImgType] = useState<string>('jpg');
+
+    const selectJPG = () => setSaveImgType('jpg');
+    const selectPNG = () => setSaveImgType('png');
+
+    const confirmType = async() => {
+        await storeSaveImgType(saveImgType);
+        setType(saveImgType);
+        hideModal();
+    }
+
+    useEffect(() => {
+        let isMounted = true;
+        const checkType = async() => {
+            const type = await getSaveImgType();
+            return type;
+        }
+
+        if (isMounted) {
+            checkType().then(type => (type) && setSaveImgType(type));
+        }
+
+    },[]);
+
+    return(
+        <Portal>
+            <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={{width:'60%', alignSelf:'center'}}>
+                <Card>
+                    <Card.Title title="Saved Image Type" />
+                    <Divider />
+                    <Card.Content style={{paddingTop:20}}>
+                        <Pressable onPress={selectJPG} style={{flexDirection:'row', paddingHorizontal:5, justifyContent:'space-between', alignItems:'center'}} >
+                            <Text style={{color:colors.text}}>jpg</Text>
+                            <RadioButton.Android onPress={selectJPG} color={colors.primary} status={(saveImgType === 'jpg') ? 'checked' : 'unchecked'} uncheckedColor={colors.text} value="jpg" />
+                        </Pressable>
+                        <Pressable onPress={selectPNG} style={{flexDirection:'row', paddingHorizontal:5, justifyContent:'space-between', alignItems:'center'}}>
+                            <Text style={{color:colors.text}}>png</Text>
+                            <RadioButton.Android onPress={selectPNG} color={colors.primary} status={(saveImgType === 'png') ? 'checked' : 'unchecked'} uncheckedColor={colors.text} value="png" />
+                        </Pressable>
+                    </Card.Content>
+                    <Card.Actions style={{justifyContent:'flex-end', paddingTop:20}}>
+                        <Button onPress={hideModal}>Cancel</Button>
+                        <Button onPress={confirmType}>Ok</Button>
+                    </Card.Actions>
+                </Card>
+            </Modal>
+        </Portal>
     );
 }
 
