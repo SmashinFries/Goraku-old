@@ -58,8 +58,8 @@ const CharacterHeaderImage = ({origin, dateOfBirth, image, date }:CharacterHeade
     },[])
     
     return (
-        <View style={{ height: 290, width: 180 }}>
-            <FastImage source={{ uri: image.large }} style={{ height: 290, width: 180, marginTop: 10, marginLeft: 10, borderRadius: 12, borderWidth: .5 }} />
+        <View style={{ height: 300, width: 200 }}>
+            <FastImage source={{ uri: image.large }} style={{ height: 300, width: 200, marginTop: 10, marginLeft: 10, borderRadius: 12,}} />
             <LinearGradient colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.9)']} locations={[0.80, 1]} style={{ position: 'absolute', justifyContent: 'flex-end', marginLeft: 10, marginTop: 10, borderBottomLeftRadius: 12, borderBottomRightRadius: 12, height: '100%', width: '100%' }}>
                 {checkBD(date, dateOfBirth) ?
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingBottom: 5 }}>
@@ -99,18 +99,17 @@ type CharacterDescProps = {
     width:number;
     colors:ThemeColors;
 }
-const CharacterDescription = ({description, width, colors}:CharacterDescProps) => {
+const CharacterDescription = React.memo(function CharacterDescription ({description, width, colors}:CharacterDescProps) {
     return(
         <RenderHtml 
             defaultTextProps={{ selectable: true }} 
             tagsStyles={{ body: { color: colors.text } }} 
-            enableExperimentalBRCollapsing 
             contentWidth={width} 
             source={{ html: description }}
             renderersProps={{a: {onPress: (event, url) => _openBrowserUrl(url, colors.primary, colors.text)}}}
         />
     );
-}
+});
 
 type staffData = {
     dateOfBirth: string;
