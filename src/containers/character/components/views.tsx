@@ -114,10 +114,10 @@ const CharacterImages = ({images, setSelectedImg, setVisible, loading, colors}:C
         );
     }
 
-    if (images === undefined && images?.length < 0) return null;
+    if (images === undefined || images?.length <= 0) return null;
     return(
         <View style={{ flex: 1, marginTop: 30, marginBottom: 20 }}>
-            <Text style={{ fontSize: 34, fontWeight: 'bold', paddingHorizontal: 10, color: colors.text }}>Images</Text>
+            <Text style={{ fontSize: 34, fontWeight: 'bold', paddingHorizontal: 10, color: colors.text }}>MAL Images</Text>
             {(loading) ? 
             <LoadingView mode='Circle' colors={colors} titleData={[{title:'imageLoading', loading:loading}]} />
             :<FlatList
