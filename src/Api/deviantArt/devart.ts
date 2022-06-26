@@ -37,12 +37,13 @@ export const getDAToken = async() => {
     }
 }
 
-export const fetchPopular = async(search:string, mode:'popular'|'recommended', page=0, limit=25) => {
+export const fetchPopular = async(search:string, mode:'popular'|'tag', page=0, limit=25) => {
     try {
         const allowNSFW = await getNSFW();
         const token = await getDAToken();
         const url = encodeURI(`${DEVART_URL}browse/popular?q=${search}&mature_content=true&timerange=alltime&offset=${page}&limit=${limit}&access_token=${token}`);
-        let resp = await axios.post<PopularDevArtData>(url);
+        const tagUrl = encodeURI(`https://www.deviantart.com/api/v1/oauth2/browse/tags?tag=${search}&offset=${page}&limit=${limit}&with_session=false&mature_content=true&access_token=${token}`)
+        let resp = await axios.post<PopularDevArtData>((mode==='tag') ? tagUrl : url);
         const visual_art = (allowNSFW) ? resp.data.results : resp.data.results.filter((item) => item.is_mature === false);
         resp.data = {...resp.data, results: visual_art};
         return resp.data;
@@ -72,4 +73,19 @@ export const fetchDownload = async(id:string) => {
         console.log('Download Fetch Failed:', e);
         return null;
     }
+}
+
+export const fetchRelatedTags = async(search:string) => {
+    const query = search.replace(/\s/gm, '+');
+    const url = `https://www.deviantart.com/search/deviations?q=${query}`;
+    const html = await axios.get<string>(url);
+    const tags = html.data.match(/<a class="_3DJk2 _2yfV4 _1qoDX _1LbFX" .*?>(.*?)<\/a>/gm);
+    const tag_words = tags.map((tag) => tag.match(/"\>(.*?)<\/a>/)[1]);
+    return tag_words;
+}
+
+export const fetchTag = async(tag:string) => {
+    const token = await getDAToken();
+    const url = `https://www.deviantart.com/api/v1/oauth2/browse/tags?tag=${tag}&with_session=false&mature_content=true&access_token=${token}`
+
 }
