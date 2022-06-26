@@ -51,19 +51,29 @@ export const DevArtMetaData = ({data, url, colors}:Props) => {
         );
     }
 
+    const ImageSize = () => {
+        return(
+            <View style={{flexDirection:'row', alignItems:'center'}}>
+                <IconButton icon={'image-size-select-actual'} />
+                <Text style={{ color: colors.text }}>{data.submission.resolution}</Text>
+            </View>
+        );
+    }
+
     return (
         <View style={{ flex: 1 }}>
             <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-evenly' }}>
                 <TotalViews />
                 <TotalLikes />
                 <TotalDownloads />
+                <ImageSize />
             </View>
             {(data.tags) ? <ScrollView horizontal>
                 {data.tags.map(tagItem)}
             </ScrollView> : null}
-            <Button mode='outlined' onPress={() => _openBrowserUrl(url, colors.primary, colors.text)}>Open Site</Button>
+            <Button mode='outlined' style={{marginHorizontal:30, marginTop:10}} onPress={() => _openBrowserUrl(url, colors.primary, colors.text)}>Open Site</Button>
             {(data.description) ? <View style={{width:'100%', alignItems:'center', paddingTop:20}}>
-                    <RenderHTML source={{html:data.description}} tagsStyles={{body:{color:colors.text}}} contentWidth={width} />
+                    <RenderHTML source={{html:data.description}} tagsStyles={{body:{color:colors.text}}} baseStyle={{paddingHorizontal:10}} contentWidth={width} />
             </View> : null}
         </View>
     );
