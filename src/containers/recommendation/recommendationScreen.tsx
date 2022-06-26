@@ -1,5 +1,5 @@
 import { useTheme } from "@react-navigation/native";
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, memo } from "react";
 import { View, Text, FlatList, useWindowDimensions, Pressable } from "react-native";
 import FastImage from "react-native-fast-image";
 import { Fontisto } from '@expo/vector-icons';
@@ -101,6 +101,7 @@ export const RecommendationScreen = ({navigation, route}:RecommendationProps) =>
     },[]);
 
     useEffect(() => {
+        setLoading(true);
         handleFetch(1, 8).then(resp => {
             setData(resp.data.Page.recommendations);
             setPageInfo(resp.data.Page.pageInfo);
@@ -144,10 +145,8 @@ export const RecommendationScreen = ({navigation, route}:RecommendationProps) =>
             </View>
         );
     }
-
-    if (loading) return <LoadingView colors={ colors } />
     
-    const RecView = ({item, index}:RenderItem) => {
+    const RecView = memo(({item, index}:RenderItem) => {
         const [visible, setVisible] = useState<boolean>(false);
         const height = 120+100+120+25;
         return(
@@ -191,13 +190,15 @@ export const RecommendationScreen = ({navigation, route}:RecommendationProps) =>
                     <UserModal user={item.user} visible={visible} onDismiss={() => setVisible(false)} colors={colors} />
                 </View>
         );
-    }
+    });
 
     const renderItem = ({item, index}) => {
         return(
             <RecView item={item} index={index} />
         );
     }
+
+    if (loading) return <LoadingView colors={ colors } />
 
     return (
         <View style={{flex:1}}>
@@ -213,7 +214,9 @@ export const RecommendationScreen = ({navigation, route}:RecommendationProps) =>
                 getItemLayout={(data, index) => (
                     {length: 365, offset: 365 * index, index}
                 )}
-                windowSize={5}
+                disableVirtualization={true}
+                removeClippedSubviews={true}
+                windowSize={10}
                 ListFooterComponent={() => (loadingMore) && <ActivityIndicator size={'large'} color={colors.primary} />}
                 ListFooterComponentStyle={{justifyContent:'center', marginTop:10}}
             />
