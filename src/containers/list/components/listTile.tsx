@@ -1,7 +1,7 @@
 import { MaterialTopTabNavigationProp } from '@react-navigation/material-top-tabs';
 import { Theme } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
-import React from 'react';
+import React, { memo } from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -42,7 +42,8 @@ const getStatus = (status, nextAiringEpisode) => {
     return statusString
 }
 
-const ListTile = ({item, colors, listStatus, tags, navigation}:TileProps) => {
+const ListTile = memo(({item, colors, listStatus, tags, navigation}:TileProps) => {
+    const size = {height:280, width:190};
     const total = (item.media.format === 'NOVEL') ? item.media.volumes : item.media.episodes || item.media.chapters;
     const progressLeft = getProgress(item.media.nextAiringEpisode, total, (item.media.format === 'NOVEL') ? item.progressVolumes : item.progress);
     // const progressPerc = (((item.media.format === 'NOVEL' ? item.progress : item.progressVolumes ) /total)*100).toFixed(0);
@@ -50,8 +51,8 @@ const ListTile = ({item, colors, listStatus, tags, navigation}:TileProps) => {
     if (item.media.isAdult) return null;
     return(
         // @ts-ignore
-        <TouchableOpacity activeOpacity={.7} onPress={() => navigation.navigate('UserListDetail', {id: item.media.id, isList:true})} style={{ height: 280, width:190, backgroundColor:colors.colors.primary, borderRadius: 8}}>
-            <FastImage fallback source={{ uri: item.media.coverImage.extraLarge }} resizeMode={'cover'} style={{ height: 280, width: 190, borderRadius: 8 }} />
+        <TouchableOpacity activeOpacity={.7} onPress={() => navigation.navigate('UserListDetail', {id: item.media.id, isList:true})} style={{ height: size.height, width:size.width, backgroundColor:colors.colors.primary, borderRadius: 8}}>
+            <FastImage fallback source={{ uri: item.media.coverImage.extraLarge }} resizeMode={'cover'} style={{ height: size.height, width: size.width, borderRadius: 8 }} />
             <LinearGradient colors={['transparent', 'rgba(0,0,0,.7)']} locations={[.65, .95]} style={{ position: 'absolute', height: '100%', width: '100%', justifyContent: 'flex-end', alignItems: 'center', borderRadius:8 }}>
                 <Text numberOfLines={2} style={{ color: '#FFF', textAlign: 'center', fontWeight: 'bold', paddingBottom:10, paddingHorizontal:5 }}>{item.media.title.userPreferred}</Text>
                 {/* {(item.progress > 0) ? <View style={{ position: 'absolute', bottom: .1, left: 0, height: 8, width: (item.media.episodes ?? item.media.chapters) ? `${progressPerc}%` : '50%', backgroundColor: colors.colors.primary, borderBottomLeftRadius: 8, borderBottomRightRadius: (progressPerc === '100') ? 8 : 0 }} /> : null} */}
@@ -68,7 +69,7 @@ const ListTile = ({item, colors, listStatus, tags, navigation}:TileProps) => {
             </LinearGradient>
         </TouchableOpacity>
     );
-}
+});
 
 type RowTileProps = {
     item: any;
@@ -80,7 +81,7 @@ type RowTileProps = {
         progressTag: boolean;
     }
 }
-const RowTile = ({item, colors, listStatus, navigation, tags}:RowTileProps) => {
+const RowTile = memo(({item, colors, listStatus, navigation, tags}:RowTileProps) => {
     const total = item.media.episodes || item.media.chapters;
     const progressLeft = getProgress(item.media.nextAiringEpisode, total, (item.media.format === 'NOVEL') ? item.progressVolumes : item.progress);
     const progressPerc = (total) ? ((item.progress/total)*100).toFixed(0) : '50';
@@ -119,6 +120,6 @@ const RowTile = ({item, colors, listStatus, navigation, tags}:RowTileProps) => {
             : null}
         </TouchableOpacity>
     );
-}
+});
 
 export { ListTile, RowTile };
