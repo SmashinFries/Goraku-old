@@ -130,8 +130,7 @@ export const DrawerStack = ({navigation, route}) => {
             <Stack.Screen name='Character' component={CharDetailScreen} options={{ headerTransparent:false}} />
             <Stack.Screen name="Staff" component={StaffInfo} options={{ headerTransparent:false}} initialParams={{isList:isList}} />
             <Stack.Screen name="ReviewBody" component={ReviewBody} options={{ headerTransparent:false}} />
-            <Stack.Screen name="DeviantArt" component={DeviantArtPage} initialParams={{inStack: true}}/>
-            <Stack.Screen name="DeviantArtDetail" component={DevArtDetail} initialParams={{inStack: true}}/>
+            
         </Stack.Navigator>
     );
 }
