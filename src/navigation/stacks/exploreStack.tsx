@@ -10,6 +10,8 @@ import { useTheme } from "@react-navigation/native";
 import { CharDetailScreen } from "../../containers/character";
 import { StaffInfo } from "../../containers/staff/staffPage";
 import RandomFive from "../../containers/explore/random/random";
+import DeviantArtPage from "../../containers/deviantArt/devartPage";
+import DevArtDetail from "../../containers/deviantArt/devartDetail";
 
 const Stack = createNativeStackNavigator();
 
@@ -80,6 +82,8 @@ export const ExploreStack = () => {
                     component={RandomFive}
                     options={{title:'3 Sauces'}}
                 />
+                <Stack.Screen name="DeviantArt" component={DeviantArtPage}/>
+                <Stack.Screen name="DeviantArtDetail" component={DevArtDetail}/>
             </Stack.Navigator>
             </GestureHandlerRootView>
     );
