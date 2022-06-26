@@ -45,6 +45,8 @@ export const UserList = ({navigation, route}:ListProps) => {
         );
     }
 
+    const itemSep = () => <View style={{height:10}} />;
+
     if (!listLayout || listLayout === 'none') return <LoadingView colors={colors} />;
 
     return ( (listLayout === 'compact') ? 
@@ -56,10 +58,12 @@ export const UserList = ({navigation, route}:ListProps) => {
                 renderItem={renderCompactItem}
                 numColumns={2}
                 getItemLayout={(data, index) => (
-                    {length: 110, offset: 110 * index, index}
+                    {length: 280, offset: 280 * index, index}
                 )}
                 windowSize={10}
-                ItemSeparatorComponent={() => <View style={{height:10}} />}
+                disableVirtualization={true}
+                removeClippedSubviews={true}
+                ItemSeparatorComponent={itemSep}
                 columnWrapperStyle={{justifyContent:'space-evenly'}}
                 contentContainerStyle={{paddingBottom:30, paddingTop:15}}
                 showsVerticalScrollIndicator={false}
@@ -73,6 +77,8 @@ export const UserList = ({navigation, route}:ListProps) => {
                 getItemLayout={(data, index) => (
                     {length: 280, offset: 280 * index, index}
                 )}
+                disableVirtualization={true}
+                removeClippedSubviews={true}
                 windowSize={10}
                 keyExtractor={(item) => item.media.id.toString()}
                 contentContainerStyle={{paddingBottom:30}}
