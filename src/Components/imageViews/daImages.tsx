@@ -14,9 +14,10 @@ import { ThemeColors } from "../types";
 type Props = {
     query: string;
     navigation: NavigationProp<any>;
+    inStack: boolean;
     colors: ThemeColors;
 }
-const DeviantArtImages = ({query, navigation, colors}:Props) => {
+const DeviantArtImages = ({query, navigation, inStack, colors}:Props) => {
     const [images, setImages] = useState<PopularDevArtData>();
     const [loading, setLoading] = useState<boolean>(true);
 
@@ -33,8 +34,9 @@ const DeviantArtImages = ({query, navigation, colors}:Props) => {
     }
 
     const artView = ({item}:{item:PopularResult}) => {
+        if (!item.preview) return null;
         return(
-            <Pressable onPress={() => _openBrowserUrl(item.url, colors.primary, colors.text)}>
+            <Pressable onPress={() => navigation.navigate('DeviantArtDetail', {image:item})}>
                 <FastImage fallback source={{ uri: item.preview.src }} resizeMode='contain' style={{ width: 130, height: 190, marginHorizontal: 10 }} />
             </Pressable>
         );
@@ -72,7 +74,7 @@ const DeviantArtImages = ({query, navigation, colors}:Props) => {
     return(
         <View>
             <View style={{flexDirection:'row', alignItems:'center'}}>
-                <Text style={{ marginLeft: 10, marginTop: 20, fontSize: 28, fontWeight: 'bold', color: colors.text }}>Fan Art</Text>
+                <Text style={{ marginLeft: 10, marginTop: 20, fontSize: 28, fontWeight: 'bold', color: colors.text }}>DeviantArt</Text>
                 <PressableAnim style={{ marginTop: 20, marginLeft: 10, borderRadius:8, borderColor:colors.primary, borderWidth:.8, padding:2, paddingHorizontal:10}} onPress={() => navigation.navigate('DeviantArt', {query:query, data:images})}>
                     <Text style={{color:colors.primary, fontSize:12}}>View More</Text>
                 </PressableAnim>
