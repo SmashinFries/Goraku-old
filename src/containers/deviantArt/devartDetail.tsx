@@ -9,7 +9,7 @@ import { fetchDownload, fetchMetaData, fetchPopular } from "../../Api/deviantArt
 import { MetadataDA, PopularDevArtData, PopularResult, DownloadData } from "../../Api/deviantArt/types";
 import { MaterialIcons } from '@expo/vector-icons';
 import { LoadingView } from "../../Components";
-import { handleShare, saveImage } from "../../utils";
+import { handleShare, saveImage, shareImage } from "../../utils";
 import { DevArtMetaData } from "./components/metadataView";
 
 type Props = {
@@ -26,12 +26,12 @@ const DevArtDetail = ({navigation, route}:Props) => {
     const ContentView = () => {
         return (
             <View style={{ alignItems: 'center', paddingTop: 20 }}>
-                <FastImage fallback source={{ uri: image.content.src }} style={{ height: 400, width: '100%' }} resizeMode='contain' />
+                <FastImage fallback source={{ uri: image.content.src }} style={{ height: 450, width: '100%' }} resizeMode='contain' />
             </View>
         );
     }
 
-    const ImageView = () => {
+    const UserView = () => {
         return(
             <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', width: '80%', paddingVertical:10 }}>
                 <Avatar.Image source={{ uri: image.author.usericon }} />
@@ -64,7 +64,7 @@ const DevArtDetail = ({navigation, route}:Props) => {
             headerTitle: (image.is_mature) ? 'Sus Image' : 'Image',
             headerRight: () => (
                 <>
-                    <IconButton onPress={() => handleShare(image.url, image.title)} icon={'share-variant'} color={colors.text} />
+                    <IconButton onPress={() => shareImage(download?.src ?? image.content.src, download?.filename ?? image.title)} icon={'share-variant'} color={colors.text} />
                     <DownloadIcon/>
                 </>
             ),
@@ -99,7 +99,7 @@ const DevArtDetail = ({navigation, route}:Props) => {
         <ScrollView contentContainerStyle={{paddingVertical:10}}>
             <ContentView />
             <View style={{alignItems:'center'}}>
-                <ImageView />
+                <UserView />
                 {(metaData) ? <DevArtMetaData data={metaData} url={image.url} colors={colors} /> : null}
             </View>
         </ScrollView>
