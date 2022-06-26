@@ -14,10 +14,9 @@ import { ThemeColors } from "../types";
 type Props = {
     query: string;
     navigation: NavigationProp<any>;
-    inStack: boolean;
     colors: ThemeColors;
 }
-const DeviantArtImages = ({query, navigation, inStack, colors}:Props) => {
+const DeviantArtImages = ({query, navigation, colors}:Props) => {
     const [images, setImages] = useState<PopularDevArtData>();
     const [loading, setLoading] = useState<boolean>(true);
 
