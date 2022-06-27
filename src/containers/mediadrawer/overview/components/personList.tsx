@@ -15,6 +15,7 @@ type CharStaffParams = {
     setData: Dispatch<React.SetStateAction<AniMalType>>;
     colors: ThemeColors;
     navigation: OverviewNav;
+    isList: boolean;
     charData?: CharacterItemType[],
     staffData?: StudioItemType[],
     rolePosition?: 'Top' | 'Bottom';
@@ -22,7 +23,7 @@ type CharStaffParams = {
     gradTopLoc?: number[];
 }
 
-const CharStaffList = ({charData, staffData, data, setData, navigation, title, colors, navLocation, rolePosition='Bottom', gradBottomLoc=[.5, .95], gradTopLoc=[0, .35]}:CharStaffParams) => {
+const CharStaffList = ({charData, staffData, data, setData, navigation, isList, title, colors, navLocation, rolePosition='Bottom', gradBottomLoc=[.5, .95], gradTopLoc=[0, .35]}:CharStaffParams) => {
     const content = (charData) ? charData.slice(0, 10) : staffData;
     const PersonItem = ({person}) => {
         const [fav, setFav] = useState<boolean>(person.node.isFavourite);
@@ -36,7 +37,7 @@ const CharStaffList = ({charData, staffData, data, setData, navigation, title, c
         }
         return(
             // @ts-ignore 
-            <Pressable onLongPress={(data.isAuth) ? handleFav : null} onPress={() => navigation.navigate(navLocation, { id: person.node.id, name: person.node.name.full, malId: data.anilist.idMal, type: data.anilist.type, inStack: false })} style={{ marginHorizontal: 10, borderRadius:8, width:120, height:180 }}>
+            <Pressable onLongPress={(data.isAuth) ? handleFav : null} onPress={() => navigation.navigate(navLocation, { id: person.node.id, name: person.node.name.full, malId: data.anilist.idMal, type: data.anilist.type, inStack: false, isList:isList })} style={{ marginHorizontal: 10, borderRadius:8, width:120, height:180 }}>
                 <FastImage fallback source={{ uri: person.node.image.large }} style={{ width: 120, zIndex: -1, height: 180, position: 'absolute', borderRadius:8 }} resizeMode='cover' />
                 <LinearGradient colors={['transparent', (fav) ? 'rgba(255, 0, 0,.85)' : 'rgba(0,0,0,.55)']} locations={gradBottomLoc} style={{ position: 'absolute', height: '100%', justifyContent: 'flex-end', alignItems: 'center', width: '100%', borderRadius:8 }}>
                     {(rolePosition === 'Bottom') ? <Text style={[{ fontSize: 14, color: '#FFF', textTransform: 'capitalize', textAlign: 'center' }]}>{person.role}</Text> : null}
