@@ -183,6 +183,7 @@ export type Names = {
     native: string;
     first: string;
     last: string;
+    alternative: string[];
 }
 
 export type CharDetailShort = {

@@ -86,9 +86,9 @@ export type DrawerParamList = {
 
 export type CharStackParamList = {
     Character: { data: AniMalType };
-    CharDetail: { id: number, malId:number, name:string, type:string, inStack:boolean };
+    CharDetail: { id: number, malId:number, name:string, type:string, inStack:boolean, isList:boolean };
     StaffDetail: { id: number, name:string, inStack:boolean };
-    DeviantArt: {query:string, data:PopularDevArtData};
+    DeviantArt: {query:string, data:PopularDevArtData, isList:boolean};
 }
 
 export type OverviewNav = CompositeNavigationProp<
