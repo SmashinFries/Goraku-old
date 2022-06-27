@@ -8,12 +8,13 @@ import { ThemeColors } from "../../../Components/types";
 type DevArtImageType = {
     item:PopularResult;
     navigation: NavigationProp<any>;
+    isList: boolean;
     colors: ThemeColors;
 }
-export const DevArtImage = ({item, navigation, colors}:DevArtImageType) => {
+export const DevArtImage = ({item, navigation, isList, colors}:DevArtImageType) => {
     const size = {height: 260, width: 180};
     return(
-        <Pressable onPress={() => navigation.navigate('DeviantArtDetail', {image:item})} style={{height:size.height+40, width:size.width, marginHorizontal:10}}>
+        <Pressable onPress={() => navigation.navigate((isList) ? 'DeviantArtListDetail' : 'DeviantArtDetail', {image:item})} style={{height:size.height+40, width:size.width, marginHorizontal:10}}>
             <FastImage fallback source={{uri:item.preview.src}} style={{height:size.height, width:size.width}} resizeMode='cover' />
             <Text numberOfLines={2} style={{textAlign:'center', color:colors.text}}>{item.title}</Text>
         </Pressable>
