@@ -30,7 +30,7 @@ export const InfoDrawer = ({ navigation, route }:InfoProps) => {
     const [aniLoading, setAniLoading] = useState(true);
     const [malLoading, setMalLoading] = useState(true);
     const { auth, daAuth } = getIsAuth();
-    const { id } = route.params;
+    const { id, isList } = route.params;
     const { colors, dark } = useTheme();
 
     const CustomDrawerContent = (props:DrawerContentComponentProps) => {
@@ -109,8 +109,8 @@ export const InfoDrawer = ({ navigation, route }:InfoProps) => {
             drawerStatusBarAnimation: 'slide',
             drawerStyle: { width: '40%' }
         })}>
-            <Drawer.Screen name="Overview" component={MediaInfoScreen} initialParams={{ data:data }} />
-            {(data.anilist.characters.edges.length > 0) ? <Drawer.Screen name="CharacterStack" component={CharacterStack} initialParams={{ data:data }} options={{drawerLabel:'Characters', headerShown:false}} /> : null}
+            <Drawer.Screen name="Overview" component={MediaInfoScreen} initialParams={{ data:data, isList:isList }} />
+            {(data.anilist.characters.edges.length > 0) ? <Drawer.Screen name="CharacterStack" component={CharacterStack} initialParams={{ data:data, isList:isList }} options={{drawerLabel:'Characters', headerShown:false}} /> : null}
             {(data.anilist.type === 'ANIME' && data.anilist.streamingEpisodes.length > 0) ? <Drawer.Screen name="Watch" component={WatchTab} initialParams={{ data:data }} options={{headerTransparent: false, headerTitle:'Watch'}} /> : null}
             {(data.anilist.reviews.edges.length > 0) ? <Drawer.Screen name="Reviews" component={ReviewsTab} initialParams={{ reviews:data.anilist.reviews.edges }} options={{headerTransparent: false, headerTitle:'Reviews'}} /> : null}
             {(auth) && <Drawer.Screen name="Following" component={FollowingTab} initialParams={{id:data.anilist.id}} options={{headerShown:true, headerTransparent:false, headerTitle:'Following', headerStyle:{elevation:8}}}/>}
@@ -126,7 +126,7 @@ export const DrawerStack = ({navigation, route}) => {
     const isList = route.params.isList;
     return(
         <Stack.Navigator >
-            <Stack.Screen name="DrawerInfo" component={InfoDrawer} options={{headerShown:false}} initialParams={{id: id}} />
+            <Stack.Screen name="DrawerInfo" component={InfoDrawer} options={{headerShown:false}} initialParams={{id: id, isList:isList}} />
             <Stack.Screen name='Character' component={CharDetailScreen} options={{ headerTransparent:false}} />
             <Stack.Screen name="Staff" component={StaffInfo} options={{ headerTransparent:false}} initialParams={{isList:isList}} />
             <Stack.Screen name="ReviewBody" component={ReviewBody} options={{ headerTransparent:false}} />
