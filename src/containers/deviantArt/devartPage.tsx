@@ -14,7 +14,7 @@ type Tags = {
     tags: string[];
 }
 const DeviantArtPage = ({navigation, route}:DevArtPageProps) => {
-    const { query, data } = route.params;
+    const { query, data, isList } = route.params;
     const [images, setImages] = useState<PopularDevArtData>(data);
     const [tags, setTags] = useState<Tags>({tags:[], active:null});
     const [visible, setVisible] = useState<boolean>(false);
@@ -24,6 +24,7 @@ const DeviantArtPage = ({navigation, route}:DevArtPageProps) => {
 
     useEffect(() => {
         navigation.setOptions({
+            headerTransparent:false,
             headerTitle: (tags.active) ? tags.active + ' Art' : query + ' Art',
             headerRight: () => (
                 <IconButton icon='tag' onPress={() => setVisible(true)} />
@@ -32,7 +33,7 @@ const DeviantArtPage = ({navigation, route}:DevArtPageProps) => {
     },[navigation, tags.active, dark]);
 
     const renderItem = ({item, index}) => {
-        return(<DevArtImage item={item} navigation={navigation} colors={colors} />);
+        return(<DevArtImage item={item} navigation={navigation} isList={isList} colors={colors} />);
     }
 
     const getNewContent = async() => {
@@ -46,7 +47,6 @@ const DeviantArtPage = ({navigation, route}:DevArtPageProps) => {
         if (!images.has_more) return;
 
         setLoading(true);
-        console.log(images.next_offset);
         const art = (tags.active) ? await fetchPopular(tags.active, 'tag', images.next_offset, 25) : await fetchPopular(query, 'popular', images.next_offset, 25);
         setImages({...images, results: [...images.results, ...art.results], next_offset: art.next_offset, has_more: art.has_more});
         setLoading(false);
@@ -61,7 +61,6 @@ const DeviantArtPage = ({navigation, route}:DevArtPageProps) => {
     useEffect(() => {
         let isMounted = true;
         if (tags.active && isMounted) {
-            console.log(tags.active);
             getNewContent();
         } else {
             setImages(data);
@@ -79,6 +78,8 @@ const DeviantArtPage = ({navigation, route}:DevArtPageProps) => {
                 onEndReached={(!loading) && loadMore}
                 onEndReachedThreshold={0.5}
                 windowSize={10}
+                disableVirtualization={true}
+                removeClippedSubviews={true}
                 getItemLayout={(data, index) => ({length: 260+40, offset: index * (260+40), index})}
                 contentContainerStyle={{flexGrow: 1, paddingVertical:20, justifyContent: 'space-evenly', alignItems:'center'}}
                 columnWrapperStyle={{paddingVertical:10}}
