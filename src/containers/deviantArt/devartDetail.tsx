@@ -52,7 +52,7 @@ const DevArtDetail = ({navigation, route}:Props) => {
         if (!download) return (<IconButton onPress={() => saveImage(download ? download?.src : image.content.src, image.title)} icon={'download'} color={colors.text} />)
         return(
             <View>
-                <IconButton onPress={() => saveImage(download ? download?.src : image.content.src, image.title)} icon={'download'} color={colors.text} />
+                <IconButton onPress={() => saveImage(download?.src ?? image.content.src, download?.filename ?? image.title)} icon={'download'} color={colors.text} />
                 <MaterialIcons name="hd" style={{position:'absolute', top:5, right:5}} size={15} color={colors.text} />
             </View>
         );
