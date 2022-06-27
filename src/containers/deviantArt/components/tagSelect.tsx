@@ -33,6 +33,7 @@ export const TagSelector = ({setActive, visible, setVisible, tags, colors}:Props
     const MappedTag = (item:string, idx?:number) => {
         return(
             <List.Item 
+                key={idx}
                 title={item} 
                 onPress={() => onSelect(item)}
                 titleStyle={{color:colors.text}}
