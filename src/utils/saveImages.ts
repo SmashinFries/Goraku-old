@@ -5,15 +5,26 @@ import * as Sharing  from 'expo-sharing';
 import { getSaveImgType } from '../Storage/generalSettings';
 
 export const saveImage = async(uri:string, title:string) => {
+    const isSavedLocal = (uri.split(':')[0] === 'file') ? true : false;
     const fileType = await getSaveImgType();
     const isAllowed = await MediaLibrary.getPermissionsAsync();
     if (!isAllowed.granted) {
         await MediaLibrary.requestPermissionsAsync();
     }
-    const fileUri = FileSystem.documentDirectory + title + '.' + fileType;
-    const result = await FileSystem.downloadAsync(uri, fileUri);
-    await MediaLibrary.saveToLibraryAsync(result.uri);
-    ToastAndroid.show('Image Saved', ToastAndroid.SHORT);
+    try {
+        if (!isSavedLocal) {
+            const fileUri = FileSystem.documentDirectory + title + '.' + fileType;
+            const result = await FileSystem.downloadAsync(uri, fileUri);
+            await MediaLibrary.saveToLibraryAsync(result.uri);
+        } else {
+            await MediaLibrary.saveToLibraryAsync(uri);
+        }
+        ToastAndroid.show('Image Saved', ToastAndroid.SHORT);
+    } catch (error) {
+        console.log(error);
+        ToastAndroid.show(error, ToastAndroid.SHORT);
+    }
+    
 }
 
 export const shareImage = async(uri:string, title:string) => {
