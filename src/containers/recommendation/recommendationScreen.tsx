@@ -118,12 +118,19 @@ export const RecommendationScreen = ({navigation, route}:RecommendationProps) =>
 
     const pressNav = (media:RecommendationMediaType) => {
         // @ts-ignore
-        navigation.navigate('RecInfo', { screen:'DrawerInfo', params: {
+        navigation.push('Info', {
             id: media.id, 
             coverImage: media.coverImage.extraLarge, 
             type: media.type
         }
-        });
+        );
+        // @ts-ignore
+        navigation.navigate('Info', {
+            id: media.id, 
+            coverImage: media.coverImage.extraLarge, 
+            type: media.type
+        }
+        );
     }
 
     type MediaButtonProps = {onPress:()=>void; title:string; cover:string; mode:'Bottom'|'Top';}
