@@ -515,6 +515,7 @@ query ($id: Int, $page: Int, $perPage: Int) {
       last
       userPreferred
       native
+      alternative
     }
     image {
       large
