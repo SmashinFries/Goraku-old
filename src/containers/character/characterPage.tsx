@@ -14,7 +14,7 @@ import { ImageViewer, LoadingView, CharacterHeaderImage, CharacterOverview, Char
 import QrView from "../../Components/qrView";
 import { CharacterFeatured, CharacterImages } from "./components/views";
 const CharDetailScreen = ({ navigation, route }: CharDetailProps) => {
-    const { id, name, malId, type, inStack } = route.params;
+    const { id, name, malId, type, inStack, isList } = route.params;
     const [data, setData] = useState<CharDetailShort>(null);
     const [favorite, setFavorite] = useState(data ? data.isFavourite : false);
     const [images, setImages] = useState<MalCharImagesShort[]>(null);
@@ -97,7 +97,7 @@ const CharDetailScreen = ({ navigation, route }: CharDetailProps) => {
                     </View>
                     <CharacterBody description={data.description} links={links} favorite={favorite} toggleLike={toggleLike} colors={colors} />
                     <CharacterFeatured data={data} parNav={parNav} colors={colors} />
-                    <DeviantArtImages query={data.name.full} navigation={navigation} colors={colors} />
+                    <DeviantArtImages name={data.name.full} native={data.name.native} altNames={data.name.alternative} navigation={navigation} isList={isList} colors={colors} />
                     <CharacterImages images={images} loading={loadingImages} setSelectedImg={setSelectedImg} setVisible={setVisible} colors={colors} />
                     <EditButton type="CHARACTER" id={data.id} colors={colors} />
                 </LinearGradient>
