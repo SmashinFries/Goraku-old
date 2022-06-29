@@ -1,21 +1,19 @@
 import React, { Dispatch, SetStateAction, useState } from "react";
-import { View, Pressable, Text, Animated, ToastAndroid } from "react-native";
+import { View, Pressable, Text, ToastAndroid } from "react-native";
 import FastImage from "react-native-fast-image";
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { AniMalType } from "../../../../Api/types";
 import { AnilistSVG, MalSVG } from "../../../../Components/svg/svgs";
-import { getMalScoreColor, getScoreColor, handleCopy, getTime, getDate } from "../../../../utils";
+import { getMalScoreColor, getScoreColor, handleCopy, getTime, getDate, saveImage } from "../../../../utils";
 import { ThemeColors } from "../../../../Components/types";
 
 type Props = {
     data: AniMalType;
     colors: ThemeColors;
-    dark: boolean;
     setVisible: Dispatch<SetStateAction<boolean>>;
-    scrollValue?: Animated.Value;
 }
-const OverViewHeader = ({data, colors, dark, setVisible, scrollValue}:Props) => {
+const OverViewHeader = ({data, colors, setVisible}:Props) => {
     const titles = [data?.anilist.title.userPreferred, data?.anilist.title.english, data?.anilist.title.romaji, data?.anilist.title.native];
     
     const status = (data?.anilist.status === 'NOT_YET_RELEASED') ? 'UNRELEASED' :  data?.anilist.status.replace(/_/g, ' ');
