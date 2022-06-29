@@ -4,7 +4,7 @@ import React, { ReactComponentElement } from "react";
 import { FlatList, Text, View } from "react-native";
 import FastImage from "react-native-fast-image";
 import { PressableAnim } from "../../Components";
-import { AnilistSVG, AnimeThemesSVG, MalSVG, TestSVG } from "../../Components/svg/svgs";
+import { AnilistSVG, AnimeThemesSVG, MalSVG, } from "../../Components/svg/svgs";
 
 type Source = {
     id: number;
