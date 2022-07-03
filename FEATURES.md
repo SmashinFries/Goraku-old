@@ -28,16 +28,30 @@ Quick access to your list content and favorites.
   <img src="https://user-images.githubusercontent.com/23146338/163293489-9edbd316-2b19-4224-8236-f4e731a05a7d.png" />
 </div>
 
-## 3 Sauces
-If you're feeling lucky or just want to spend all your luck for the month, then look no further! With the mode "3 Sauces", you can get three random anime or manga. Might be a useless feature, but it's here!
-
-<div align="center">
-  <img src="https://user-images.githubusercontent.com/23146338/163294260-f723d90e-600e-44a6-b994-294a3fac07d3.gif" />
-</div>
-
-## Suggestions
+## Recommendations
 Browse through what others are recommending. Like the suggested pair? Upvote it. Think _Go!! Go!! Mario Kart_ and _Miss Kobayashi's Dragon Maid_ are similar? They aren't, so downvote it.
 
 <div align="center">
   <img src="https://user-images.githubusercontent.com/23146338/163294612-e84e0697-5068-47e4-a9cd-4532d7bff2d3.png" />
+</div>
+
+## Music
+Curious about an anime opening or ending? You can find music videos in the music tab of the anime!
+
+<div align="center">
+  -Image coming soon-
+</div>
+
+## Fan Art
+If you're looking for fan art of a certain character, look no further! View fan art from DeviantArt right in the app.
+
+<div align="center">
+  -Image coming soon-
+</div>
+
+## 3 Sauces (WIP)
+If you're feeling lucky or just want to spend all your luck for the month, then look no further! With the mode "3 Sauces", you can get three random anime or manga. Might be a useless feature, but it's here!
+
+<div align="center">
+  <img src="https://user-images.githubusercontent.com/23146338/163294260-f723d90e-600e-44a6-b994-294a3fac07d3.gif" />
 </div>
