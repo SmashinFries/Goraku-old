@@ -228,6 +228,8 @@ export const SearchScreen = ({ route, navigation }: SearchProps) => {
                         {length: 210+65, offset: (210+65) * index, index}
                     )}
                     windowSize={10}
+                    disableVirtualization={true}
+                    removeClippedSubviews={true}
                     ListFooterComponent={() => (loadingMore) && <ActivityIndicator size={'large'} color={colors.primary} />}
                     ListFooterComponentStyle={{justifyContent:'center', alignItems:'center', marginTop:10}}
                 /> :
@@ -238,13 +240,15 @@ export const SearchScreen = ({ route, navigation }: SearchProps) => {
                         keyExtractor={(item) => item.id.toString()}
                         numColumns={3}
                         columnWrapperStyle={{ margin: 3, justifyContent: 'space-evenly' }}
-                        ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
+                        ItemSeparatorComponent={() => <View style={{ height: 5 }} />}
                         onEndReached={() => (charData.data.Page.pageInfo.hasNextPage) ? fetchMoreChar() : null}
                         onEndReachedThreshold={0.7}
                         getItemLayout={(data, index) => (
                             {length: 210, offset: 210 * index, index}
                         )}
                         windowSize={10}
+                        disableVirtualization={true}
+                        removeClippedSubviews={true}
                         ListFooterComponent={() => (loadingMore) && <ActivityIndicator size={'large'} color={colors.primary} />}
                         ListFooterComponentStyle={{justifyContent:'center', alignItems:'center', marginTop:10}}
                     /> :
@@ -254,13 +258,14 @@ export const SearchScreen = ({ route, navigation }: SearchProps) => {
                         keyExtractor={(item) => item.id.toString()}
                         numColumns={3}
                         columnWrapperStyle={{ margin: 3, justifyContent: 'space-evenly' }}
-                        ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
+                        ItemSeparatorComponent={() => <View style={{ height: 5 }} />}
                         onEndReached={() => (staffData.data.Page.pageInfo.hasNextPage) ? fetchMoreChar() : null}
                         onEndReachedThreshold={0.7}
                         getItemLayout={(data, index) => (
                             {length: 210, offset: 210 * index, index}
                         )}
-                        windowSize={10}
+                        disableVirtualization={true}
+                        removeClippedSubviews={true}
                         ListFooterComponent={() => (loadingMore) && <ActivityIndicator size={'large'} color={colors.primary} />}
                         ListFooterComponentStyle={{justifyContent:'center', alignItems:'center', marginTop:10}}
                     />
