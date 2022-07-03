@@ -88,7 +88,7 @@ const RowTile = memo(({item, colors, listStatus, navigation, tags}:RowTileProps)
     if (item.media.isAdult) return null;
     return(
         // @ts-ignore
-        <TouchableOpacity activeOpacity={.7} pressRetentionOffset={{right:0}} onPress={() => navigation.navigate('UserListDetail', {id: item.media.id})} style={{backgroundColor:colors.colors.primary,}} key={item.media.id}>
+        <TouchableOpacity activeOpacity={.7} onPress={() => navigation.navigate('UserListDetail', {id: item.media.id})} style={{backgroundColor:colors.colors.primary,}} key={item.media.id}>
             <FastImage source={{uri:(item.media.bannerImage) ? item.media.bannerImage : item.media.coverImage.extraLarge}} style={{width:'100%', height:110}} resizeMode={'cover'} />
             <LinearGradient colors={['transparent', 'rgba(0,0,0,.8)']} start={{x:.8, y:.2}} end={{x:.4, y:1}} style={{position:'absolute', height:'100%', justifyContent:'center', width:'100%'}}>
                 <Text numberOfLines={3} style={{paddingLeft:10, fontWeight:'bold', color:'#FFF', width:190}}>{item.media.title.userPreferred}</Text>
