@@ -1,6 +1,6 @@
 import { useTheme } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
-import { View, Animated } from "react-native";
+import { View, Animated, Alert } from "react-native";
 import { Portal } from 'react-native-paper';
 import { getCharacterDetail, toggleFav } from "../../Api/anilist/anilist";
 import { CharDetailShort, MalCharImagesShort } from "../../Api/types";
@@ -9,13 +9,18 @@ import { MediaHeader } from "../../Components/header/mediaHeader";
 import { handleShare } from "../../utils";
 import { LinearGradient } from "expo-linear-gradient";
 import { getMalChar } from "../../Api/mal";
-import { HeaderBackButton, HeaderRightButtons } from "../../Components/header/headers";
+import { HeaderRightButtons } from "../../Components/header/headers";
 import { ImageViewer, LoadingView, CharacterHeaderImage, CharacterOverview, CharacterBody, EditButton, DeviantArtImages } from "../../Components";
 import QrView from "../../Components/qrView";
 import { CharacterFeatured, CharacterImages } from "./components/views";
+import { getIsAuth } from "../../Storage/authToken";
+import { useDevArtEnabled } from "../../Storage/generalSettings";
+import { ADULT_ALLOW } from "../../constants";
 const CharDetailScreen = ({ navigation, route }: CharDetailProps) => {
     const { id, name, malId, type, inStack, isList } = route.params;
     const [data, setData] = useState<CharDetailShort>(null);
+    const {auth} = getIsAuth();
+    const {devartState} = useDevArtEnabled();
     const [favorite, setFavorite] = useState(data ? data.isFavourite : false);
     const [images, setImages] = useState<MalCharImagesShort[]>(null);
     const [links, setLinks] = useState({aniLink: null, malLink: null});
@@ -40,10 +45,10 @@ const CharDetailScreen = ({ navigation, route }: CharDetailProps) => {
 
     useEffect(() => {
         navigation.setOptions({
-            headerStyle: { backgroundColor: colors.card },
-            title: name,
+            headerStyle: { maxWidth:150, backgroundColor: colors.card },
+            headerTitle: name,
             headerRight: () => (!loading) && <HeaderRightButtons navigation={navigation} colors={colors} id={id} drawer={inStack ?? false} share qrCode qrOnPress={() => qrOpen()} onShare={() => handleShare(data?.siteUrl ?? 'None')} />,
-            headerLeft: () => <HeaderBackButton style={{ paddingRight: 10 }} colors={colors} navigation={navigation} />,
+            // headerLeft: () => <HeaderBackButton style={{ paddingRight: 10 }} colors={colors} navigation={navigation} />,
         });
     }, [navigation, dark, route, loading]);
 
@@ -62,6 +67,7 @@ const CharDetailScreen = ({ navigation, route }: CharDetailProps) => {
 
     useEffect(() => {
         let isMounted = true;
+        
         if (isMounted) {
             setLoading(true);
             getData().then(res => {(isMounted) &&
@@ -95,9 +101,9 @@ const CharDetailScreen = ({ navigation, route }: CharDetailProps) => {
                         />
                         <CharacterOverview name={data.name} dateOfBirth={data.dateOfBirth} favourites={data.favourites} colors={colors} />
                     </View>
-                    <CharacterBody description={data.description} links={links} favorite={favorite} toggleLike={toggleLike} colors={colors} />
+                    <CharacterBody description={data.description} altNames={data.name.alternative} isAuth={auth} links={links} favorite={favorite} toggleLike={toggleLike} colors={colors} />
                     <CharacterFeatured data={data} parNav={parNav} colors={colors} />
-                    <DeviantArtImages name={data.name.full} native={data.name.native} altNames={data.name.alternative} navigation={navigation} isList={isList} colors={colors} />
+                    {(devartState && ADULT_ALLOW) && <DeviantArtImages name={data.name.full} titles={data.media.edges[0].node.title} altNames={data.name.alternative} navigation={navigation} isList={isList} colors={colors} />}
                     <CharacterImages images={images} loading={loadingImages} setSelectedImg={setSelectedImg} setVisible={setVisible} colors={colors} />
                     <EditButton type="CHARACTER" id={data.id} colors={colors} />
                 </LinearGradient>
