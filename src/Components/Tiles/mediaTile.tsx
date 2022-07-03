@@ -33,7 +33,7 @@ const onPress = (props, nav) => {
 
 export const MediaTile = (props: MediaTileProps) => {
     const [status, setStatus] = useState((props.data.mediaListEntry) ? props.data.mediaListEntry.status : null);
-    const [visible, setVisible] = useState<boolean>(false);
+    // const [visible, setVisible] = useState<boolean>(false);
     const score = (props.data.averageScore !== null) ? props.data.averageScore : props.data.meanScore;
     const {width, height } = props.size || {width:140, height:230};
     const { colors } = useTheme();
@@ -49,8 +49,9 @@ export const MediaTile = (props: MediaTileProps) => {
                                 <ScoreTag score={score} />
                                 {(props.data.nextAiringEpisode?.timeUntilAiring) ? 
                                 <View style={{position:'absolute', flexDirection:'row', justifyContent:'center', bottom:0, width:'100%', backgroundColor:'rgb(60,180,242)'}}>
-                                    <MaterialIcons name="access-time" size={16} style={{ alignSelf: 'center' }} color={colors.text} />
-                                    <Text style={{fontWeight:'bold'}}> {getTime(props.data.nextAiringEpisode.timeUntilAiring)}</Text>
+                                    <Text style={{fontWeight:'bold'}}>EP {props.data.nextAiringEpisode.episode} </Text>
+                                    <MaterialIcons name="access-time" size={16} style={{ alignSelf: 'center' }} color={'#FFF'} />
+                                    <Text style={{fontWeight:'bold'}}> {getTime(props.data.nextAiringEpisode.timeUntilAiring, false)}</Text>
                                 </View> : null}
                             </View>
                         </Pressable>
