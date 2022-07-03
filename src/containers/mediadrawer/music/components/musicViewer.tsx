@@ -1,14 +1,12 @@
 import { Video } from "expo-av";
-import { openURL } from "expo-linking";
 import React, { useState } from "react";
-import { View, Text, Alert } from "react-native";
+import { View, Text } from "react-native";
 import { Button, Card, IconButton } from "react-native-paper";
 import { AnimeThemes } from "../../../../Api/types";
 import { ThemeColors } from "../../../../Components/types";
 import { handleCopy, _openBrowserUrl } from "../../../../utils";
 
 const getWikiURL = (title:string, slug:string, tags?:string, version?:number|null) => {
-    console.log(version);
     if (tags && version) return `https://staging.animethemes.moe/wiki/anime/${title}/${slug}-${tags}v${version}`;
     if (tags && !version) return `https://staging.animethemes.moe/wiki/anime/${title}/${slug}-${tags}`;
     if (!tags && version) return `https://staging.animethemes.moe/wiki/anime/${title}/${slug}v${version}`;
