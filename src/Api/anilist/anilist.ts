@@ -3,11 +3,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
 import { changeAdultContent_M, changeLanguage_M, changeNotifications_M, quickAdd_M, quickRemove_M, rateReview_M, removeActivity_M, saveRecommendation_M, toggleLike_M } from "./mutations";
 import { account_options_q, activity_q, alsofollowing_media_q, character_search_q, charDetail_Q, favorites_q, fav_anime_frag, fav_char_frag, fav_manga_frag, fav_staff_frag, fav_studio_frag, fullInfo_Q, mediaListEntryFull_q, mediaTile_Q, notification_q, random_q, recommendations_full_q, reviewUserRating_q, staff_info_q, staff_search_q, studio_list_q, TagCollection_Q, user_list_q, user_statistics_q } from "./query";
-import { ActivityData, ActivityPage, CharFullType, CharSearchType, HomePageFetchParams, MediaEntryInfoType, MediaFollowing, MediaListCollectionType, MediaQueryRoot, RandomContent, RecommendationsFullType, ReviewRating, StaffFullType, StudioListType, TagArrangedType, TagCollectionType, UserFavoritesType, UserNotificationData, UserOptions, userRatingReview, UserStats } from "../types";
-import { useEffect, useState } from "react";
+import { ActivityData, CharFullType, CharSearchType, HomePageFetchParams, MediaEntryInfoType, MediaFollowing, MediaListCollectionType, MediaQueryRoot, RandomContent, RecommendationsFullType, ReviewRating, StaffFullType, StudioListType, TagArrangedType, TagCollectionType, UserFavoritesType, UserNotificationData, UserOptions, userRatingReview, UserStats } from "../types";
 import { HomeType } from "../../Components/types";
 import { ADULT_ALLOW } from "../../constants";
-import { getNSFW, storeNSFW } from "../../Storage/nsfw";
 
 const _URL = 'https://graphql.anilist.co';
 const queryParams = `
@@ -42,6 +40,31 @@ $startDate_greater:FuzzyDateInt,
 $isAdult: Boolean,$search: String
 $onList: Boolean,
 `;
+
+const getToken = async () => {
+    const token = await SecureStore.getItemAsync('auth');
+    return token;
+}
+
+const getNSFW = async() => {
+    try {
+        let isNSFW = await AsyncStorage.getItem('@nsfw');
+        const isAuth = await getToken();
+        if (isNSFW === null && isAuth) {
+            const results = await getUserOptions();
+            await AsyncStorage.setItem('@nsfw', (ADULT_ALLOW && results.options.displayAdultContent) ? 'true' : 'false');
+            isNSFW = (ADULT_ALLOW && results.options.displayAdultContent) ? 'true' : 'false';
+        } else if (isNSFW === null && !isAuth) {
+            await AsyncStorage.setItem('@nsfw', 'false');
+            isNSFW = 'false';
+        }
+
+        return isNSFW === 'true' ? true : false;
+    } catch (error) {
+        console.log('nsfw error:', error);
+        return false;
+    }
+}
 
 const getQuery = (query: string, params: string) => {
     const _QUERY = `
@@ -354,19 +377,14 @@ export const getFavoriteContent = async(type:favoriteType, pageName?:pageNameTyp
             let frag = '';
             // Using a switch would always cycle through all the possible values of the type variable. Not sure why.
             if (type === 'ANIME') {
-                console.log('ANIME');
                 frag = fav_anime_frag;
             } else if (type === 'MANGA') {
-                console.log('MANGA');
                 frag = fav_manga_frag;
             } else if (type === 'CHARACTER') {
-                console.log('CHARACTER');
                 frag = fav_char_frag;
             } else if (type === 'STAFF') {
-                console.log('STAFF');
                 frag = fav_staff_frag;
             } else if (type === 'STUDIO') {
-                console.log('STUDIO');
                 frag = fav_studio_frag;
             } else if (type === 'ALL') {
                 return(favorites_q);
@@ -596,7 +614,6 @@ export const changeNotifOptions = async(type:string, isEnabled:boolean) => {
                 notificationOptions: [variable]
             }
         }, {headers: header});
-        console.log(res);
         return res.status;
     } catch (e) {
         console.log(e);
@@ -613,7 +630,7 @@ export const changeNSFW = async(isEnabled:boolean) => {
                 displayNSFW: isEnabled
             }
         }, {headers: header});
-        await storeNSFW(isEnabled);
+        await AsyncStorage.setItem('@nsfw', (ADULT_ALLOW && isEnabled) ? 'true' : 'false');
         return res.status;
     } catch (e) {
         console.log(e);
