@@ -7,11 +7,11 @@ const MINUTE = 60;
 const MONTH = WEEK*4;
 const YEAR = MONTH*12;
 
-export const getTime = (seconds:number):string => {
+export const getTime = (seconds:number, showMinutes:boolean=true):string => {
     const days = Math.floor(seconds/DAY);
     const hours = Math.floor((seconds/HOUR)%24);
     const minutes = Math.floor((seconds/MINUTE)%60);
-    const timeUntil = `${(days > 0) ? days+'d ' : ' '}${(hours > 0) ? hours + 'h ' : ' '}${(minutes > 0) ? minutes + 'm ' : ' '}`;
+    const timeUntil = `${(days > 0) ? days+'d ' : ' '}${(hours > 0) ? hours + 'h ' : ' '}${(minutes > 0 && showMinutes) ? minutes + 'm ' : ' '}`;
     return timeUntil;
 }
 
@@ -44,11 +44,17 @@ export const convertUnixTime = (unixTime:number) => {
     }
 }
 
-export const getDate = (dates:DateType) => {
-    const months = ['', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-    if (!dates.year) return `${months[dates.month]} ${dates.day}`;
-    if (!dates.day) return `${months[dates.month]} ${dates.year}`;
-    return `${dates.month}/${dates.day ?? '??'}/${dates.year}`;
+export const getDate = (dates:DateType, mode:'full'|'abrv'='full') => {
+    if (mode === 'full') {
+        const months = ['', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        if (!dates.year) return `${months[dates.month]} ${dates.day}`;
+        if (!dates.day) return `${months[dates.month]} ${dates.year}`;
+        return `${dates.month}/${dates.day ?? '??'}/${dates.year}`;
+    } else {
+        const months = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
+        return `${months[dates.month]} ${(dates.day) ? dates.day+', ' : ''}${dates.year}`;
+    }
+    
 }
 
 export const checkBD = (date:Date, dateOfBirth:DateType) => {
