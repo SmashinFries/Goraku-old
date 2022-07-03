@@ -10,6 +10,26 @@ import { LoadingView } from "../../Components";
 import { useListSearch } from "../../Storage/listStorage";
 import { checkBD, dataTitleFilter, handleCopy, _openBrowserUrl } from "../../utils";
 import { uniqueItems, uniqueNodes } from "../../utils/filters/uniqueItems";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { ThemeColors } from "../../Components/types";
+
+type FavoriteTileProps = {
+    cover: string;
+    title: string;
+    colors: ThemeColors;
+    onPress: () => void,
+}
+const FavoriteTile = ({cover, onPress, title, colors}:FavoriteTileProps) => {
+
+    return(
+            <TouchableOpacity activeOpacity={.7} onPress={onPress} style={{ borderRadius: 8, height: 200, width: 130, justifyContent: 'center', alignItems: 'center', backgroundColor:colors.primary }}>
+                <FastImage source={{ uri: cover }} style={{ height: 200, width: 130, borderRadius: 8, }} />
+                <LinearGradient colors={['transparent', 'rgba(0,0,0,.7)']} locations={[.65, .95]} style={{ position: 'absolute', height: 200, width: 130, justifyContent: 'flex-end', alignItems: 'center', borderRadius: 8 }}>
+                    <Text numberOfLines={2} onLongPress={() => handleCopy(title)} style={{ color: '#FFF', textAlign: 'center', fontWeight: 'bold', paddingBottom: 5, paddingHorizontal: 5 }}>{title}</Text>
+                </LinearGradient>
+            </TouchableOpacity>
+    );
+}
 
 const dataPersonFilter = (search:string, data:any[]) => {
     if (search.length === 0) return data;
@@ -100,12 +120,7 @@ const StaffFav = ({navigation, route}) => {
 
     const renderItem = ({item}:{item:UserFavStaffNode}) => {
         return(
-            <Pressable onPress={() => onPress(item)} onLongPress={() => setSelected([...selected, item.node.id])} android_ripple={{color:colors.primary}} style={{padding:10, borderRadius:8, height:200, width:130, justifyContent:'center', alignItems:'center', backgroundColor: (selected.includes(item.node.id)) ? colors.primary : 'transparent'}}>
-                <FastImage source={{uri:item.node.image.large}} style={{height:190, width:120, borderRadius:8,}} />
-                <LinearGradient colors={['transparent', 'rgba(0,0,0,.5)']} locations={[0, 1]} style={{position:'absolute', height:190, width:120, borderRadius:8, justifyContent:'flex-end'}}>
-                    <Text numberOfLines={3} style={{textAlign:'center', color:'#FFF', paddingBottom:5}}>{item.node.name.userPreferred}</Text>
-                </LinearGradient>
-            </Pressable>
+            <FavoriteTile colors={colors} cover={item.node.image.large} onPress={() => onPress(item)} title={item.node.name.userPreferred} />
         );
     }
 
@@ -166,17 +181,7 @@ const CharacterFav = ({navigation, route}) => {
 
     // for onLongPress (selectable) -> setSelected([...selected, item.node.id])
     const renderItem = ({item}:{item:UserFavCharNode}) => {
-        return(
-            <View style={{borderRadius:8, overflow:'hidden'}}>
-                <Pressable onPress={() => onPress(item)} android_ripple={{ color: colors.primary }} style={{ padding: 10, borderRadius: 8, height: 200, width: 130, justifyContent: 'center', alignItems: 'center', backgroundColor: (selected.includes(item.node.id)) ? colors.primary : 'transparent' }}>
-                    <FastImage source={{ uri: item.node.image.large }} style={{ height: 190, width: 120, borderRadius: 8, }} />
-                    <LinearGradient colors={['transparent', 'rgba(0,0,0,.7)']} locations={[.65, .95]} style={{ position: 'absolute', height: 190, width: 120, justifyContent: 'flex-end', alignItems: 'center', borderRadius: 8 }}>
-                        <Text numberOfLines={2} onLongPress={() => handleCopy(item.node.name.userPreferred)} style={{ color: '#FFF', textAlign: 'center', fontWeight: 'bold', paddingBottom: 5, paddingHorizontal: 5 }}>{item.node.name.userPreferred}</Text>
-                        {(checkBD(date, item.node.dateOfBirth)) && <IconButton icon={'cake-variant'} style={{ position: 'absolute', top: -5, right: -10 }} color={colors.primary} />}
-                    </LinearGradient>
-                </Pressable>
-            </View>
-        );
+        return(<FavoriteTile colors={colors} cover={item.node.image.large} title={item.node.name.userPreferred} onPress={() => onPress(item)} />);
     }
 
     const onRefresh = async() => {
@@ -225,16 +230,8 @@ const MediaFav = ({navigation, route}) => {
     const type:'ANIME'|'MANGA' = route.params.type;
 
     const renderItem = ({item}:{item:UserFavMediaNode}) => {
-
         return(
-            <View style={{borderRadius:8, overflow:'hidden'}}>
-                <Pressable onPress={() => navigation.navigate('UserListDetail', { id: item.node.id })} android_ripple={{ color: colors.primary }} style={{ padding: 10, borderRadius: 8, height: 200, width: 130, justifyContent: 'center', alignItems: 'center' }}>
-                    <FastImage source={{ uri: item.node.coverImage.extraLarge }} style={{ height: 190, width: 120, borderRadius: 8, }} />
-                    <LinearGradient colors={['transparent', 'rgba(0,0,0,.7)']} locations={[.65, .95]} style={{ position: 'absolute', height: 190, width: 120, justifyContent: 'flex-end', alignItems: 'center', borderRadius: 8 }}>
-                        <Text numberOfLines={2} onLongPress={() => handleCopy(item.node.title.userPreferred)} style={{ color: '#FFF', textAlign: 'center', fontWeight: 'bold', paddingBottom: 5, paddingHorizontal: 5 }}>{item.node.title.userPreferred}</Text>
-                    </LinearGradient>
-                </Pressable>
-            </View>
+            <FavoriteTile colors={colors} cover={item.node.coverImage.extraLarge} title={item.node.title.userPreferred} onPress={() => navigation.navigate('UserListDetail', { id: item.node.id })} />
         );
     }
 
