@@ -73,10 +73,9 @@ export const StaffInfo = ({ navigation, route }:StaffInfoProps) => {
 
     useEffect(() => {
         navigation.setOptions({
-            headerTitleStyle: { color: colors.text },
             title: name || data?.name.userPreferred || 'Staff',
             headerRight: () => (!loading) && <HeaderRightButtons colors={colors} navigation={navigation} drawer={(inStack) ? true : false} qrCode qrOnPress={() => qrOpen()} share onShare={() => handleShare(data?.siteUrl ?? 'None')} id={id} />,
-            headerLeft: () => <HeaderBackButton style={{paddingRight:10}} colors={colors} navigation={navigation} />
+            headerLeft: () => <HeaderBackButton colors={colors} navigation={navigation} />
         });
     }, [navigation, route, dark, loading]);
 

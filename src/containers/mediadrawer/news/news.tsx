@@ -8,9 +8,10 @@ import { MalNews, MalNewsData } from "../../../Api/types";
 import { MediaHeader } from "../../../Components/header/mediaHeader";
 import { openURL } from "expo-linking";
 import { LoadingView } from "../../../Components";
-import { HeaderBackButton, HeaderRightButtons } from "../../../Components/header/headers";
+import { HeaderBackButton, HeaderBackground, HeaderRightButtons, HeaderTitle } from "../../../Components/header/headers";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { _openBrowserUrl } from "../../../utils";
+import { FlatList } from "react-native-gesture-handler";
 
 type renderProp = {item: MalNewsData}
 
@@ -24,16 +25,9 @@ const NewsTab = ({navigation, route}) => {
     const type = route.params.type;
     const { width, height } = useWindowDimensions();
     const { colors, dark } = useTheme();
-    const scrollY = useRef(new Animated.Value(0)).current;
     const headerHeight = useHeaderHeight();
 
     const openLink = (link:string) => _openBrowserUrl(link, colors.primary, colors.text);
-
-    const headerOpacity = scrollY.interpolate({
-        inputRange: [0, 70],
-        outputRange: [0, 1],
-        extrapolate: 'clamp'
-    }); 
 
     const fetchNews = async (page=1) => {
         const result = await getNews(mal_id, page, type);
@@ -70,22 +64,12 @@ const NewsTab = ({navigation, route}) => {
 
     useEffect(() => {
         navigation.setOptions({
-            headerTitle: () => (
-                <Animated.Text style={{textAlign:'center', fontSize:20, color:colors.text}}>News</Animated.Text>
-            ),
-            headerRight: () => <HeaderRightButtons colors={colors} navigation={navigation} drawer style={{paddingRight:15}} />,
-            headerLeft: () => <HeaderBackButton colors={colors} navigation={navigation} style={{paddingLeft:15}} />,
-            headerBackground: () => (
-                <Animated.View 
-                    style={{ 
-                        backgroundColor: colors.card,  
-                        justifyContent: 'flex-end', 
-                        height: '100%' 
-                    }}
-                />
-            ),
+            headerTitle: 'News',
+            headerRight: () => <HeaderRightButtons navigation={navigation} colors={colors} drawer />,
+            headerLeft: () => <HeaderBackButton navigation={navigation} colors={colors} style={{paddingLeft:3}} />,
+            headerBackground: () => <HeaderBackground colors={colors} />,
         });
-    },[navigation, headerOpacity, dark])
+    }, [navigation, dark]);
 
     useEffect(() => {
         fetchNews();
@@ -118,7 +102,7 @@ const NewsTab = ({navigation, route}) => {
     return(
         <View style={{flex:1}}>
             <MediaHeader coverImage={coverImage} loc={[0, .8]} />
-            <Animated.FlatList 
+            <FlatList 
             // @ts-ignore
                 data={(news !== 500) ? news?.data : []}
                 renderItem={newsCard}
@@ -126,15 +110,6 @@ const NewsTab = ({navigation, route}) => {
                 contentContainerStyle={{paddingTop:100}}
                 ItemSeparatorComponent={() => <View style={{height:10}}/>}
                 ListEmptyComponent={() => (news === 500) ? <RetryView /> : <EmptyView />}
-                onScroll={Animated.event([
-                    {
-                        nativeEvent: {
-                            contentOffset: {
-                                y: scrollY,
-                            }
-                        }
-                    }
-                ], { useNativeDriver: true })}
             />
         </View>
     );

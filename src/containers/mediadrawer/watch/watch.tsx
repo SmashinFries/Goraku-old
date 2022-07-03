@@ -8,7 +8,9 @@ import FastImage from "react-native-fast-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { handleLink } from "../../../utils";
 import { CrunchyRollSVG } from "../../../Components/svg/svgs";
-import { HeaderBackButton, HeaderRightButtons } from "../../../Components/header/headers";
+import { HeaderBackButton, HeaderBackground, HeaderRightButtons } from "../../../Components/header/headers";
+import { IconButton } from "react-native-paper";
+import { PressableAnim } from "../../../Components";
 
 type renderProps = {
     item: StreamingEpType;
@@ -20,25 +22,27 @@ const WatchTab = ({navigation, route}:WatchProps) => {
 
     useEffect(() => {
         navigation.setOptions({
-            headerBackgroundContainerStyle: {backgroundColor:colors.card},
-            headerRight: () =>
-                <HeaderRightButtons colors={colors} navigation={navigation} drawer />,
-            headerLeft: () => <HeaderBackButton navigation={navigation} style={{ marginLeft: 15 }} colors={colors} />,
+            headerRight: () => <HeaderRightButtons navigation={navigation} colors={colors} drawer />,
+            headerLeft: () => <HeaderBackButton navigation={navigation} colors={colors} style={{paddingLeft:3}} />,
+            headerBackground: () => <HeaderBackground colors={colors} />,
         });
     }, [navigation, dark]);
 
     const RenderItem = ({item}:renderProps) => {
         return(
           <View style={{alignSelf: 'center', width: '90%' }}>
-            <Pressable onPress={() => handleLink(item.url)} style={{height:220}}>
-              <FastImage source={{ uri: item.thumbnail }} style={{ height: 220, width: '100%' }} resizeMode='cover' />
-              <LinearGradient colors={['transparent', '#000']} locations={[0.35, .9]} style={{ position: 'absolute', width: '100%', justifyContent: 'flex-end', height: 220 }}>
+            <PressableAnim onPress={() => handleLink(item.url)} style={{height:220, borderRadius:8}}>
+              <FastImage source={{ uri: item.thumbnail }} style={{ height: 220, width: '100%', borderRadius:8 }} resizeMode='cover' />
+              <LinearGradient colors={['transparent', '#000']} locations={[0.35, .9]} style={{ position: 'absolute', width: '100%', justifyContent: 'flex-end', height: 220, borderRadius:8 }}>
                 <View style={{ width: '100%', padding: 5 }}>
                   <Text style={{ color: '#FFF', textAlign: 'center' }}>{item.title}</Text>
                 </View>
                 {(item.site === 'Crunchyroll') ? <CrunchyRollSVG style={{ position: 'absolute', top: 5, left: 5 }} /> : null}
               </LinearGradient>
-            </Pressable>
+              <View style={{position:'absolute', height:220, width:'100%', alignSelf:'center', alignItems:'center', justifyContent:'center'}}>
+                <IconButton size={90} icon='play-circle' color="rgba(255,255,255,.5)" />
+              </View>
+            </PressableAnim>
           </View>
         );
     }

@@ -6,7 +6,7 @@ import { getMusic } from "../../../Api";
 import { MediaHeader } from "../../../Components/header/mediaHeader";
 import { MusicInfo } from "../../../Api/types";
 import { MusicProps } from "../../types";
-import { HeaderBackButton, HeaderRightButtons, HeaderTitle } from "../../../Components/header/headers";
+import { HeaderBackButton, HeaderBackground, HeaderRightButtons, HeaderTitle } from "../../../Components/header/headers";
 import { LoadingView } from "../../../Components";
 import MusicViewer from "./components/musicViewer";
 
@@ -36,17 +36,9 @@ const MusicTab = ({ navigation, route }: MusicProps) => {
     useEffect(() => {
         navigation.setOptions({
             headerTitle: () => <HeaderTitle title={`Music${(data) ? ' (' + data?.animethemes.length + ')' : ''}`} colors={colors} />,
-            headerRight: () => <HeaderRightButtons navigation={navigation} colors={colors} drawer style={{paddingRight:15}} />,
-            headerLeft: () => <HeaderBackButton navigation={navigation} colors={colors} style={{paddingLeft:15}} />,
-            headerBackground: () => (
-                <Animated.View 
-                    style={{ 
-                        backgroundColor: colors.card,
-                        justifyContent: 'flex-end', 
-                        height: '100%' 
-                    }}
-                />
-            ),
+            headerRight: () => <HeaderRightButtons navigation={navigation} colors={colors} drawer />,
+            headerLeft: () => <HeaderBackButton navigation={navigation} colors={colors} style={{paddingLeft:3}} />,
+            headerBackground: () => <HeaderBackground colors={colors} />,
         });
     }, [navigation, parNav, data, dark]);
 

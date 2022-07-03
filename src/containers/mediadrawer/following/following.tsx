@@ -4,7 +4,7 @@ import { FlatList, View } from "react-native";
 import { getMediaFollowing } from "../../../Api/anilist/anilist";
 import { MediaFollowing } from "../../../Api/types";
 import { LoadingView } from "../../../Components";
-import { HeaderBackButton, HeaderRightButtons } from "../../../Components/header/headers";
+import { HeaderBackButton, HeaderBackground, HeaderRightButtons } from "../../../Components/header/headers";
 import { getUserID } from "../../../Storage/authToken";
 import FollowingTile from "./components/followingTile";
 
@@ -29,11 +29,9 @@ const FollowingTab = ({ navigation, route }) => {
 
     useEffect(() => {
         navigation.setOptions({
-            headerStyle:{elevation:8},
-            headerBackgroundContainerStyle: {backgroundColor:colors.card},
-            headerRight: () =>
-                <HeaderRightButtons colors={colors} navigation={navigation} drawer />,
-            headerLeft: () => <HeaderBackButton navigation={navigation} style={{ marginLeft: 15 }} colors={colors} />,
+            headerRight: () => <HeaderRightButtons navigation={navigation} colors={colors} drawer />,
+            headerLeft: () => <HeaderBackButton navigation={navigation} colors={colors} style={{paddingLeft:3}} />,
+            headerBackground: () => <HeaderBackground colors={colors} />,
         });
     }, [navigation, dark]);
 

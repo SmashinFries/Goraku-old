@@ -6,7 +6,7 @@ import { getStudioList, toggleFav } from "../../../Api/anilist/anilist";
 import { StudioListType } from "../../../Api/types";
 import { StudioInfoProps } from "../../types";
 import { MediaTile } from "../../../Components/Tiles/mediaTile";
-import { HeaderBackButton, HeaderRightButtons } from "../../../Components/header/headers";
+import { HeaderBackButton, HeaderBackground, HeaderRightButtons } from "../../../Components/header/headers";
 import { LoadingView } from "../../../Components";
 
 const StudioInfo = ({navigation, route}:StudioInfoProps) => {
@@ -34,15 +34,11 @@ const StudioInfo = ({navigation, route}:StudioInfoProps) => {
 
     useEffect(() => {
         navigation.setOptions({
-            headerRight: () =>
-            <View style={{flexDirection:'row', justifyContent:'center'}}>
-                {isAuth && <IconButton icon={(isLiked) ? 'heart' : 'heart-outline'} onPress={() => likeStudio()} color={(isLiked) ? 'red' : colors.text} />}
-                <HeaderRightButtons colors={colors} navigation={navigation} style={{paddingRight:15}} drawer />
-            </View>,
-            headerLeft: () => 
-                <HeaderBackButton style={{marginLeft:15}} colors={colors} navigation={navigation} />
+            headerRight: () => <HeaderRightButtons navigation={navigation} colors={colors} drawer />,
+            headerLeft: () => <HeaderBackButton navigation={navigation} colors={colors} style={{paddingLeft:3}} />,
+            headerBackground: () => <HeaderBackground colors={colors} />,
         });
-    },[navigation, dark, isLiked]);
+    }, [navigation, dark, isLiked]);
 
     useEffect(() => {
         handleStudioFetch().then(data => {setStudio(data); setIsLiked(data.data.Studio.isFavourite)}).then(() => setLoading(false)).catch((err) => console.log(err));
