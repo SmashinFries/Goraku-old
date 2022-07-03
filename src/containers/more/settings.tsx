@@ -3,12 +3,13 @@ import { Pressable, View, Text, ScrollView } from "react-native";
 import { useTheme } from "@react-navigation/native";
 import { SettingsScreenProps, ThemesScreenProps } from "../types";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { Button, Card, Divider, IconButton, List, Modal, Portal, RadioButton, Switch } from 'react-native-paper';
+import { Button, Card, DefaultTheme, Divider, IconButton, List, Modal, Portal, RadioButton, Switch } from 'react-native-paper';
 import { storeTheme } from "../../Storage/themeStorage";
 import { ThemeContext } from "../../contexts/context";
 import { AvailableThemes } from "../../Themes/themes";
 import { ThemeColors } from "../../Components/types";
-import { getImgType, getSaveImgType, storeSaveImgType } from "../../Storage/generalSettings";
+import { getImgType, getSaveImgType, storeSaveImgType, useDevArtEnabled } from "../../Storage/generalSettings";
+import { ADULT_ALLOW } from "../../constants";
 
 const Stack = createNativeStackNavigator();
 
@@ -16,14 +17,42 @@ export const SettingsScreen = ({navigation, route}:SettingsScreenProps) => {
     const { colors, dark } = useTheme();
     const {imgType, setImgType} = getImgType();
     const [saveimgVis, setSaveimgVis] = useState(false);
+    const {devartState, updateDevArt} = useDevArtEnabled();
 
     const hideSaveImgModal = () => setSaveimgVis(false);
 
+    const ToggleDevArt = () => {
+        return(
+            <Switch value={devartState} onValueChange={() => updateDevArt(!devartState)} />
+        )
+    }
+
     return(
         <ScrollView style={{flex:1, backgroundColor:(dark) ? colors.background : colors.card}}>
-            <List.Item rippleColor={colors.border} title="Themes" titleStyle={{color:colors.text}} onPress={() => navigation.navigate('Themes')} left={props => <List.Icon {...props} icon="theme-light-dark" color={colors.primary} />} />
-            <List.Item rippleColor={colors.border} title="Save Image Type" titleStyle={{color:colors.text}} onPress={() => setSaveimgVis(true)} right={props => <View style={{justifyContent:'center', paddingRight:10}}><Text style={{color:props.color}}>{imgType}</Text></View>} left={props => <List.Icon {...props} icon="image" color={colors.primary} />} />
+            <List.Section>
+                <List.Subheader>Appearance</List.Subheader>
+                <List.Item rippleColor={colors.border} title="Themes" titleStyle={{color:colors.text}} onPress={() => navigation.navigate('Themes')} left={props => <List.Icon {...props} icon="theme-light-dark" color={colors.primary} />} />
+            </List.Section>
+            <List.Section>
+                <List.Subheader>API</List.Subheader>
+                <List.Item 
+                    rippleColor={colors.border} 
+                    title="Deviant Art" 
+                    description={(ADULT_ALLOW) ? 'Enable character fan art' : 'Uncensored version required!\n(Too risky for Play Store 😔)'} 
+                    descriptionStyle={(!ADULT_ALLOW) && {color:'red'}}
+                    titleStyle={{color:colors.text}} 
+                    left={props => <List.Icon {...props} 
+                    icon="brush" 
+                    color={colors.primary} />} 
+                    right={props => (ADULT_ALLOW) ? <ToggleDevArt /> : undefined} 
+                />
+            </List.Section>
+            <List.Section>
+                <List.Subheader>Images</List.Subheader>
+                <List.Item rippleColor={colors.border} title="Save Image Type" titleStyle={{color:colors.text}} onPress={() => setSaveimgVis(true)} right={props => <View style={{justifyContent:'center', paddingRight:10}}><Text style={{color:props.color}}>{imgType}</Text></View>} left={props => <List.Icon {...props} icon="image" color={colors.primary} />} />
+            </List.Section>
             <SavedImageModal visible={saveimgVis} hideModal={hideSaveImgModal} setType={setImgType} colors={colors} />
+            
         </ScrollView>
     );
 }
@@ -132,8 +161,8 @@ const SavedImageModal = ({visible, hideModal, setType, colors}:ImageModalProps) 
                         </Pressable>
                     </Card.Content>
                     <Card.Actions style={{justifyContent:'flex-end', paddingTop:20}}>
-                        <Button onPress={hideModal}>Cancel</Button>
-                        <Button onPress={confirmType}>Ok</Button>
+                        <Button onPress={hideModal} color={colors.primary}>Cancel</Button>
+                        <Button onPress={confirmType} color={colors.primary}>Ok</Button>
                     </Card.Actions>
                 </Card>
             </Modal>
