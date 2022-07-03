@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage, { useAsyncStorage } from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
 
 export const storeSaveImgType = async(type:string) => {
@@ -39,4 +39,33 @@ export const getImgType = () => {
     },[type]);
     
     return {imgType, setImgType};
+}
+
+
+export const useDevArtEnabled = () => {
+    const [devartState, setDevartState] = useState<boolean>(false);
+    const {getItem, setItem} = useAsyncStorage('@devArtEnabled');
+    
+    const stringToBool = (text:string) => {return((text === 'true') ? true : false);}
+
+    const checkDevArt = async() => {
+        const item = await getItem();
+        if (item !== null) {
+            setDevartState(stringToBool(item));
+        } else {
+            await setItem('false');
+            setDevartState(stringToBool('false'));
+        }
+    }
+
+    const updateDevArt = async(isEnabled:boolean) => {
+        await setItem((isEnabled === true) ? 'true' : 'false');
+        setDevartState(isEnabled);
+    }
+
+    useEffect(() => {
+        checkDevArt();
+    },[]);
+
+    return {devartState, updateDevArt};
 }
