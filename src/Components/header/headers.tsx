@@ -42,13 +42,14 @@ type RightButtonProps = {
     style?:StyleProp<ViewStyle>;
     qrOnPress?: () => void;
     onShare?: () => void;
+    onLongShare?: () => void;
     id?:number;
 }
-export const HeaderRightButtons = ({navigation, colors, share, drawer, qrCode, qrOnPress, onShare, favorites, list, style, id}:RightButtonProps) => {
+export const HeaderRightButtons = ({navigation, colors, share, drawer, qrCode, qrOnPress, onShare, onLongShare, favorites, list, style, id}:RightButtonProps) => {
     return (
         <Animated.View style={[style,{ flexDirection: 'row', }]}>
             {(qrCode) && <IconButton icon={'qrcode'} size={26} rippleColor={colors.primary} color={colors.text} onPress={qrOnPress} /> }
-            {(share) && <IconButton icon={'share-variant'} size={26} rippleColor={colors.primary} color={colors.text} onPress={(onShare) ? onShare : () => handleShare(`goraku://info/${id}`)} /> }
+            {(share) && <IconButton icon={'share-variant'} size={26} rippleColor={colors.primary} color={colors.text} onLongPress={(onLongShare) ? onLongShare: undefined } onPress={(onShare) ? onShare : () => handleShare(`goraku://info/${id}`)} /> }
             {/* @ts-ignore */}
             {(drawer) && <IconButton icon={'menu'} size={26} rippleColor={colors.primary} color={colors.text} onPress={() => navigation.toggleDrawer()} /> }
             {/* @ts-ignore */}
