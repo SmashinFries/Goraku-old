@@ -74,7 +74,7 @@ export interface MediaTileType {
         siteUrl: string;
 }
 
-type TitleType = {
+export type TitleType = {
     userPreferred: string;
     native: string;
     english: string;
@@ -325,6 +325,7 @@ export type Reviews = {
     edges: ReviewsNode[];
 }
 
+export type Status = 'FINISHED' | 'RELEASING' | 'NOT_YET_RELEASED' | 'CANCELLED' | 'HIATUS';
 export type MediaQueryType = {
     id: number;
     idMal: number;
@@ -367,7 +368,7 @@ export type MediaQueryType = {
     seasonYear: number;
     type: 'ANIME'|'MANGA';
     format: string;
-    status: string;
+    status: Status;
     episodes: number;
     duration: number;
     chapters: number;
