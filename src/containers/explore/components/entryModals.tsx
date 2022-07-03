@@ -6,7 +6,7 @@ import { updateMediaListEntry } from "../../../Api";
 import { ScrollView } from "react-native-gesture-handler";
 import { RadioButton } from "../../../Components/buttons/radio";
 import { Button, Dialog, IconButton, TextInput } from "react-native-paper";
-import { rgbConvert } from "../../../utils";
+import { range, rgbConvert } from "../../../utils";
 
 const STATUS_OPTIONS = ['CURRENT', 'PLANNING', 'COMPLETED', 'DROPPED', 'PAUSED', 'REPEATING'];
 type visibleState = {
@@ -111,7 +111,9 @@ const ProgressList = ({data, setData, totalEP, onClose, colors}:StatusProps) => 
 
 const ScoreList = ({data, setData, onClose, colors}:StatusProps) => {
     const [score, setScore] = useState(data.anilist.mediaListEntry.score);
-    const scores = [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10];
+    const scoress = Array.from(Array(100).keys()).map(decimal => Math.round(.1*decimal));
+    const scores = range(1, 100).map(number => (Math.round((.1*number)*100)/100));
+    // const scores = [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10];
 
     const changeScore = async(rating:number) => {
         setScore(rating);
