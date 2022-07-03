@@ -3,25 +3,21 @@ import { View, Text, ToastAndroid, useWindowDimensions, ScrollView, Image } from
 import { useFocusEffect, useTheme } from "@react-navigation/native";
 import { List, Portal, Dialog, Button, Caption, ActivityIndicator, IconButton } from 'react-native-paper';
 import { checkTokenExpiration, getAuth, removeToken } from "../../../Storage/authToken";
-import { changeLanguage, changeNSFW } from "../../../Api/anilist/anilist";
+import { changeLanguage, getUserOptions } from "../../../Api/anilist/anilist";
 import { RefreshContext, AccountContext } from "../../../contexts/context";
-import { ADULT_ALLOW } from "../../../constants";
 import { RadioButton } from "../../../Components/buttons/radio";
 import { _openAuthBrowser, _openBrowserUrl } from "../../../utils";
 import { AccountSettings, LoginButton, LogoutButton } from "./components/buttons";
 import { LoadingView } from "../../../Components";
 import { AccountType } from "../../types";
-import { fetchPopular, fetchDevArtToken } from "../../../Api/deviantArt/devart";
-import { DEVART_KEY } from '@env';
+import { getNSFW, storeNSFW } from "../../../Storage/nsfw";
 
 export const AccountHome = ({navigation, route}) => {
     const { isAuth, setIsAuth, isDevArtAuth, setIsDevArtAuth } = useContext(AccountContext);
     const { colors, dark } = useTheme();
     const [isAniPressed, setIsAniPressed] = useState(false);
-    const [isDevArtPressed, setIsDevArtPressed] = useState(false);
     const [tokenExp, setTokenExp] = useState<string>();
     const [aniLoading, setAniLoading] = useState<boolean>(false);
-    const [devartLoading, setDevartLoading] = useState<boolean>(false);
     const token:string = route.params?.token;
 
     const handleLogin = async(type:AccountType) => {
@@ -30,11 +26,10 @@ export const AccountHome = ({navigation, route}) => {
             setAniLoading(true);
             setIsAniPressed(true);
         }
-        if (type === 'DeviantArt') {
-            const token = await 
-            setDevartLoading(true);
-            setIsDevArtPressed(true);
-        }
+        // if (type === 'DeviantArt') {
+        //     setDevartLoading(true);
+        //     setIsDevArtPressed(true);
+        // }
     };
 
     const logout = async(type:AccountType) => {
@@ -43,6 +38,7 @@ export const AccountHome = ({navigation, route}) => {
             // @ts-ignore
             (type === 'Anilist') ? setIsAuth(false) : setIsDevArtAuth(false);
             (type === 'Anilist') && setTokenExp(null);
+            (type === 'Anilist') && await storeNSFW(false);
             ToastAndroid.show('Logged out', ToastAndroid.SHORT);
         }
     }
@@ -59,8 +55,8 @@ export const AccountHome = ({navigation, route}) => {
 
     useEffect(() => {
         if (!isAuth && isAniPressed) {
-            console.log('AniList');
             getAuth('Anilist', token).then(auth => {setIsAuth(auth); setAniLoading(false); ToastAndroid.show('Logged In', ToastAndroid.SHORT);});
+            getUserOptions().then(res => {storeNSFW(res.options.displayAdultContent)});
             setIsAniPressed(false);
         }
         // if (!isDevArtAuth && isDevArtPressed) {
