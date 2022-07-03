@@ -1,49 +1,32 @@
-import { useHeaderHeight } from "@react-navigation/elements";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, Animated, Pressable } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import { Shadow } from "react-native-shadow-2";
 import { AniMalType } from "../../Api/types";
 import { CharacterProps } from "../types";
 import { MediaHeader } from "../../Components/header/mediaHeader";
-import { useIsFocused, useTheme } from "@react-navigation/native";
+import { useTheme } from "@react-navigation/native";
 import { getMediaInfo } from "../../Api";
 import FastImage from 'react-native-fast-image';
 import { PressableAnim } from "../../Components/animated/AnimPressable";
 import { toggleFav } from "../../Api/anilist/anilist";
-import { HeaderBackButton, HeaderRightButtons, HeaderTitle } from "../../Components/header/headers";
+import { HeaderBackButton, HeaderBackground, HeaderRightButtons } from "../../Components/header/headers";
 
 const CharacterTab = ({navigation, route}:CharacterProps) => {
     const [data, setData] = useState<AniMalType>(route.params.data);
-    const scrollY = useRef(new Animated.Value(0)).current;
-    const headerHeight = useHeaderHeight();
     const { colors, dark } = useTheme();
 
-    const diffClampOpacity = Animated.diffClamp(scrollY, 0, 70);
-    const headerOpacity = diffClampOpacity.interpolate({
-        inputRange: [0, 70],
-        outputRange: [1, 0],
-        extrapolate: 'clamp'
-    });
-
     useEffect(() => {
-        const routename = route.name;
         navigation.setOptions({
-            headerStyle: {backgroundColor:colors.card},
-            headerTitle: () => <HeaderTitle colors={colors} title={'Characters'}/>,
-            headerRight: () =>
-                <Animated.View>
-                    <HeaderRightButtons colors={colors} navigation={navigation} drawer />
-                </Animated.View>,
-            headerLeft: () => 
-                <Animated.View style={{paddingRight:15}}>
-                    <HeaderBackButton colors={colors} navigation={navigation} />
-                </Animated.View>,
+            headerRight: () => <HeaderRightButtons navigation={navigation} colors={colors} drawer />,
+            headerLeft: () => <HeaderBackButton navigation={navigation} colors={colors} style={{paddingLeft:3}} />,
+            // headerBackground: () => <HeaderBackground colors={colors} />,
         });
     }, [navigation, dark]);
 
     const toCharDetail = (charID:number, name:string) => {
+        // @ts-ignore
         navigation.navigate('CharDetail', {id:charID, name:name, malId:data.anilist.idMal, type: data.anilist.type, inStack: true});
     }
 
@@ -97,9 +80,6 @@ const CharacterTab = ({navigation, route}:CharacterProps) => {
         setData({...data, anilist:{...data.anilist, characters:{...data.anilist.characters, edges: [...data.anilist.characters.edges, ...newCharacters.edges], pageInfo: newCharacters.pageInfo}}});
     }
 
-    // const getItemLayout = (data, index) => {
-    //     return {length:180+80, offset:180+80*index, index}
-    // }
     const keyExtractor = ({id}) => id.toString();
     const renderItem = ({ item, index }) => <CharItem {...item} index={index} />;
     const flatlistData = data.anilist.characters.edges.map((item) => {
@@ -122,16 +102,7 @@ const CharacterTab = ({navigation, route}:CharacterProps) => {
             renderItem={renderItem}
             keyExtractor={keyExtractor}
             numColumns={2}
-            contentContainerStyle={{justifyContent:'space-evenly', alignItems: 'center', paddingTop: headerHeight+10,}}
-            onScroll={Animated.event([
-                {
-                    nativeEvent: {
-                        contentOffset: {
-                            y: scrollY,
-                        }
-                    }
-                }
-            ], { useNativeDriver: true })}
+            contentContainerStyle={{justifyContent:'space-evenly', alignItems: 'center', paddingTop: 10,}}
             onEndReached={() => (data.anilist.characters.pageInfo.hasNextPage) ? handleMore() : null}
             onEndReachedThreshold={0.4}
         />
