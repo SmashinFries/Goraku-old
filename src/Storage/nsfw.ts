@@ -1,26 +1,19 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useEffect, useState } from 'react';
 import { getUserOptions } from '../Api';
 import { ADULT_ALLOW } from '../constants';
 import { getToken } from './authToken';
 
-const useNSFW = () => {
-    const [isNSFW, setIsNSFW] = useState(false);
-
-    useEffect(() => {
-
-    },[]);
-}
-
 export const getNSFW = async() => {
     try {
-        const isNSFW = await AsyncStorage.getItem('@nsfw');
+        let isNSFW = await AsyncStorage.getItem('@nsfw');
         const isAuth = await getToken();
         if (isNSFW === null && isAuth) {
             const results = await getUserOptions();
             await storeNSFW(results.options.displayAdultContent);
+            isNSFW = (results.options.displayAdultContent) ? 'true' : 'false';
         } else if (isNSFW === null && !isAuth) {
-            await storeNSFW(true);
+            await storeNSFW(false);
+            isNSFW = 'false';
         }
 
         return isNSFW === 'true' ? true : false;
