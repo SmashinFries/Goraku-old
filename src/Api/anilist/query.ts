@@ -548,6 +548,9 @@ query ($id: Int, $page: Int, $perPage: Int) {
           countryOfOrigin
           title {
             userPreferred
+            english
+            native
+            romaji
           }
           coverImage {
             extraLarge
