@@ -9,7 +9,7 @@ import { fetchDownload, fetchMetaData, fetchPopular } from "../../Api/deviantArt
 import { MetadataDA, PopularDevArtData, PopularResult, DownloadData } from "../../Api/deviantArt/types";
 import { MaterialIcons } from '@expo/vector-icons';
 import { LoadingView } from "../../Components";
-import { handleShare, saveImage, shareImage } from "../../utils";
+import { handleShare, saveImage, shareImage, _openBrowserUrl } from "../../utils";
 import { DevArtMetaData } from "./components/metadataView";
 
 type Props = {
@@ -34,10 +34,12 @@ const DevArtDetail = ({navigation, route}:Props) => {
     const UserView = () => {
         return(
             <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', width: '80%', paddingVertical:10 }}>
-                <Avatar.Image source={{ uri: image.author.usericon }} />
+                <Pressable onPress={() => _openBrowserUrl(`https://www.deviantart.com/${image.author.username}`, colors.primary, colors.text)}>
+                    <Avatar.Image source={{ uri: image.author.usericon }} />
+                </Pressable>
                 <View>
                     <Text style={{ color: colors.text, fontSize: 22, fontWeight: 'bold', paddingLeft: 20 }}>{image.title}</Text>
-                    <Text style={{ color: colors.text, paddingLeft: 20 }}>By {image.author.username}</Text>
+                    <Text selectable style={{ color: colors.text, paddingLeft: 20 }}>By {image.author.username}</Text>
                     {(metaData) ? 
                     <View style={{flexDirection:'row', alignItems:'center', paddingLeft: 10}}>
                         <IconButton icon='calendar' size={15} />
