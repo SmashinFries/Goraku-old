@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig } from "axios";
+import axios from "axios";
 import { DownloadData, MetaDatas, PopularDevArtData } from "./types";
 import { DEVART_KEY, DEVART_ID} from '@env';
 import * as SecureStore from 'expo-secure-store';
@@ -78,8 +78,9 @@ export const fetchDownload = async(id:string) => {
 export const fetchRelatedTags = async(search:string) => {
     const query = search.replace(/\s/gm, '+');
     const url = `https://www.deviantart.com/search/deviations?q=${query}`;
+    const regx = /tag=.*?>(.*?)<\/a>/gm
     const html = await axios.get<string>(url);
-    const tags = html.data.match(/<a class="_3DJk2 _2yfV4 _1qoDX _1LbFX" .*?>(.*?)<\/a>/gm);
+    const tags = html.data.match(regx);
     const tag_words = tags.map((tag) => tag.match(/"\>(.*?)<\/a>/)[1]);
     return tag_words;
 }
