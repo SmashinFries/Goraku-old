@@ -4,7 +4,7 @@ import FastImage from "react-native-fast-image";
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { AniMalType } from "../../../../Api/types";
-import { AnilistSVG, MalSVG } from "../../../../Components/svg/svgs";
+import { AnilistSVG, MalSVG, MalSVGc } from "../../../../Components/svg/svgs";
 import { getMalScoreColor, getScoreColor, handleCopy, getTime, getDate, saveImage } from "../../../../utils";
 import { ThemeColors } from "../../../../Components/types";
 
@@ -76,6 +76,7 @@ const OverViewHeader = ({data, colors, setVisible}:Props) => {
                     <Pressable onPress={() => setVisible(true)} style={{ height: 200, width: 130 }}>
                         <FastImage fallback source={{ uri: data.anilist.coverImage.extraLarge, priority: 'high' }} style={{ height: 200, width: 130, borderRadius: 8 }} resizeMode='cover' />
                     </Pressable>
+                    
                     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'flex-start', paddingLeft: 20, paddingRight:5 }}>
                         <SwipeTitle />
                         {(!data.anilist.isLicensed) ? <Text style={{ fontSize: 16, textTransform: 'capitalize', color: colors.text }}>{'Doujinshi'}</Text> : null}
@@ -100,7 +101,7 @@ const OverViewHeader = ({data, colors, setVisible}:Props) => {
                             {((data?.anilist.averageScore !== null || data?.anilist.meanScore !== null) && (data?.mal.data?.score || data?.mal.data?.scored)) ? <Text style={{ fontSize: 16, fontWeight: 'bold', color: colors.text }}> ・ </Text> : null}
                             {(data.mal.data?.score || data.mal.data?.scored) ?
                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                    <MalSVG color='#2A50A3' />
+                                    <MalSVGc color='#2A50A3' width={30}  />
                                     <Text style={{ fontSize: 16, textTransform: 'capitalize', fontWeight: 'bold', color: getMalScoreColor((data?.anilist.type === 'ANIME') ? data?.mal.data.score : data?.mal.data.scored), marginLeft: 5 }}>
                                         {(data?.anilist.type === 'ANIME') ? data?.mal.data?.score : data?.mal.data?.scored}
                                     </Text>
