@@ -122,25 +122,31 @@ type staffData = {
 }
 type CharButtonsProps = {
     description:string;
+    altNames: string[];
     links: { aniLink:string; malLink:string; };
     favorite:boolean;
     toggleLike: () => void;
     colors:ThemeColors;
     staffData?:staffData;
+    isAuth?:boolean;
 }
-const CharacterBody = ({description, links, favorite, toggleLike, colors, staffData}:CharButtonsProps) => {
+const CharacterBody = ({description, altNames, links, favorite, isAuth, toggleLike, colors, staffData}:CharButtonsProps) => {
     const {width, height} = useWindowDimensions();
     return(
         <View style={{ flex: 1, marginTop: 30, paddingHorizontal: 10 }}>
-            <Button mode={(favorite) ? 'contained' : 'outlined'} onPress={toggleLike} icon={(!favorite) ? 'heart-outline' : 'heart'} color={'red'} style={{ borderColor: 'red', borderWidth: (favorite) ? 0 : 1 }}>
+            {(isAuth) ? <Button mode={(favorite) ? 'contained' : 'outlined'} onPress={toggleLike} icon={(!favorite) ? 'heart-outline' : 'heart'} color={'red'} style={{ borderColor: 'red', borderWidth: (favorite) ? 0 : 1 }}>
                 {(favorite) ? 'Favorited' : 'Favorite'}
-            </Button>
+            </Button> : null}
             {(staffData) ?
                 <View style={{marginTop:10}}>
                     {Object.keys(staffData).filter((elem, idx) => staffData[elem] !== null).map((item, index) => <Text key={index} style={{ marginBottom: 5, color: colors.text }}>{staffData[item]}</Text>)}
                 </View>
                 : null
             }
+            {(altNames?.length > 0) ? <View style={{paddingTop:20}}>
+                <Text style={{color:colors.text, fontWeight:'bold', paddingBottom:5}}>Alternative Names:</Text>
+                {altNames.map((name, idx) => <Text key={idx} onLongPress={() => handleCopy(name)} style={{color:colors.text}}>・{name}</Text>)}
+            </View> : null}
             <CharacterDescription description={description} width={width} colors={colors} />
             <View style={{flexDirection:'row', justifyContent:'space-evenly', width:'100%', paddingVertical:10}}>
                 <View style={{minWidth:'45%'}}>
