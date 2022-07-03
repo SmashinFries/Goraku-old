@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { View, Pressable, Text, useWindowDimensions, Animated } from "react-native";
+import { View, Pressable, Text, useWindowDimensions, Animated, PixelRatio } from "react-native";
 import { useNavigation, useTheme } from "@react-navigation/native";
 import { ScrollView } from "react-native-gesture-handler";
 import { LinearGradient } from "expo-linear-gradient";
@@ -7,7 +7,7 @@ import FastImage from 'react-native-fast-image';
 import { IconButton } from 'react-native-paper';
 import { AniMalType, MalImages } from "../../../Api/types";
 import { OverviewNav, OverviewProps } from "../../types";
-import { handleCopy, handleShare } from "../../../utils";
+import { getDate, handleCopy, handleShare, saveImage, shareImage } from "../../../utils";
 import { getMalImages, getMediaListEntry, quickRemove, toggleFav, updateMediaListEntry } from "../../../Api";
 import { ListEntryDialog } from "../../explore/components/entryModals";
 import { PressableAnim } from "../../../Components/animated/AnimPressable";
@@ -16,8 +16,9 @@ import { ListEntryUI, Trailer, MediaInformation, CharStaffList, ExternalLinkList
 import RenderHtml from 'react-native-render-html';
 import { Portal } from 'react-native-paper';
 import QrView from "../../../Components/qrView";
-import { DeviantArtImages, EditButton, ImageViewer, LoadingView } from "../../../Components";
-import { getIsAuth } from "../../../Storage/authToken";
+import { EditButton, ImageViewer, LoadingView } from "../../../Components";
+import { captureRef } from "react-native-view-shot";
+import { SharedImageData, ShareMediaInfo } from "./components/shareMediaInfo";
 
 const AnimGradient = Animated.createAnimatedComponent(LinearGradient);
 
@@ -153,7 +154,7 @@ const OverviewTab = ({ content, isList }: OverviewTabParams) => {
                 {(imageLoading) && <View style={{height:190}}><LoadingView colors={colors} mode='Circle' /></View>}
                 {(!imageLoading) && <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
                     {images.map((img, index) =>
-                        <Pressable key={index} onPress={() => { setImageIndex(index); console.log(index, img.jpg.image_url); setVisible(true) }}>
+                        <Pressable key={index} onPress={() => { setImageIndex(index); setVisible(true) }}>
                             <FastImage fallback source={{ uri: img.jpg.image_url }} resizeMode='contain' style={{ width: 130, height: 190, marginHorizontal: 10 }} />
                         </Pressable>
                     )}
@@ -215,8 +216,8 @@ const OverviewTab = ({ content, isList }: OverviewTabParams) => {
                     <MediaInformation data={data} type={data.anilist.type} colors={colors} />
                     <StudioButton />
                     <RelationsList data={data} navigation={navigation} colors={colors} />
-                    <CharStaffList data={data} setData={setData} colors={colors} navigation={navigation} charData={data?.anilist.characters.edges} title='Characters' navLocation={'Character'} rolePosition='Top' />
-                    <CharStaffList data={data} setData={setData} colors={colors} navigation={navigation} staffData={data?.anilist.staff.edges} title='Staff' navLocation={'Staff'} gradBottomLoc={[.1, .9]} rolePosition='Top' />
+                    <CharStaffList data={data} setData={setData} colors={colors} navigation={navigation} isList={isList} charData={data?.anilist.characters.edges} title='Characters' navLocation={'Character'} rolePosition='Top' />
+                    <CharStaffList data={data} setData={setData} colors={colors} navigation={navigation} isList={isList} staffData={data?.anilist.staff.edges} title='Staff' navLocation={'Staff'} gradBottomLoc={[.1, .9]} rolePosition='Top' />
                     <Trailer trailer={data.anilist.trailer ?? null} width={width} colors={colors} />
                     <ImageList />
                     {/* <DeviantArtImages query={data.anilist.title.romaji} colors={colors} /> */}
@@ -247,32 +248,70 @@ const MediaInfoScreen = ({ navigation, route }: OverviewProps) => {
     const [visible, setVisible] = useState(false);
     const [showQr, setShowQr] = useState(false);
     const { data, isList } = route.params;
+    const shareRef = useRef<View>();
     const { colors, dark } = useTheme();
+    const { width } = useWindowDimensions();
     const headerOpacity = scrollY.interpolate({
         inputRange: [40, 110],
         outputRange: [0, 1],
         extrapolate: 'clamp'
     });
+    const link = `goraku://info/${data.anilist.type.toLowerCase()}/${data.anilist.id}`;
+    const contentAmount = 
+        (data.anilist.format === 'NOVEL' && data.anilist.volumes) ? `${data.anilist.volumes} Volumes` : 
+        (data.anilist.episodes) ? `${data.anilist.episodes} Episodes` : 
+        (data.anilist.chapters) ? `${data.anilist.chapters} Chapters` : null;
+    const genres = data.anilist.genres.slice(0, 3)
+    const shareData:SharedImageData = {
+        title: data.anilist.title.userPreferred,
+        cover: data.anilist.coverImage.extraLarge,
+        // will update link once app link is fixed
+        link: data.anilist.siteUrl,
+        format: data.anilist.format.replace(/_/g, ' '),
+        aniScore: data.anilist.averageScore ?? data.anilist.meanScore,
+        contentAmount: contentAmount,
+        genres: genres.join(', '),
+        malScore: data.mal?.data?.score,
+        releaseDate:getDate(data.anilist.startDate, 'abrv'),
+        status: (data?.anilist.status === 'NOT_YET_RELEASED') ? 'UNRELEASED' :  data?.anilist.status.replace(/_/g, ' '),
+    }
     const qrOpen = () => setShowQr(true);
     const qrClose = () => setShowQr(false);
+
+    const capture = async(type:'share'|'download'='share') => {
+        const targetPixelCount = 1080; // If you want full HD pictures
+        const pixelRatio = PixelRatio.get(); // The pixel ratio of the device
+        // pixels * pixelratio = targetPixelCount, so pixels = targetPixelCount / pixelRatio
+        const pixels = targetPixelCount / pixelRatio;
+        const result = await captureRef(shareRef, {
+            result: 'tmpfile',
+            height: pixels,
+            width: pixels,
+            quality: 1,
+            format: 'png',
+        });
+        if (type === 'download') {
+            await saveImage(result, data.anilist.title.userPreferred);
+        } 
+        (type === 'share') && await shareImage(result, data.anilist.title.userPreferred);
+    }
 
     useEffect(() => {
         navigation.setOptions({
             // @ts-ignore
-            headerTitleStyle: { width: 150, opacity: headerOpacity },
+            headerTitleStyle: { width: 160, opacity: headerOpacity },
             headerTitle: data.anilist.title.userPreferred,
             headerBackground: () => <HeaderBackground colors={colors} opacity={headerOpacity} />,
             headerRight: () =>
-                <View style={{ paddingRight: 15 }}>
                     <HeaderRightButtons
                         colors={colors}
                         navigation={navigation}
                         drawer share qrCode
                         qrOnPress={() => qrOpen()}
-                        onShare={() => handleShare(data.anilist.siteUrl, data.anilist.title.userPreferred)}
-                    />
-                </View>,
-            headerLeft: () => <HeaderBackButton style={{ marginLeft: 15 }} colors={colors} navigation={navigation} />,
+                        onShare={() => capture()}
+                        onLongShare={() => capture('download')}
+                    />,
+            headerLeft: () => <HeaderBackButton style={{ marginLeft: 3 }} colors={colors} navigation={navigation} />,
         });
     }, [headerOpacity, navigation, dark]);
 
@@ -290,18 +329,23 @@ const MediaInfoScreen = ({ navigation, route }: OverviewProps) => {
                 ], { useNativeDriver: true })}
                 scrollEventThrottle={16}
             >
-                <LinearGradient colors={['rgba(0,0,0,0)', colors.background]} locations={[0, .065]}>
-                    <OverViewHeader data={data} colors={colors} dark={dark} setVisible={setVisible} />
+                <LinearGradient colors={['rgba(0,0,0,0)', colors.background]} locations={[.1, 1]}>
+                    <OverViewHeader data={data} colors={colors} setVisible={setVisible} />
+                </LinearGradient>
                     <OverviewTab content={data} isList={isList} />
+                    
                     <Portal>
-                        <QrView colors={colors} visible={showQr} onDismiss={qrClose} link={`goraku://info/${data.anilist.type.toLowerCase()}/${data.anilist.id}`} />
+                        <QrView colors={colors} visible={showQr} onDismiss={qrClose} link={link} />
                     </Portal>
                     <ImageViewer imageIndex={0} visible={visible} setVisible={setVisible} theme={{colors, dark}} images={[{ uri: data.anilist.coverImage.extraLarge }, { uri: data.anilist.bannerImage }]} />
-                </LinearGradient>
+                
             </Animated.ScrollView>
+            
             <View style={{ position: 'absolute', zIndex: -1, height: 195, width: '100%' }}>
                 <FastImage source={{ priority: 'high', uri: (data.anilist.bannerImage !== null) ? data.anilist.bannerImage : data.anilist.coverImage.extraLarge }} fallback style={{ height: 195, width: '100%' }} resizeMode='cover' />
+                <LinearGradient colors={['rgba(0,0,0,0)', colors.background]} locations={[0, .95]} style={{position:'absolute', height: 195, width: '100%'}} />
             </View>
+            <ShareMediaInfo data={shareData} shareRef={shareRef} screenWidth={width} />
         </View>
     );
 }
