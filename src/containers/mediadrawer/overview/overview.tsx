@@ -267,13 +267,13 @@ const MediaInfoScreen = ({ navigation, route }: OverviewProps) => {
         cover: data.anilist.coverImage.extraLarge,
         // will update link once app link is fixed
         link: data.anilist.siteUrl,
-        format: data.anilist.format.replace(/_/g, ' '),
-        aniScore: data.anilist.averageScore ?? data.anilist.meanScore,
+        format: data.anilist.format?.replace(/_/g, ' '),
+        aniScore: data.anilist.averageScore ?? data.anilist.meanScore ?? null,
         contentAmount: contentAmount,
-        genres: genres.join(', '),
+        genres: genres?.join(', '),
         malScore: data.mal?.data?.score,
-        releaseDate:getDate(data.anilist.startDate, 'abrv'),
-        status: (data?.anilist.status === 'NOT_YET_RELEASED') ? 'UNRELEASED' :  data?.anilist.status.replace(/_/g, ' '),
+        releaseDate:getDate(data.anilist?.startDate, 'abrv'),
+        status: (data?.anilist?.status === 'NOT_YET_RELEASED') ? 'UNRELEASED' :  data?.anilist.status.replace(/_/g, ' '),
     }
     const qrOpen = () => setShowQr(true);
     const qrClose = () => setShowQr(false);

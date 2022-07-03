@@ -67,17 +67,16 @@ const CharacterFeatured = ({data, parNav, colors}:CharFeaturedProps) => {
             parNav.navigate('Info', { id: relation.node.id});
         }
         
-        const searchNav = 
-        parNav.getState().type
+        const size = {width: 120, height: 180}
         return (
-            <Pressable onPress={mediaNav} style={{ marginHorizontal: 10, borderRadius:8, width:140, height:200 }} >
-                <LinearGradient locations={[0, 1]} colors={['rgba(0,0,0,.3)', 'rgba(0,0,0,.9)']} style={{ position: 'absolute', width: 140, height: 200, borderRadius:8, justifyContent: 'flex-end', alignItems: 'center' }}>
+            <Pressable onPress={mediaNav} style={{ marginHorizontal: 10, borderRadius:8, width: size.width, height: size.height, }} >
+                <LinearGradient locations={[0, 1]} colors={['rgba(0,0,0,.3)', 'rgba(0,0,0,.9)']} style={{ position: 'absolute', width: size.width, height: size.height, borderRadius:8, justifyContent: 'flex-end', alignItems: 'center' }}>
                     <View style={{position:'absolute', alignSelf:'center', top:0}}>
                         <Text style={{ color: '#FFF', fontWeight:'bold', textTransform: 'capitalize' }}>{relation.node.format?.replace('_', ' ') ?? null}</Text>
                     </View>
                     <Text numberOfLines={3} style={{ fontWeight:'bold', color: '#FFF', textAlign:'center', textTransform: 'capitalize' }}>{relation.node.title.userPreferred ?? null}</Text>
                 </LinearGradient>
-                <FastImage source={{ uri: relation.node.coverImage.extraLarge }} style={{ width: 140, zIndex: -1, height: 200, borderRadius:8, position: 'absolute' }} />
+                <FastImage source={{ uri: relation.node.coverImage.extraLarge }} style={{ zIndex: -1, width: size.width, height: size.height, borderRadius:8, position: 'absolute' }} />
             </Pressable>
         );
     }
