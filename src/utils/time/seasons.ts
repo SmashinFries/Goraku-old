@@ -12,12 +12,18 @@ export const getYear = ():number => {
 
 export const getSeason = (next = false):string => {
     const month = new Date().getMonth();
+    const keys = Object.keys(_SEASONS);
     let current_season = '';
     for (let season in _SEASONS) {
-        if (_SEASONS[season].includes((next) ? month+1 : month)) {
+        if (_SEASONS[season].includes(month)) {
             current_season = season
             break;
         }
+    }
+    if (next) {
+        const idx = keys.indexOf(current_season);
+        const newIdx = (idx > 3) ? idx : idx + 1
+        current_season = keys[newIdx]
     }
     return current_season;
 }
