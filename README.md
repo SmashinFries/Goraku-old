@@ -24,9 +24,9 @@
 
 <div align="center">
   <h2>Features</h2>
-  <p>Explore・Search・List</p>
-  <p>Want to know everything this app can do?</p>
-  <a href="https://github.com/SmashinFries/Goraku/blob/master/FEATURES.md">Read this</a>
+  <p>Anilist・MAL Data・Music・Fan Art</p>
+  <p>Want to know <b>everything</b> this app can do?</p>
+  <a href="https://github.com/SmashinFries/Goraku/blob/master/FEATURES.md">Read here</a>
 </div>
 
 <div align="center">
