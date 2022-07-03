@@ -21,6 +21,8 @@ import DownloadDialog from './src/Components/dialogs/downloadDialog';
 import { useRelease } from './src/Api/github/github';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { enableFreeze } from 'react-native-screens';
+import { Inter_900Black, useFonts } from '@expo-google-fonts/inter';
+import * as Font from 'expo-font';
 
 enableFreeze(true);
 
@@ -75,6 +77,7 @@ const config: PathConfigMap<ReactNavigation.RootParamList> = {
 
 const App = () => {
   const systemTheme = Appearance.getColorScheme();
+  let [fontsLoaded] = useFonts({Inter_900Black,})
   const [appReady, setAppReady] = useState<boolean>(false);
   const [theme, setTheme] = useState((systemTheme === 'light') ? 'Light' : 'Dark');
   const [refresh, setRefresh] = useState();
@@ -94,6 +97,7 @@ const App = () => {
   const prepare = async() => {
     try{
       await SplashScreen.preventAutoHideAsync();
+      await Font.loadAsync({Inter_900Black});
     } catch(e) {
       console.log('Start Error:', e);
     } finally {
