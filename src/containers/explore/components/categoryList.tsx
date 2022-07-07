@@ -3,7 +3,7 @@ import { View, Text, FlatList, Pressable } from "react-native";
 import { MediaTile } from "../../../Components/Tiles/mediaTile";
 import { getHomeData } from "../../../Api";
 import { useTheme } from "@react-navigation/native";
-import { MediaAnimeSort } from "../../../Api/types";
+import { MediaAnimeSort, MediaTileType } from "../../../Api/types";
 import { Titles, Formats, HomeType, PageInfoType, MediaType } from "../../../Components/types";
 import { AxiosError } from "axios";
 import { uniqueItems } from "../../../utils/filters/uniqueItems";
@@ -20,6 +20,7 @@ type CategoryProps = {
     type:string;
     season:string|undefined; 
     year:number|undefined;
+    sortByAir?:boolean;
 };
 export const CategoryList = (props:CategoryProps) => {
     const [data, setData] = useState<MediaType>();
@@ -45,8 +46,18 @@ export const CategoryList = (props:CategoryProps) => {
 
     const handleError = () => {
         setLoading(true);
-        handleFetch().then(res => {setData(res.data.Page.media); setPage(res.data.Page.pageInfo); setLoading(false); setError(null)}).catch((err) => setError(err));
+        handleFetch().then(res => {setData(res.data.Page.media); setPage(res.data.Page.pageInfo); setLoading(false); setError(null)}).catch((err) => {console.log(err); setError(err); setLoading(false);});
     }
+
+    const sortAiring = (a:MediaTileType, b:MediaTileType) => {
+        if (!a.nextAiringEpisode) {
+            return 1;
+        }
+        if (!b.nextAiringEpisode) {
+            return -1;
+        }
+        return(a.nextAiringEpisode.timeUntilAiring-b.nextAiringEpisode.timeUntilAiring)
+    };
 
     const handleFetch = async() => {
         try {
@@ -55,7 +66,7 @@ export const CategoryList = (props:CategoryProps) => {
                 type:props.type, 
                 format:props.format,
                 page:1,
-                perPage:24, 
+                perPage:props.sortByAir ? 50 : 24, 
                 isAdult:false,
                 season:props.season, seasonYear:props.year,
                 search:undefined,
@@ -72,7 +83,12 @@ export const CategoryList = (props:CategoryProps) => {
                 status:undefined,
                 licensedBy_in:undefined,
             });
-            const init_data: HomeType = result.data
+            let init_data: HomeType = result.data;
+            if (props.sortByAir) {
+                let medias = init_data.data.Page.media
+                medias.sort(sortAiring)
+                init_data = {...init_data, data: {...init_data.data, Page: {...init_data.data.Page, media: medias}}}
+            }
             return init_data;
         } catch (error) {
             setError(error);
@@ -104,7 +120,8 @@ export const CategoryList = (props:CategoryProps) => {
                 status:undefined,
                 licensedBy_in:undefined,
             });
-            const init_data: HomeType = result.data
+            const init_data: HomeType = result.data;
+            (props.sortByAir) && init_data.data.Page.media.sort(sortAiring);
             const unique = uniqueItems([...data, ...init_data.data.Page.media]);
             setData([...unique]);
             setPage(init_data.data.Page.pageInfo);
