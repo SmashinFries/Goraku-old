@@ -62,9 +62,9 @@ export const ExploreScreen = ({navigation, route}:ExploreProps) => {
                     <Text style={{ fontSize: 36, fontWeight: 'bold', color:colors.text, alignSelf: 'flex-start', marginLeft: 10,}}>Trending</Text>
                     <CategoryList titleType={"userPreferred"} type={TYPE} format={format} noFormat={noFormat} sort={'TRENDING_DESC'} season={undefined} year={undefined} />
                     {type === 'ANIME' ? <Text style={{ fontSize: 36, fontWeight: 'bold', color:colors.text, alignSelf: 'flex-start', marginLeft: 10, }}>This Season</Text> : null}
-                    {type === 'ANIME' ? <CategoryList titleType='userPreferred' type='ANIME' format={undefined} sort={'POPULARITY_DESC'} season={getSeason()} year={getYear()} /> : null}
+                    {type === 'ANIME' ? <CategoryList titleType='userPreferred' type='ANIME' format={undefined} sort={'POPULARITY_DESC'} season={getSeason()} year={getYear()} sortByAir={true} /> : null}
                     {type === 'ANIME' ? <Text style={{ fontSize: 36, fontWeight: 'bold', color:colors.text, alignSelf: 'flex-start', marginLeft: 10, }}>Next Season</Text> : null}
-                    {type === 'ANIME' ? <CategoryList titleType='userPreferred' type='ANIME' format={undefined} sort={'POPULARITY_DESC'} season={getSeason(true)} year={getYear()} /> : null}
+                    {type === 'ANIME' ? <CategoryList titleType='userPreferred' type='ANIME' format={undefined} sort={'POPULARITY_DESC'} season={getSeason(true)} year={getYear()} sortByAir={true} /> : null}
                     <Text style={{ fontSize: 36, fontWeight: 'bold', alignSelf: 'flex-start', color:colors.text, marginLeft: 10,}}>Popular</Text>
                     <CategoryList titleType='userPreferred' type={TYPE} format={format} noFormat={noFormat} sort={'POPULARITY_DESC'} season={undefined} year={undefined} />
                     <Text style={{ fontSize: 36, fontWeight: 'bold', alignSelf: 'flex-start', color:colors.text, marginLeft: 10,}}>Top Rated</Text>
