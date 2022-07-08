@@ -1,13 +1,10 @@
 import { LinearGradient } from "expo-linear-gradient";
-import React, { MutableRefObject, Ref } from "react";
-import { View, Text, StyleSheet } from 'react-native';
+import React, { MutableRefObject } from "react";
+import { View, Text } from 'react-native';
 import FastImage from "react-native-fast-image";
 import QRCode from "react-native-qrcode-svg";
-import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-import { DateType } from "../../../../Api/types";
-import { AnilistSVG, GorakuLabelSVG, GorakuLabelVertSVG, MalSVG, MalSVGc } from "../../../../Components/svg/svgs";
-import { getDate, getMalScoreColor, getScoreColor } from "../../../../utils";
-import { Title } from "react-native-paper";
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { GorakuLabelVertSVG } from "../../../../Components/svg/svgs";
 
 export type SharedImageData = {
     title: string;
@@ -36,8 +33,8 @@ export const ShareMediaInfo = ({ screenWidth, data, shareRef }: Props) => {
         return(
             <View>
                 <FastImage source={{ uri: data.cover }} style={{ position: 'absolute', height: size, width: size }} resizeMode='cover' />
-                <View style={{ position: 'absolute', height: size, width: size, backgroundColor:'rgba(0,0,0,.33)' }} />
-                <LinearGradient colors={['rgba(0,0,0,0.70)', 'rgba(0,0,0,0)']} locations={[.5, 1]} style={{ position: 'absolute', height: size, width: size }} />
+                <View style={{ position: 'absolute', height: size, width: size, backgroundColor:'rgba(0,0,0,.83)' }} />
+                {/* <LinearGradient colors={['rgba(0,0,0,0.70)', 'rgba(0,0,0,0)']} locations={[.5, 1]} style={{ position: 'absolute', height: size, width: size }} /> */}
             </View>
         );
     }
@@ -75,17 +72,17 @@ export const ShareMediaInfo = ({ screenWidth, data, shareRef }: Props) => {
     }
     const InfoRow = ({width, icon, textHeight, text, secondaryText, capitalize}:InfoRowProps) => {
         const color = '#02BAE3'
-        const iconSize = 115
+        const iconSize = 100
         return(
-            <View style={{width:width, height:textHeight, flexDirection:'row', alignItems:'center', paddingLeft:20 }}>
-                <View style={{justifyContent:'flex-start', height:iconSize}}>
+            <View style={{width:width, height:textHeight, flexDirection:'row', alignItems:'center', paddingLeft:30 }}>
+                <View style={{justifyContent:'flex-start', height:iconSize, paddingLeft:20}}>
                     <MaterialCommunityIcons name={icon} color={color} size={iconSize} />
                 </View>
                 <View style={{flex:1, width:481, alignItems:'center', justifyContent:'center', height:textHeight, paddingHorizontal:20}}>
-                    <Text style={{color:'#FFF', fontSize:48, fontWeight:'bold', textTransform:(capitalize) ? 'capitalize' : undefined, textAlign:'center'}}>
+                    <Text style={{color:'#FFF', fontSize:48,  textTransform:(capitalize) ? 'capitalize' : undefined, textAlign:'center'}}>
                         {text}
                     </Text>
-                    {(secondaryText) ? <Text style={{color:'#FFF', fontSize:48, fontWeight:'bold', textTransform:(capitalize) ? 'capitalize' : undefined, textAlign:'center'}}>
+                    {(secondaryText) ? <Text style={{color:'#FFF', fontSize:48,  textTransform:(capitalize) ? 'capitalize' : undefined, textAlign:'center'}}>
                         {secondaryText}
                     </Text> : null}
                 </View>
@@ -94,8 +91,8 @@ export const ShareMediaInfo = ({ screenWidth, data, shareRef }: Props) => {
     }
 
     const BodyView = () => {
-        const cover_width = 394;
-        const cover_height = 591;
+        const cover_width = 398;
+        const cover_height = 595;
         return(
             <View style={{width:size, height:cover_height, justifyContent:'flex-start'}}>
                 <View style={{flex:1, flexDirection:'row', justifyContent:'space-evenly'}}>
