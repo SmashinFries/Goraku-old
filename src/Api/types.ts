@@ -1,5 +1,7 @@
 import { PageInfoType } from "../Components/types";
 
+export type MediaCountries = "JP"|"KR"|"CN"|"TW"
+
 export type HomePageFetchParams = { 
     sort:string; 
     type:string; 
@@ -11,13 +13,14 @@ export type HomePageFetchParams = {
     tag_in?:string[];
     tag_not_in?:string[];
     licensedBy_in?:string[];
+    isLicensed?:boolean;
     minimumTagRank?:number;
     page:number;
     perPage:number;
     isAdult?:boolean;
     season?:string;
     seasonYear?:number;
-    countryOfOrigin?:string;
+    countryOfOrigin?:MediaCountries;
     averageScore_greater?:number;
     averageScore_lesser?:number;
     volumes_greater?:number;
@@ -375,7 +378,7 @@ export type MediaQueryType = {
     volumes: number;
     isAdult: boolean;
     genres: string[];
-    countryOfOrigin: string;
+    countryOfOrigin: MediaCountries;
     isLicensed: boolean;
     source: string;
     hashtag: string;
@@ -647,6 +650,7 @@ export type RecommendationMediaType = {
         title: TitleType;
         averageScore: number;
         meanScore: number;
+        isAdult: boolean;
         coverImage: {
             extraLarge: string;
         };

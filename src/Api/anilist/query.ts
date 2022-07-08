@@ -85,6 +85,7 @@ episodes_lesser:$episodes_lesser,
 duration_greater:$duration_greater,
 duration_lesser:$duration_lesser,
 licensedBy_in:$licensedBy_in,
+isLicensed:$isLicensed,
 minimumTagRank:$minimumTagRank,
 countryOfOrigin:$countryOfOrigin,
 averageScore_greater:$averageScore_greater,
@@ -578,6 +579,7 @@ query ($page:Int,  $perPage:Int, $sort:[RecommendationSort], $onList:Boolean) {
         idMal
         type
         bannerImage
+        isAdult
         ${title_Q}
         ${coverImage_Q}
         ${score_Q}
