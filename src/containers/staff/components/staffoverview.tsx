@@ -13,10 +13,11 @@ type Props = {
     colors: ThemeColors;
     links: LinkType;
     liked: boolean;
+    isAuth: boolean;
     toggleLike: () => void;
 }
 
-const StaffOverview = ({data, links, colors, liked, toggleLike}:Props) => {
+const StaffOverview = ({data, links, colors, liked, isAuth, toggleLike}:Props) => {
     const { width, height } = useWindowDimensions();
     const date = new Date();
 
@@ -42,7 +43,9 @@ const StaffOverview = ({data, links, colors, liked, toggleLike}:Props) => {
                     primaryOccupations: (data.primaryOccupations.length > 0) ? `Occupations: ${data.primaryOccupations.join(', ')}` : null,
                     yearsActive: (data.yearsActive.length > 0) ? `Years Active: ${data.yearsActive}` : null
                 }}
-                colors={colors} 
+                altNames={data.name.alternative}
+                colors={colors}
+                isAuth={isAuth}
             />
             {(links.length > 0) ?
                 <View style={{ flexDirection: 'row', flexWrap: "wrap", justifyContent: 'space-evenly', marginTop: 10, alignItems: 'center' }}>
