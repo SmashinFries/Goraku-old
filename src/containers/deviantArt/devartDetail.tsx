@@ -9,7 +9,7 @@ import { fetchDownload, fetchMetaData, fetchPopular } from "../../Api/deviantArt
 import { MetadataDA, PopularDevArtData, PopularResult, DownloadData } from "../../Api/deviantArt/types";
 import { MaterialIcons } from '@expo/vector-icons';
 import { LoadingView } from "../../Components";
-import { handleShare, saveImage, shareImage, _openBrowserUrl } from "../../utils";
+import { handleCopy, handleShare, saveImage, shareImage, _openBrowserUrl } from "../../utils";
 import { DevArtMetaData } from "./components/metadataView";
 
 type Props = {
@@ -34,12 +34,12 @@ const DevArtDetail = ({navigation, route}:Props) => {
     const UserView = () => {
         return(
             <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', width: '80%', paddingVertical:10 }}>
-                <Pressable onPress={() => _openBrowserUrl(`https://www.deviantart.com/${image.author.username}`, colors.primary, colors.text)}>
+                <Pressable onLongPress={() => handleCopy(image.author.username)} onPress={() => _openBrowserUrl(`https://www.deviantart.com/${image.author.username}`, colors.primary, colors.text)}>
                     <Avatar.Image source={{ uri: image.author.usericon }} />
                 </Pressable>
                 <View>
                     <Text style={{ color: colors.text, fontSize: 22, fontWeight: 'bold', paddingLeft: 20 }}>{image.title}</Text>
-                    <Text selectable style={{ color: colors.text, paddingLeft: 20 }}>By {image.author.username}</Text>
+                    <Text onLongPress={() => handleCopy(image.author.username)} style={{ color: colors.text, paddingLeft: 20 }}>By {image.author.username}</Text>
                     {(metaData) ? 
                     <View style={{flexDirection:'row', alignItems:'center', paddingLeft: 10}}>
                         <IconButton icon='calendar' size={15} />
@@ -55,7 +55,7 @@ const DevArtDetail = ({navigation, route}:Props) => {
         return(
             <View>
                 <IconButton onPress={() => {saveImage(download?.src ?? image.content.src, download?.filename ?? image.title)}} icon={'download'} color={colors.text} />
-                <MaterialIcons name="hd" style={{position:'absolute', top:5, right:5}} size={15} color={colors.text} />
+                <MaterialIcons name="hd" style={{position:'absolute', top:5, right:5, zIndex:-1}} size={15} color={colors.text} />
             </View>
         );
     }
