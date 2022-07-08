@@ -38,7 +38,7 @@ export const SettingsScreen = ({navigation, route}:SettingsScreenProps) => {
                 <List.Item 
                     rippleColor={colors.border} 
                     title="Deviant Art" 
-                    description={(ADULT_ALLOW) ? 'Enable character fan art' : 'Uncensored version required!\n(Too risky for Play Store 😔)'} 
+                    description={(ADULT_ALLOW) ? 'Toggle character fan art' : 'Uncensored version required!\n(Too risky for Play Store 😔)'} 
                     descriptionStyle={(!ADULT_ALLOW) && {color:'red'}}
                     titleStyle={{color:colors.text}} 
                     left={props => <List.Icon {...props} 
@@ -49,7 +49,7 @@ export const SettingsScreen = ({navigation, route}:SettingsScreenProps) => {
             </List.Section>
             <List.Section>
                 <List.Subheader>Images</List.Subheader>
-                <List.Item rippleColor={colors.border} title="Save Image Type" titleStyle={{color:colors.text}} onPress={() => setSaveimgVis(true)} right={props => <View style={{justifyContent:'center', paddingRight:10}}><Text style={{color:props.color}}>{imgType}</Text></View>} left={props => <List.Icon {...props} icon="image" color={colors.primary} />} />
+                <List.Item rippleColor={colors.border} title="Save Image Type" titleStyle={{color:colors.text}} onPress={() => setSaveimgVis(true)} right={props => <View style={{justifyContent:'center', paddingRight:10}}><Text style={{color:props.color, textTransform:'uppercase'}}>{imgType}</Text></View>} left={props => <List.Icon {...props} icon="image" color={colors.primary} />} />
             </List.Section>
             <SavedImageModal visible={saveimgVis} hideModal={hideSaveImgModal} setType={setImgType} colors={colors} />
             
