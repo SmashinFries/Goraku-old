@@ -19,6 +19,7 @@ $genre_not_in:[String],
 $tag_in:[String], 
 $tag_not_in:[String], 
 $licensedBy_in:[String],
+$isLicensed:Boolean,
 $minimumTagRank: Int,
 $countryOfOrigin: CountryCode,
 $status:MediaStatus,
@@ -66,6 +67,33 @@ const getNSFW = async() => {
     }
 }
 
+export const getGenreData = (genres:string[]) => {
+    const formattedGenres = genres.map(genre => genre.replace(/\s/g, ''));
+    const genreDescriptions = {
+        Action: '',
+        Adventure: '',
+        Comedy: '',
+        Drama: '',
+        Ecchi: '',
+        Fantasy: '',
+        Horror: '',
+        MahouShoujo: '',
+        Mecha: '',
+        Music: '',
+        Mystery: '',
+        Psychological: '',
+        Romance: '',
+        SciFi: '',
+        SliceOfLife: '',
+        Sports: '',
+        Supernatural: '',
+        Thriller: ''
+    };
+
+    const genreData = formattedGenres.map(genre => {return({name:genre, description:genreDescriptions[genre]});});
+    return genreData;
+}
+
 const getQuery = (query: string, params: string) => {
     const _QUERY = `
     query (${params}) {
@@ -100,7 +128,7 @@ export const getHomeData = async ({
     sort, type, format = undefined, page = 1, perPage = 5, season = undefined, seasonYear = undefined, search = undefined,
     status = undefined, countryOfOrigin = undefined, format_in = undefined,
     format_not_in = undefined, genre_in = undefined, genre_not_in = undefined,
-    minimumTagRank = undefined, tag_in = undefined, tag_not_in = undefined, licensedBy_in = undefined,
+    minimumTagRank = undefined, tag_in = undefined, tag_not_in = undefined, licensedBy_in = undefined, isLicensed = undefined,
     averageScore_greater=undefined, averageScore_lesser=undefined,
     chapters_greater=undefined, chapters_lesser=undefined,
     episodes_greater=undefined, episodes_lesser=undefined,
@@ -124,6 +152,7 @@ export const getHomeData = async ({
             status: status,
             season: season, seasonYear: seasonYear,
             licensedBy_in: licensedBy_in,
+            isLicensed: isLicensed,
             averageScore_greater: averageScore_greater,
             averageScore_lesser: averageScore_lesser,
             isAdult: (ADULT_ALLOW && nsfw) ? undefined : false,
@@ -237,6 +266,7 @@ export const getTagData = async (): Promise<TagArrangedType> => {
 export const getRecommendations = async(page=1, perPage=10, sort=['RATING_DESC'], onList=true, type='ANIME') => {
     try {
         const header = await getHeader();
+        const nsfw = await getNSFW();
         const res = await axios.post<RecommendationsFullType>(_URL, {
             query:recommendations_full_q,
             variables: {
@@ -246,7 +276,12 @@ export const getRecommendations = async(page=1, perPage=10, sort=['RATING_DESC']
                 onList:onList
             }
         }, {headers: header});
-        return res;
+        if (!nsfw) {
+            const cleansedData = res.data.data.Page.recommendations.filter(media => media.media.isAdult === false);
+            const newRes = {...res.data, data: {...res.data.data, Page: {...res.data.data.Page, recommendations: cleansedData}}};
+            return newRes;
+        }
+        return res.data;
     } catch (error) {
         console.log('Recommendations:', error);
     }
