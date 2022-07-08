@@ -54,7 +54,7 @@ const DevArtDetail = ({navigation, route}:Props) => {
         if (!download) return (<IconButton onPress={() => saveImage(download ? download?.src : image.content.src, image.title)} icon={'download'} color={colors.text} />)
         return(
             <View>
-                <IconButton onPress={() => saveImage(download?.src ?? image.content.src, download?.filename ?? image.title)} icon={'download'} color={colors.text} />
+                <IconButton onPress={() => {saveImage(download?.src ?? image.content.src, download?.filename ?? image.title)}} icon={'download'} color={colors.text} />
                 <MaterialIcons name="hd" style={{position:'absolute', top:5, right:5}} size={15} color={colors.text} />
             </View>
         );
@@ -78,7 +78,7 @@ const DevArtDetail = ({navigation, route}:Props) => {
 
         const getData = async() => {
             const meta = (!metaData) ? await fetchMetaData(image.deviationid) : null;
-            const down = (!download) ? await fetchDownload(image.deviationid) : null;
+            const down = (image.is_downloadable) ? await fetchDownload(image.deviationid) : null;
             if (isMounted) {
                 (meta) && setMetaData(meta);
                 (down) && setDownload(down);
