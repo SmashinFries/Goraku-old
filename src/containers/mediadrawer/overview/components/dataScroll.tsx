@@ -1,5 +1,5 @@
 import { View, ScrollView, Pressable, Text } from 'react-native';
-import { AniMalType } from '../../../../Api/types';
+import { AniMalType, MediaCountries } from '../../../../Api/types';
 import { ThemeColors } from '../../../../Components/types';
 import { getDate, getMalScoreColor, getScoreColor, handleCopy } from '../../../../utils';
 
@@ -17,6 +17,15 @@ const MetaDataItem = ({ header, text, textColor, titleColor }:MetaDataTileProps)
             <Text style={{ color: textColor, textTransform:'capitalize'}}>{(text !== undefined && text !== null) ? text : '?'}</Text>
         </Pressable>
     );
+}
+
+const getOrigin = (countryCode:MediaCountries) => {
+    console.log(countryCode);
+    if (countryCode === 'JP') return('🇯🇵');
+    if (countryCode === 'KR') return('🇰🇷');
+    if (countryCode === 'CN') return('🇨🇳');
+    if (countryCode === 'TW') return('🇹🇼');
+    return null;
 }
 
 type DataTileProps = {
@@ -50,6 +59,7 @@ const AnimeDataTile = ({data, colors}:DataTileProps) => {
                 <MetaDataItem header='Average Score' text={data.anilist.averageScore?.toString()} textColor={getScoreColor(data.anilist.averageScore ?? null)} titleColor={colors.text} />
                 <MetaDataItem header='Mean Score' text={data.anilist.meanScore?.toString()} textColor={getScoreColor(data.anilist.meanScore ?? null)} titleColor={colors.text} />
                 <MetaDataItem header='MAL Score' text={data.mal.data?.score?.toString()} textColor={getMalScoreColor(data.mal.data?.score ?? null)} titleColor={colors.text} />
+                <MetaDataItem header='Origin' text={getOrigin(data.anilist.countryOfOrigin)} textColor={colors.text} />
                 <MetaDataItem header='Rating Rank' text={(ratingRank?.length > 0) ? ratingRank[0].rank.toString() : null} textColor={colors.text} />
                 <MetaDataItem header='Popularity Rank' text={(popularRank?.length > 0) ? popularRank[0].rank.toString() : null} textColor={colors.text} />
                 <MetaDataItem header='Favorites' text={data.anilist.favourites?.toString()} textColor={colors.text} />
@@ -89,6 +99,7 @@ const MangaDataTile = ({data, colors}:DataTileProps) => {
                     {data.anilist.averageScore && <MetaDataItem header='Average Score' text={data.anilist.averageScore?.toString()} textColor={getScoreColor(data.anilist.averageScore ?? null)} titleColor={colors.text} />}
                     {data.anilist.meanScore && <MetaDataItem header='Mean Score' text={data.anilist.meanScore?.toString()} textColor={getScoreColor(data.anilist.meanScore ?? null)} titleColor={colors.text} />}
                     <MetaDataItem header='MAL Score' text={data.mal.data?.scored?.toString()} textColor={getMalScoreColor(data.mal.data?.scored ?? null)} titleColor={colors.text} />
+                    <MetaDataItem header='Origin' text={getOrigin(data.anilist.countryOfOrigin)} textColor={colors.text} />
                     <MetaDataItem header='Popularity Rank' text={popularRank[0]?.rank?.toString()} textColor={colors.text} />
                     <MetaDataItem header='Favorites' text={data.anilist.favourites?.toString()} textColor={colors.text} /> 
                     <MetaDataItem header='English' text={data.anilist.title?.english} textColor={colors.text} />
