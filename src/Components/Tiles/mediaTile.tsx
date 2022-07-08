@@ -41,7 +41,7 @@ export const MediaTile = (props: MediaTileProps) => {
     // onLongPress={() => {props.setActiveId({id:props.data.id, index:props.index}); console.log(props.data.id); props.sheetControl.current.present()}}
     return(
         <View style={{flex:1, width:width, height:height+65, marginHorizontal:10, paddingTop:10, justifyContent:'flex-start',}}>
-                <Shadow size={[width-8, height-8]} paintInside startColor={(status) ? listColor(props.data.mediaListEntry?.status) : 'transparent'} offset={[4,0]} viewStyle={{position:'absolute', width:width-8, height:height-8, alignItems:'center', alignSelf:'center', borderRadius:8, justifyContent:'center'}}>
+                <Shadow size={(props.isSearch) ? [width-12, height-12] : [width-8, height-8]} paintInside startColor={(status) ? listColor(props.data.mediaListEntry?.status) : 'transparent'} offset={(props.isSearch) ? [0,0] : [4,0]} viewStyle={{position:'absolute', width:(props.isSearch) ? width-12 : width-8, height:(props.isSearch) ? height-12 : height-8, alignItems:'center', alignSelf:'center', borderRadius:8, justifyContent:'center'}}>
                     <View style={{ borderRadius: 8, overflow: 'hidden', alignItems:'center' }}>
                         <Pressable  onPress={() => onPress(props, nav)} android_ripple={{color:colors.primary,}} style={{height:height, width:width, borderRadius:8, alignItems:'center', justifyContent:'center'}}>
                             <View style={{overflow: 'hidden', borderRadius:8}}>
