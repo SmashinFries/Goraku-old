@@ -57,15 +57,15 @@ export const TagSelector = ({setActive, visible, setVisible, tags, colors}:Props
                                     title={'None'}
                                     titleStyle={{ color: colors.text }}
                                     onPress={() => onSelect(null)}
-                                    right={() => <RadioButton.Android value={'None'} status={(!enabled) ? 'checked' : 'unchecked'} onPress={() => onSelect(null)} />}
+                                    right={() => <RadioButton.Android value={'None'} color={colors.primary} status={(!enabled) ? 'checked' : 'unchecked'} onPress={() => onSelect(null)} />}
                                 />
                                 {tags.tags.map(MappedTag)}
                             </View>}
                         </ScrollView>
                     </Card.Content>
                     <Card.Actions style={{justifyContent:'flex-end'}}>
-                        <Button onPress={() => {setEnabled(tags.active); setVisible(false);}}>Cancel</Button>
-                        <Button onPress={onEnable}>Search</Button>
+                        <Button color={colors.primary} onPress={() => {setEnabled(tags.active); setVisible(false);}}>Cancel</Button>
+                        <Button color={colors.primary} onPress={onEnable}>Search</Button>
                     </Card.Actions>
                 </Card>
             </Modal>
