@@ -12,6 +12,7 @@ import { StatusBar } from "expo-status-bar";
 import SelectDropdown from "react-native-select-dropdown";
 import { HeaderBackground } from "../../Components/header/headers";
 import { Formats } from "../../Components/types";
+import { MediaAnimeSort, MediaCountries } from "../../Api/types";
 
 
 export const ExploreScreen = ({navigation, route}:ExploreProps) => {
@@ -52,6 +53,76 @@ export const ExploreScreen = ({navigation, route}:ExploreProps) => {
         }
     },[]);
 
+    type SectionListProps = {
+        heading:string;
+        TYPE:"ANIME"|"MANGA";
+        format:"NOVEL"|undefined;
+        noFormat:Formats[]|undefined;
+        sort?:MediaAnimeSort;
+        country?:MediaCountries|undefined;
+        doujin?:boolean;
+    }
+    type ListProps = {
+        TYPE:"ANIME"|"MANGA";
+        format:"NOVEL"|undefined;
+        noFormat:Formats[]|undefined;
+    }
+    const GeneralList = ({heading, TYPE, format, noFormat, sort, country, doujin=false}:SectionListProps) => {
+        return(
+            <>
+                <Text style={{ fontSize: 36, fontWeight: 'bold', color:colors.text, alignSelf: 'flex-start', marginLeft: 10,}}>{heading}</Text>
+                <CategoryList titleType={"userPreferred"} type={TYPE} country={country} doujin={!doujin} format={format} noFormat={noFormat} sort={sort} season={undefined} year={undefined} />
+            </>
+        );
+    }
+
+    type SeasonListType = {
+        heading:string;
+        nextSeason?:boolean;
+    }
+    const SeasonList = ({heading, nextSeason=false}:SeasonListType) => {
+        return(
+            <>
+                <Text style={{ fontSize: 36, fontWeight: 'bold', color:colors.text, alignSelf: 'flex-start', marginLeft: 10, }}>{heading}</Text>
+                <CategoryList titleType='userPreferred' type='ANIME' format={undefined} sort={'POPULARITY_DESC'} season={getSeason(nextSeason)} year={getYear()} />
+            </>
+        );
+    }
+
+    const AnimeList = ({TYPE, format, noFormat}:ListProps) => {
+        return(
+            <>
+                <GeneralList heading="Trending" TYPE={TYPE} format={format} noFormat={noFormat} sort='TRENDING_DESC' />
+                <SeasonList heading='This Season' />
+                <SeasonList heading='Next Season' nextSeason />
+                <GeneralList heading="Popular" TYPE={TYPE} format={format} noFormat={noFormat} sort='POPULARITY_DESC' />
+                <GeneralList heading="Top Rated" TYPE={TYPE} format={format} noFormat={noFormat} sort='SCORE_DESC' />
+            </>
+        );
+    }
+
+    const MangaList = ({TYPE, format, noFormat}:ListProps) => {
+        return(
+            <>
+                <GeneralList heading='Trending' TYPE={TYPE} format={format} noFormat={noFormat} sort='TRENDING_DESC' />
+                <GeneralList heading='Popular' TYPE={TYPE} format={format} noFormat={noFormat} sort='POPULARITY_DESC' />
+                <GeneralList heading='Popular Doujin' TYPE={TYPE} format={format} noFormat={noFormat} sort='POPULARITY_DESC' doujin={true} />
+                <GeneralList heading='Popular Manhwa' TYPE={TYPE} format={format} noFormat={noFormat} sort='POPULARITY_DESC' country="KR" />
+                <GeneralList heading='Top Rated' TYPE={TYPE} format={format} noFormat={noFormat} sort='SCORE_DESC' />
+            </>
+        );
+    }
+
+    const NovelList = ({TYPE, format, noFormat}:ListProps) => {
+        return(
+            <>
+                <GeneralList heading='Trending' TYPE={TYPE} format={format} noFormat={noFormat} sort='TRENDING_DESC' />
+                <GeneralList heading='Popular' TYPE={TYPE} format={format} noFormat={noFormat} sort='POPULARITY_DESC' />
+                <GeneralList heading='Top Rated' TYPE={TYPE} format={format} noFormat={noFormat} sort='SCORE_DESC' />
+            </>
+        );
+    }
+
     const ListUI = () => {
         const TYPE = (type === 'NOVEL') ? 'MANGA' : type;
         const format = (type === 'NOVEL') ? 'NOVEL' : undefined;
@@ -59,16 +130,9 @@ export const ExploreScreen = ({navigation, route}:ExploreProps) => {
         return(
             <View style={{flex:1}}>
                 <ScrollView contentContainerStyle={{ justifyContent: 'flex-start', alignItems: 'center' }} style={{ flex: 1, backgroundColor:'transparent'}}>
-                    <Text style={{ fontSize: 36, fontWeight: 'bold', color:colors.text, alignSelf: 'flex-start', marginLeft: 10,}}>Trending</Text>
-                    <CategoryList titleType={"userPreferred"} type={TYPE} format={format} noFormat={noFormat} sort={'TRENDING_DESC'} season={undefined} year={undefined} />
-                    {type === 'ANIME' ? <Text style={{ fontSize: 36, fontWeight: 'bold', color:colors.text, alignSelf: 'flex-start', marginLeft: 10, }}>This Season</Text> : null}
-                    {type === 'ANIME' ? <CategoryList titleType='userPreferred' type='ANIME' format={undefined} sort={'POPULARITY_DESC'} season={getSeason()} year={getYear()} sortByAir={true} /> : null}
-                    {type === 'ANIME' ? <Text style={{ fontSize: 36, fontWeight: 'bold', color:colors.text, alignSelf: 'flex-start', marginLeft: 10, }}>Next Season</Text> : null}
-                    {type === 'ANIME' ? <CategoryList titleType='userPreferred' type='ANIME' format={undefined} sort={'POPULARITY_DESC'} season={getSeason(true)} year={getYear()} sortByAir={true} /> : null}
-                    <Text style={{ fontSize: 36, fontWeight: 'bold', alignSelf: 'flex-start', color:colors.text, marginLeft: 10,}}>Popular</Text>
-                    <CategoryList titleType='userPreferred' type={TYPE} format={format} noFormat={noFormat} sort={'POPULARITY_DESC'} season={undefined} year={undefined} />
-                    <Text style={{ fontSize: 36, fontWeight: 'bold', alignSelf: 'flex-start', color:colors.text, marginLeft: 10,}}>Top Rated</Text>
-                    <CategoryList titleType='userPreferred' type={TYPE} format={format} noFormat={noFormat} sort={'SCORE_DESC'} season={undefined} year={undefined} />
+                    {(type === 'ANIME') ? <AnimeList TYPE={TYPE} format={format} noFormat={noFormat} /> : null}
+                    {(type === 'MANGA') ? <MangaList TYPE={TYPE} format={format} noFormat={noFormat} /> : null}
+                    {(type === 'NOVEL') ? <NovelList TYPE={TYPE} format={format} noFormat={noFormat} /> : null}
                 </ScrollView>
             </View>
         );
