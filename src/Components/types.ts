@@ -39,7 +39,8 @@ export type MediaTileProps = {
     sheetControl?:MutableRefObject<BottomSheetModalMethods>;
     setActiveId?: Dispatch<SetStateAction<{id:number|null, index:number|null}>>;
     route?:string;
-    size?:{width:number, height:number} 
+    size?:{width:number, height:number}
+    isSearch?:boolean;
 };
 
 export type PageInfoType = {
