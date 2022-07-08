@@ -5,6 +5,7 @@ import FastImage from "react-native-fast-image";
 import QRCode from "react-native-qrcode-svg";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { GorakuLabelVertSVG } from "../../../../Components/svg/svgs";
+import { ThemeColors } from "../../../../Components/types";
 
 export type SharedImageData = {
     title: string;
@@ -23,8 +24,9 @@ type Props = {
     screenWidth: number;
     data: SharedImageData;
     shareRef: MutableRefObject<View>;
+    colors:ThemeColors;
 }
-export const ShareMediaInfo = ({ screenWidth, data, shareRef }: Props) => {
+export const ShareMediaInfo = ({ screenWidth, data, shareRef, colors }: Props) => {
     const size = 1080;
     const statusOrAmount = data.contentAmount ?? data.status;
     const fontFamily = 'Inter_900Black'
@@ -33,7 +35,7 @@ export const ShareMediaInfo = ({ screenWidth, data, shareRef }: Props) => {
         return(
             <View>
                 <FastImage source={{ uri: data.cover }} style={{ position: 'absolute', height: size, width: size }} resizeMode='cover' />
-                <View style={{ position: 'absolute', height: size, width: size, backgroundColor:'rgba(0,0,0,.83)' }} />
+                <View style={{ position: 'absolute', height: size, width: size, backgroundColor:'rgba(0,0,0,.78)' }} />
                 {/* <LinearGradient colors={['rgba(0,0,0,0.70)', 'rgba(0,0,0,0)']} locations={[.5, 1]} style={{ position: 'absolute', height: size, width: size }} /> */}
             </View>
         );
@@ -76,7 +78,7 @@ export const ShareMediaInfo = ({ screenWidth, data, shareRef }: Props) => {
         return(
             <View style={{width:width, height:textHeight, flexDirection:'row', alignItems:'center', paddingLeft:30 }}>
                 <View style={{justifyContent:'flex-start', height:iconSize, paddingLeft:20}}>
-                    <MaterialCommunityIcons name={icon} color={color} size={iconSize} />
+                    <MaterialCommunityIcons name={icon} color={colors.primary} size={iconSize} />
                 </View>
                 <View style={{flex:1, width:481, alignItems:'center', justifyContent:'center', height:textHeight, paddingHorizontal:20}}>
                     <Text style={{color:'#FFF', fontSize:48,  textTransform:(capitalize) ? 'capitalize' : undefined, textAlign:'center'}}>
