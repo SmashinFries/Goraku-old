@@ -2,7 +2,7 @@ import { MaterialBottomTabScreenProps } from "@react-navigation/material-bottom-
 import { DrawerNavigationProp, DrawerScreenProps } from "@react-navigation/drawer";
 import { CompositeNavigationProp, CompositeScreenProps } from "@react-navigation/native";
 import { NativeStackNavigationProp, NativeStackScreenProps } from "@react-navigation/native-stack";
-import { AniMalType, MediaAnimeSort, MediaMangaSort, ReviewsNode } from "../Api/types";
+import { AniMalType, MediaAnimeSort, MediaCountries, MediaMangaSort, ReviewsNode } from "../Api/types";
 import { PopularDevArtData } from "../Api/deviantArt/types";
 
 export type BottomTabParamList = {
@@ -55,7 +55,7 @@ export interface FilterRef {
     formatNotIn: string[];
     duration: number[];
     averageScore: number[];
-    country: string;
+    country: MediaCountries;
     year: number[];
     score: number[];
     episodes: number[];
