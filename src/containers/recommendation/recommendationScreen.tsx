@@ -41,11 +41,6 @@ export const RecommendationScreen = ({navigation, route}:RecommendationProps) =>
     const {colors, dark} = useTheme();
     const { width, height } = useWindowDimensions();
 
-    const handleFetch = async(page:number, perPage:number):Promise<RecommendationsFullType> => {
-        const resp = await getRecommendations(page, perPage, [sort]);
-        return resp.data;
-    }
-
     const handlePress = async(index:number, baseId:number, recId:number, rating:'NO_RATING'|'RATE_UP'|'RATE_DOWN') => {
         const res = await saveRecommendation(baseId, recId, rating);
         const newArray = [...data];
@@ -57,7 +52,7 @@ export const RecommendationScreen = ({navigation, route}:RecommendationProps) =>
     const fetchMore = async() => {
         if (pageInfo.hasNextPage) {
             setLoadingMore(true);
-            const newData = await handleFetch(pageInfo.currentPage + 1, 8);
+            const newData = await getRecommendations(pageInfo.currentPage + 1, 8, [sort]);
             setData([...data, ...newData.data.Page.recommendations]);
             setPageInfo(newData.data.Page.pageInfo);
             (false);
@@ -93,7 +88,7 @@ export const RecommendationScreen = ({navigation, route}:RecommendationProps) =>
 
     useEffect(() => {
         if (data === undefined) {
-            handleFetch(1, 8).then(resp => {
+            getRecommendations(1, 8, ).then(resp => {
                 setData(resp.data.Page.recommendations);
                 setPageInfo(resp.data.Page.pageInfo);
             }).then(() => setLoading(false));
@@ -102,7 +97,7 @@ export const RecommendationScreen = ({navigation, route}:RecommendationProps) =>
 
     useEffect(() => {
         setLoading(true);
-        handleFetch(1, 8).then(resp => {
+        getRecommendations(1, 8, [sort]).then(resp => {
             setData(resp.data.Page.recommendations);
             setPageInfo(resp.data.Page.pageInfo);
         }).then(() => setLoading(false));
@@ -110,7 +105,7 @@ export const RecommendationScreen = ({navigation, route}:RecommendationProps) =>
 
     const refreshList = async() => {
         setRefreshing(true);
-        const resp = await handleFetch(1, 10);
+        const resp = await getRecommendations(1, 10, [sort]);
         setData(resp.data.Page.recommendations);
         setPageInfo(resp.data.Page.pageInfo);
         setRefreshing(false);
