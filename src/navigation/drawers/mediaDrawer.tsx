@@ -1,13 +1,11 @@
 import { useTheme } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import { View, Text } from "react-native";
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { getMediaInfo, getMalData } from "../../Api";
 import { AniMalType } from "../../Api/types";
 import { createDrawerNavigator, DrawerContentComponentProps, DrawerContentScrollView, DrawerItem, DrawerItemList } from "@react-navigation/drawer";
 import { InfoProps } from "../../containers/types";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { getMalImages } from "../../Api/mal";
 import { StaffInfo } from "../../containers/staff/staffPage";
 import { CharDetailScreen } from "../../containers/character";
 import { MediaInfoScreen, MusicTab, NewsTab, ReviewBody, ReviewsTab, StudioInfo, WatchTab } from "../../containers/mediadrawer";
@@ -18,8 +16,7 @@ import { getIsAuth } from "../../Storage/authToken";
 import { HeaderBackButton, HeaderRightButtons } from "../../Components/header/headers";
 import { _openBrowserUrl } from "../../utils";
 import { openURL } from "expo-linking";
-import DeviantArtPage from "../../containers/deviantArt/devartPage";
-import DevArtDetail from "../../containers/deviantArt/devartDetail";
+import { getGenreData } from "../../Api/anilist/anilist";
 
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();
@@ -63,6 +60,8 @@ export const InfoDrawer = ({ navigation, route }:InfoProps) => {
     const fetchInfo = async () => {
         try{
             const result = await getMediaInfo(id);
+            // const customGenres = getGenreData(result.res.data.data.Media.genres);
+            // const newData:MediaQueryType = {...result.res.data.data.Media, genres: customGenres};
             setAniLoading(result.res.data ? false : null);
             
             const maldata = (result.res.data.data.Media.idMal) ? await getMalData(result.res.data.data.Media.idMal, result.res.data.data.Media.type) : {data:null};
