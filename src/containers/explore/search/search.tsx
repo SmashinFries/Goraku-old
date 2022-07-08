@@ -195,7 +195,7 @@ export const SearchScreen = ({ route, navigation }: SearchProps) => {
 
     const renderItem = ({ item }) => {
         return (
-            <MediaTile titleType='userPreferred' data={item} colors={colors} sheetRef={sheetRef} size={{height:210, width:130}} />
+            <MediaTile isSearch titleType='userPreferred' data={item} colors={colors} sheetRef={sheetRef} size={{height:210, width:130}} />
         );
     }
 
@@ -224,9 +224,6 @@ export const SearchScreen = ({ route, navigation }: SearchProps) => {
                     columnWrapperStyle={{ marginVertical: 5, justifyContent: 'space-evenly' }}
                     onEndReached={() => (data.data.Page.pageInfo.hasNextPage) ? fetchMore() : null}
                     onEndReachedThreshold={0.7}
-                    getItemLayout={(data, index) => (
-                        {length: 210+65, offset: (210+65) * index, index}
-                    )}
                     windowSize={10}
                     disableVirtualization={true}
                     removeClippedSubviews={true}
