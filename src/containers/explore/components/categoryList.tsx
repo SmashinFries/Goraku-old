@@ -3,7 +3,7 @@ import { View, Text, FlatList, Pressable } from "react-native";
 import { MediaTile } from "../../../Components/Tiles/mediaTile";
 import { getHomeData } from "../../../Api";
 import { useTheme } from "@react-navigation/native";
-import { MediaAnimeSort, MediaTileType } from "../../../Api/types";
+import { MediaAnimeSort, MediaCountries, MediaTileType } from "../../../Api/types";
 import { Titles, Formats, HomeType, PageInfoType, MediaType } from "../../../Components/types";
 import { AxiosError } from "axios";
 import { uniqueItems } from "../../../utils/filters/uniqueItems";
@@ -20,7 +20,9 @@ type CategoryProps = {
     type:string;
     season:string|undefined; 
     year:number|undefined;
-    sortByAir?:boolean;
+    country?:MediaCountries|undefined;
+    sortByAir?:boolean|undefined;
+    doujin?:boolean|undefined;
 };
 export const CategoryList = (props:CategoryProps) => {
     const [data, setData] = useState<MediaType>();
@@ -36,9 +38,9 @@ export const CategoryList = (props:CategoryProps) => {
     const ShowError = () => {
         return(
             <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
-                <Text>{error.message}</Text>
-                <Pressable style={{borderWidth:2, borderRadius:8, padding:5, borderColor:'red'}} onPress={() => handleError()}>
-                    <Text style={{fontSize:18, textAlign:'center'}}>Retry</Text>
+                <Text style={{color:colors.text, paddingBottom:5}}>{error.message}</Text>
+                <Pressable style={{borderWidth:2, borderRadius:8, padding:5, paddingHorizontal:20, borderColor:'red'}} onPress={() => handleError()}>
+                    <Text style={{fontSize:18, textAlign:'center', color:colors.text}}>Retry</Text>
                 </Pressable>
             </View>
         );
@@ -70,7 +72,7 @@ export const CategoryList = (props:CategoryProps) => {
                 isAdult:false,
                 season:props.season, seasonYear:props.year,
                 search:undefined,
-                countryOfOrigin:undefined,
+                countryOfOrigin:props.country,
                 averageScore_greater:undefined, averageScore_lesser:undefined,
                 chapters_greater:undefined, chapters_lesser:undefined,
                 duration_greater:undefined, duration_lesser:undefined,
@@ -81,6 +83,7 @@ export const CategoryList = (props:CategoryProps) => {
                 volumes_greater:undefined, volumes_lesser:undefined,
                 minimumTagRank:undefined,
                 status:undefined,
+                isLicensed:props.doujin,
                 licensedBy_in:undefined,
             });
             let init_data: HomeType = result.data;
@@ -103,21 +106,22 @@ export const CategoryList = (props:CategoryProps) => {
                 type:props.type, 
                 format:props.format,
                 page:page.currentPage + 1,
-                perPage:10, 
+                perPage:props.sortByAir ? 50 : 24,
                 isAdult:false,
                 season:props.season, seasonYear:props.year,
                 search:undefined,
-                countryOfOrigin:undefined,
+                countryOfOrigin:props.country,
                 averageScore_greater:undefined, averageScore_lesser:undefined,
                 chapters_greater:undefined, chapters_lesser:undefined,
                 duration_greater:undefined, duration_lesser:undefined,
                 episodes_greater:undefined, episodes_lesser:undefined,
-                format_in:undefined, format_not_in:undefined,
+                format_in:undefined, format_not_in:props.noFormat,
                 tag_in:undefined, tag_not_in:undefined,
                 genre_in:undefined, genre_not_in:undefined,
                 volumes_greater:undefined, volumes_lesser:undefined,
                 minimumTagRank:undefined,
                 status:undefined,
+                isLicensed:props.doujin,
                 licensedBy_in:undefined,
             });
             const init_data: HomeType = result.data;
@@ -132,12 +136,18 @@ export const CategoryList = (props:CategoryProps) => {
     }
 
     useEffect(() => {
-        setData(undefined);
+        let isMounted = true;
+        
+        (isMounted) && setData(undefined);
+
+        return () => {
+            isMounted = false;
+        }
     },[auth]);
 
     useEffect(() => {
         let isMounted = true;
-        if (!data) {
+        if (!data && isMounted) {
             handleFetch().then(res => {
                 if (isMounted) {
                     setData(res?.data?.Page.media);
