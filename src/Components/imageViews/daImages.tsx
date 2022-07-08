@@ -25,7 +25,7 @@ const DeviantArtImages = ({name, titles, navigation, altNames, isList, colors}:P
     const [images, setImages] = useState<PopularDevArtData>();
     const [query, setQuery] = useState<string>(name);
     const [loading, setLoading] = useState<boolean>(true);
-    const alternatives = [name, ...altNames, titles.english, titles.romaji].filter(() => !null);
+    const alternatives = [...new Set([name, ...altNames, titles.english, titles.romaji].filter(() => !null))];
 
     const searchImages = async() => {
         try {
