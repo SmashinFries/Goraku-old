@@ -41,7 +41,7 @@ const OverViewHeader = ({data, colors, setVisible}:Props) => {
             <Text
                 onPress={iterateTitles}
                 onLongPress={() => handleCopy(filteredTitles[textIdx])}
-                style={{ fontSize: 20, fontWeight: 'bold', color: colors.text }}
+                style={{ fontSize: 20, fontFamily:'Inter_900Black', color: colors.text }}
             >
                 {filteredTitles[textIdx]}
             </Text>

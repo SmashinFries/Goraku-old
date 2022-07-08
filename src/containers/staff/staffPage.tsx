@@ -13,6 +13,7 @@ import { LoadingView } from "../../Components";
 import { handleShare } from "../../utils";
 import { Portal } from "react-native-paper";
 import QrView from "../../Components/qrView";
+import { getIsAuth } from "../../Storage/authToken";
 
 type StaffInfoProps = {
     navigation: NavigationProp<any>,
@@ -20,6 +21,7 @@ type StaffInfoProps = {
 }
 type linkType = {title:string, url:string}[];
 export const StaffInfo = ({ navigation, route }:StaffInfoProps) => {
+    const {auth} = getIsAuth();
     const [data, setData] = useState<StaffDataType>();
     const [isLiked, setIsLiked] = useState<boolean>();
     const [links, setLinks] = useState<linkType>([]);
@@ -37,8 +39,9 @@ export const StaffInfo = ({ navigation, route }:StaffInfoProps) => {
         return self.indexOf(value) === index;
     }
 
-    const toggleLike = () => {
-        const status = toggleFav(id, 'STAFF')
+    const toggleLike = async() => {
+        const status = await toggleFav(id, 'STAFF');
+        console.log(status);
         setIsLiked(!isLiked);
     }
 
@@ -126,14 +129,14 @@ export const StaffInfo = ({ navigation, route }:StaffInfoProps) => {
                     <FastImage fallback source={{ uri: item.characters[0].image.large }} style={{ height: 250, width: 180, borderRadius:8, borderBottomLeftRadius:0, borderBottomRightRadius:0 }} resizeMode={'cover'} />
                     <LinearGradient locations={[.7, 1]} colors={['transparent', (item.characters[0].isFavourite) ? 'rgba(255, 0, 0,.85)' : 'rgba(0,0,0,.8)']} style={{position:'absolute', borderRadius:8, borderBottomLeftRadius:0, borderBottomRightRadius:0, top:0, justifyContent:'flex-end', height: 250, width: 180,}}>
                         <Text style={{textAlign:'center', color:'#FFF'}}>{item.characterRole}</Text>
-                        <Text style={{textAlign:'center', color:'#FFF', fontWeight:'bold'}}>{item.characters[0].name.userPreferred}</Text>
+                        <Text style={{textAlign:'center', color:'#FFF', fontFamily:'Inter_900Black',}}>{item.characters[0].name.userPreferred}</Text>
                     </LinearGradient>
                 </Pressable>
                 {/* @ts-ignore */}
                 <Pressable onPress={() => mediaNav('MEDIA', {id:item.node.id})} style={{borderWidth:1, borderColor:'black'}}>
                     <FastImage fallback source={{uri:item.node.bannerImage ?? item.node.coverImage.extraLarge}} resizeMode={'cover'} style={{height:50, width:'100%'}} />
                     <LinearGradient colors={['rgba(0,0,0,.3)', 'rgba(0,0,0,.8)']} style={{position:'absolute', justifyContent:'center', height:'100%', width:'100%'}}>
-                        <Text numberOfLines={2} style={{color:'#FFF', textAlign:'center', textAlignVertical:'center'}}>{item.node.title.userPreferred}</Text>
+                        <Text numberOfLines={2} style={{color:'#FFF', textAlign:'center', fontFamily:'Inter_900Black', textAlignVertical:'center'}}>{item.node.title.userPreferred}</Text>
                     </LinearGradient>
                 </Pressable> 
             </View>
@@ -149,7 +152,7 @@ export const StaffInfo = ({ navigation, route }:StaffInfoProps) => {
                     data={data.characterMedia.edges}
                     renderItem={renderItem}
                     keyExtractor={(item) => item.id.toString()}
-                    ListHeaderComponent={() => <StaffOverview data={data} date={{day:date.getDate(), month:date.getMonth()}} links={links} liked={isLiked} toggleLike={toggleLike} colors={colors} />}
+                    ListHeaderComponent={() => <StaffOverview data={data} isAuth={auth} date={{day:date.getDate(), month:date.getMonth()}} links={links} liked={isLiked} toggleLike={toggleLike} colors={colors} />}
                     ItemSeparatorComponent={() => <View style={{ height: 15 }} />}
                     columnWrapperStyle={{ paddingHorizontal:10, justifyContent: 'space-evenly' }}
                     contentContainerStyle={{paddingBottom:10}}
@@ -161,7 +164,7 @@ export const StaffInfo = ({ navigation, route }:StaffInfoProps) => {
                     data={[0]}
                     renderItem={() => <StaffMediaRender data={data} navigation={navigation} isList={isList} colors={colors} />}
                     keyExtractor={(item, index) => index.toString()}
-                    ListHeaderComponent={() => <StaffOverview data={data} date={{day:date.getDate(), month:date.getMonth()}} links={links} liked={isLiked} toggleLike={toggleLike} colors={colors} />}
+                    ListHeaderComponent={() => <StaffOverview data={data} isAuth={auth} date={{day:date.getDate(), month:date.getMonth()}} links={links} liked={isLiked} toggleLike={toggleLike} colors={colors} />}
                     ItemSeparatorComponent={() => <View style={{ height: 15 }} />}
                     columnWrapperStyle={{ paddingHorizontal:10, justifyContent: 'space-evenly' }}
                     numColumns={2}

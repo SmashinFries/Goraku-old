@@ -16,7 +16,7 @@ const RelationsList = ({data, navigation, colors}:Props) => {
     if (data?.anilist.relations.edges.length <= 0) return null;
     return(
         <View>
-            <Text style={{ marginLeft: 10, marginTop: 20, fontSize: 28, fontWeight: 'bold', color: colors.text }}>Relations</Text>
+            <Text style={{ marginLeft: 10, marginTop: 20, fontSize: 28, fontFamily:'Inter_900Black', color: colors.text }}>Relations</Text>
             <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
                 {data?.anilist.relations.edges.map((relation, index) =>
                     <Pressable key={index} onPress={() => { navigation.push('DrawerInfo', { id: relation.node.id, coverImage: relation.node.coverImage.extraLarge, type: relation.node.type }) }} style={{ marginHorizontal: 10, width:120, height:180, overflow:'hidden', borderRadius:8 }}>

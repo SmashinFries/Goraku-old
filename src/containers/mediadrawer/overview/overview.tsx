@@ -150,7 +150,7 @@ const OverviewTab = ({ content, isList }: OverviewTabParams) => {
         if (!images && !imageLoading) return null;
         return (
             <View>
-                <Text style={{ marginLeft: 10, marginTop: 20, fontSize: 28, fontWeight: 'bold', color: colors.text }}>Mal Images</Text>
+                <Text style={{ marginLeft: 10, marginTop: 20, fontSize: 28, fontFamily:'Inter_900Black', color: colors.text }}>Mal Images</Text>
                 {(imageLoading) && <View style={{height:190}}><LoadingView colors={colors} mode='Circle' /></View>}
                 {(!imageLoading) && <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
                     {images.map((img, index) =>
@@ -167,7 +167,7 @@ const OverviewTab = ({ content, isList }: OverviewTabParams) => {
         if (data.anilist.synonyms.length <= 0) return null;
         return (
             <View>
-                <Text style={{ marginLeft: 10, marginTop: 20, fontSize: 28, fontWeight: 'bold', color: colors.text }}>Synonyms</Text>
+                <Text style={{ marginLeft: 10, marginTop: 20, fontSize: 28, fontFamily:'Inter_900Black', color: colors.text }}>Synonyms</Text>
                 <View style={{ marginLeft: 10 }}>
                     {data.anilist.synonyms.map((synonym, index) => <Text onLongPress={() => handleCopy(synonym)} key={index} style={{ fontSize: 16, color: colors.text }}>{synonym}</Text>)}
                 </View>
@@ -179,7 +179,7 @@ const OverviewTab = ({ content, isList }: OverviewTabParams) => {
         if (!data?.mal.data?.background) return null;
         return (
             <View style={{ flex: 1 }}>
-                <Text style={{ marginLeft: 10, marginTop: 20, fontSize: 28, fontWeight: 'bold', color: colors.text }}>Background</Text>
+                <Text style={{ marginLeft: 10, marginTop: 20, fontSize: 28, fontFamily:'Inter_900Black', color: colors.text }}>Background</Text>
                 <Text style={{ padding: 10, fontSize: 15, color: colors.text }}>{data.mal.data.background}</Text>
             </View>
         );
@@ -225,10 +225,10 @@ const OverviewTab = ({ content, isList }: OverviewTabParams) => {
                     <BackgroundInfo />
                     <SynonymsDisplay />
                     {(data.anilist.hashtag) ? <View>
-                        <Text style={{ marginLeft: 10, marginTop: 20, fontSize: 28, fontWeight: 'bold', color: colors.text }}>HashTag</Text>
+                        <Text style={{ marginLeft: 10, marginTop: 20, fontSize: 28, fontFamily:'Inter_900Black', color: colors.text }}>HashTag</Text>
                         <Text selectable style={{ fontSize: 16, marginLeft: 10, color: colors.text }}>{data.anilist.hashtag}</Text>
                     </View> : null}
-                    <Text style={{ marginLeft: 10, marginTop: 20, fontSize: 28, fontWeight: 'bold', color: colors.text }}>Links</Text>
+                    <Text style={{ marginLeft: 10, marginTop: 20, fontSize: 28, fontFamily:'Inter_900Black', color: colors.text }}>Links</Text>
                     <View style={{ flex: 1 }}>
                         <ExternalLinkList data={data} colors={colors} />
                     </View>
@@ -345,7 +345,7 @@ const MediaInfoScreen = ({ navigation, route }: OverviewProps) => {
                 <FastImage source={{ priority: 'high', uri: (data.anilist.bannerImage !== null) ? data.anilist.bannerImage : data.anilist.coverImage.extraLarge }} fallback style={{ height: 195, width: '100%' }} resizeMode='cover' />
                 <LinearGradient colors={['rgba(0,0,0,0)', colors.background]} locations={[0, .95]} style={{position:'absolute', height: 195, width: '100%'}} />
             </View>
-            <ShareMediaInfo data={shareData} shareRef={shareRef} screenWidth={width} />
+            <ShareMediaInfo data={shareData} shareRef={shareRef} screenWidth={width} colors={colors} />
         </View>
     );
 }

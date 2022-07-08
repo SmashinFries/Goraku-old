@@ -16,6 +16,7 @@ type CharacterHeaderProps = {
     date:Date;
 }
 const CharacterHeaderImage = ({origin, dateOfBirth, image, date }:CharacterHeaderProps) => {
+    const imgSize = {width:180, height:280}
     const birthdayJP = ['Happy Birthday!', 'Tanjoubi Omedetou!', 'お誕生日おめでとう！']
     const birthdayKR = ['Happy Birthday!', 'Saengil Chukahae', '생일 축하해!']
     const birthdayCN = ['Happy Birthday!', 'Shēngrì Kuàilè', '生日快乐!']
@@ -58,8 +59,8 @@ const CharacterHeaderImage = ({origin, dateOfBirth, image, date }:CharacterHeade
     },[])
     
     return (
-        <View style={{ height: 300, width: 200 }}>
-            <FastImage source={{ uri: image.large }} style={{ height: 300, width: 200, marginTop: 10, marginLeft: 10, borderRadius: 12,}} />
+        <View style={{ height: imgSize.height, width: imgSize.width }}>
+            <FastImage source={{ uri: image.large }} style={{ height: imgSize.height, width: imgSize.width, marginTop: 10, marginLeft: 10, borderRadius: 12,}} />
             <LinearGradient colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.9)']} locations={[0.80, 1]} style={{ position: 'absolute', justifyContent: 'flex-end', marginLeft: 10, marginTop: 10, borderBottomLeftRadius: 12, borderBottomRightRadius: 12, height: '100%', width: '100%' }}>
                 {checkBD(date, dateOfBirth) ?
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingBottom: 5 }}>
@@ -80,7 +81,7 @@ type CharOverviewProps = {
 const CharacterOverview = ({name, favourites, dateOfBirth, colors, age}:CharOverviewProps) => {
     return(
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'flex-start', paddingLeft: 20 }}>
-            <Text onLongPress={() => handleCopy(name?.userPreferred)} style={{ textAlign: 'left', fontSize: 22, fontWeight: 'bold', color: colors.text }}>{name?.userPreferred}</Text>
+            <Text onLongPress={() => handleCopy(name?.userPreferred)} style={{ textAlign: 'left', fontSize: 22, fontFamily:'Inter_900Black', color: colors.text }}>{name?.full}</Text>
             {(name?.native) ? <Text onLongPress={() => handleCopy(name?.native)} style={{ textAlign: 'left', fontSize: 18, color: colors.text }}>{name?.native}</Text> : null}
             <View style={{flexDirection:'row', alignItems:'center'}}>
                 <Avatar.Icon icon='heart' size={24} color='red' style={{backgroundColor:'transparent'}} />
@@ -134,7 +135,7 @@ const CharacterBody = ({description, altNames, links, favorite, isAuth, toggleLi
     const {width, height} = useWindowDimensions();
     return(
         <View style={{ flex: 1, marginTop: 30, paddingHorizontal: 10 }}>
-            {(isAuth) ? <Button mode={(favorite) ? 'contained' : 'outlined'} onPress={toggleLike} icon={(!favorite) ? 'heart-outline' : 'heart'} color={'red'} style={{ borderColor: 'red', borderWidth: (favorite) ? 0 : 1 }}>
+            {(isAuth) ? <Button mode={(favorite) ? 'contained' : 'outlined'} onPress={toggleLike} icon={(!favorite) ? 'heart-outline' : 'heart'} color={'red'} style={{ borderColor: 'red', borderWidth: (favorite) ? 0 : 1, marginVertical:20 }}>
                 {(favorite) ? 'Favorited' : 'Favorite'}
             </Button> : null}
             {(staffData) ?

@@ -41,7 +41,7 @@ const CharStaffList = ({charData, staffData, data, setData, navigation, isList, 
                 <FastImage fallback source={{ uri: person.node.image.large }} style={{ width: 120, zIndex: -1, height: 180, position: 'absolute', borderRadius:8 }} resizeMode='cover' />
                 <LinearGradient colors={['transparent', (fav) ? 'rgba(255, 0, 0,.85)' : 'rgba(0,0,0,.55)']} locations={gradBottomLoc} style={{ position: 'absolute', height: '100%', justifyContent: 'flex-end', alignItems: 'center', width: '100%', borderRadius:8 }}>
                     {(rolePosition === 'Bottom') ? <Text style={[{ fontSize: 14, color: '#FFF', textTransform: 'capitalize', textAlign: 'center' }]}>{person.role}</Text> : null}
-                    <Text style={{ fontSize: 14, color: '#FFF', textTransform: 'capitalize', fontWeight: 'bold', textAlign: 'center' }}>{person.node.name.userPreferred}</Text>
+                    <Text style={{ fontSize: 14, color: '#FFF', textTransform: 'capitalize', fontFamily:'Inter_900Black', textAlign: 'center' }}>{person.node.name.userPreferred}</Text>
                 </LinearGradient>
                 {(rolePosition === 'Top') ? <LinearGradient colors={['rgba(0,0,0,.55)', 'transparent']} locations={gradTopLoc} style={{ position: 'absolute', height: '100%', justifyContent: 'flex-start', alignItems: 'center', width: '100%', borderRadius:8 }}>
                     <View style={[(rolePosition === 'Top') ? { position: 'absolute', top: 0, justifyContent: 'center', alignItems: 'flex-start' } : null]}>
@@ -55,7 +55,7 @@ const CharStaffList = ({charData, staffData, data, setData, navigation, isList, 
     if (content.length <= 0) return null;
     return(
         <View>
-            <Text style={{ marginLeft: 10, marginTop: 20, fontSize: 28, fontWeight: 'bold', color: colors.text }}>{title}</Text>
+            <Text style={{ marginLeft: 10, marginTop: 20, fontSize: 28, fontFamily:'Inter_900Black', color: colors.text }}>{title}</Text>
             <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
                 {content.map((person, index) =>
                     // @ts-ignore

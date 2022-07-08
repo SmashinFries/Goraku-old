@@ -35,7 +35,7 @@ const WatchTab = ({navigation, route}:WatchProps) => {
               <FastImage source={{ uri: item.thumbnail }} style={{ height: 220, width: '100%', borderRadius:8 }} resizeMode='cover' />
               <LinearGradient colors={['transparent', '#000']} locations={[0.35, .9]} style={{ position: 'absolute', width: '100%', justifyContent: 'flex-end', height: 220, borderRadius:8 }}>
                 <View style={{ width: '100%', padding: 5 }}>
-                  <Text style={{ color: '#FFF', textAlign: 'center' }}>{item.title}</Text>
+                  <Text style={{ color: '#FFF', textAlign: 'center', fontFamily:'Inter_900Black', }}>{item.title}</Text>
                 </View>
                 {(item.site === 'Crunchyroll') ? <CrunchyRollSVG style={{ position: 'absolute', top: 5, left: 5 }} /> : null}
               </LinearGradient>

@@ -96,9 +96,9 @@ const DeviantArtImages = ({name, titles, navigation, altNames, isList, colors}:P
     },[query]);
 
     return(
-        <View>
+        <View style={{marginTop:20}}>
             <View style={{flexDirection:'row', alignItems:'center'}}>
-                <Text style={{ marginLeft: 10, marginTop: 20, fontSize: 28, fontWeight: 'bold', color: colors.text }}>DeviantArt</Text>
+                <Text style={{ marginLeft: 10, marginTop: 20, fontSize: 28, fontFamily:'Inter_900Black', color: colors.text }}>DeviantArt</Text>
                 <ViewMore />
             </View>
             {(alternatives.length > 0) ? <ScrollView horizontal contentContainerStyle={{paddingVertical:10}}>

@@ -82,12 +82,12 @@ const CharacterFeatured = ({data, parNav, colors}:CharFeaturedProps) => {
     }
 
     return(
-        <>
-            <Text style={{ fontSize: 34, fontWeight: 'bold', paddingHorizontal: 10, color: colors.text }}>Featured In</Text>
+        <View style={{marginTop:20}}>
+            <Text style={{ fontSize: 34, fontFamily:'Inter_900Black', paddingHorizontal: 10, color: colors.text }}>Featured In</Text>
             <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
                 {data.media?.edges.map((relation, index) => <FeaturedItem key={index} relation={relation} />)}
             </ScrollView>
-        </>
+        </View>
     );
 }
 
@@ -115,8 +115,8 @@ const CharacterImages = ({images, setSelectedImg, setVisible, loading, colors}:C
 
     if (images === undefined || images?.length <= 0) return null;
     return(
-        <View style={{ flex: 1, marginTop: 30, marginBottom: 20 }}>
-            <Text style={{ fontSize: 34, fontWeight: 'bold', paddingHorizontal: 10, color: colors.text }}>MAL Images</Text>
+        <View style={{ flex: 1, marginTop: 20, marginBottom: 20 }}>
+            <Text style={{ fontSize: 34, fontFamily:'Inter_900Black', paddingHorizontal: 10, color: colors.text }}>MAL Images</Text>
             {(loading) ? 
             <LoadingView mode='Circle' colors={colors} titleData={[{title:'imageLoading', loading:loading}]} />
             :<FlatList

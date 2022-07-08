@@ -50,7 +50,7 @@ const CharacterTab = ({navigation, route}:CharacterProps) => {
                     <FastImage source={{uri:charImage}} style={{ borderRadius:12, borderBottomLeftRadius:(data.anilist.type !== 'ANIME') ? 12 : 0, borderBottomRightRadius:(data.anilist.type !== 'ANIME') ? 12 : 0, alignSelf:'center', width:SIZE[0], height:SIZE[1]}} resizeMode={'cover'} />
                     <LinearGradient locations={[.7, .96]} colors={['transparent', (isLiked) ? 'rgba(255, 0, 0,.85)' : 'rgba(0,0,0,0.85)']} style={{position:'absolute', bottom:0, alignSelf:'center', width:'100%', height:'100%', justifyContent:'flex-end', borderRadius:(data.anilist.type !== 'ANIME') ? 12 : 0}}>
                         <Text style={{textAlign:'center', color:'#FFF', fontSize:14}}>{role}</Text>
-                        <Text style={{textAlign:'center', color:'#FFF', fontWeight:'bold', fontSize:16}} numberOfLines={2}>{name}</Text>
+                        <Text style={{textAlign:'center', color:'#FFF', fontFamily:'Inter_900Black', fontSize:16}} numberOfLines={2}>{name}</Text>
                     </LinearGradient>
                 </PressableAnim>
                 {(data.anilist.type === 'ANIME') ? <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -60,7 +60,7 @@ const CharacterTab = ({navigation, route}:CharacterProps) => {
                             <FastImage source={{ uri: jpnVoiceActor[0].voiceActor.image.large }} style={{ height: 78, width: 50 }} />
                             : <View style={{height:78, width:50, justifyContent:'center'}}><AntDesign name="question" size={30} color="black" /></View>}
                             <View style={{ flex: 1, justifyContent: 'center' }}>
-                                <Text style={{ textAlign: 'center', color: colors.text }}>{(jpnVoiceActor[0]) ? jpnVoiceActor[0].voiceActor.name.userPreferred : 'Unknown'}</Text>
+                                <Text style={{ textAlign: 'center', color: colors.text, fontFamily:'Inter_900Black', }}>{(jpnVoiceActor[0]) ? jpnVoiceActor[0].voiceActor.name.userPreferred : 'Unknown'}</Text>
                                 {(jpnVoiceActor[0]) ? <View style={{ justifyContent: 'center' }}>
                                     <Text style={{ textAlign: 'center', color: colors.text }}>
                                         {jpnVoiceActor[0].voiceActor.language}

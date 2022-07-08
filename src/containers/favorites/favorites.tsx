@@ -25,7 +25,7 @@ const FavoriteTile = ({cover, onPress, title, colors}:FavoriteTileProps) => {
             <TouchableOpacity activeOpacity={.7} onPress={onPress} style={{ borderRadius: 8, height: 200, width: 130, justifyContent: 'center', alignItems: 'center', backgroundColor:colors.primary }}>
                 <FastImage source={{ uri: cover }} style={{ height: 200, width: 130, borderRadius: 8, }} />
                 <LinearGradient colors={['transparent', 'rgba(0,0,0,.7)']} locations={[.65, .95]} style={{ position: 'absolute', height: 200, width: 130, justifyContent: 'flex-end', alignItems: 'center', borderRadius: 8 }}>
-                    <Text numberOfLines={2} onLongPress={() => handleCopy(title)} style={{ color: '#FFF', textAlign: 'center', fontWeight: 'bold', paddingBottom: 5, paddingHorizontal: 5 }}>{title}</Text>
+                    <Text numberOfLines={2} onLongPress={() => handleCopy(title)} style={{ color: '#FFF', textAlign: 'center', fontFamily:'Inter_900Black', paddingBottom: 5, paddingHorizontal: 5 }}>{title}</Text>
                 </LinearGradient>
             </TouchableOpacity>
     );

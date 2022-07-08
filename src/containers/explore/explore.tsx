@@ -70,7 +70,7 @@ export const ExploreScreen = ({navigation, route}:ExploreProps) => {
     const GeneralList = ({heading, TYPE, format, noFormat, sort, country, doujin=false}:SectionListProps) => {
         return(
             <>
-                <Text style={{ fontSize: 36, fontWeight: 'bold', color:colors.text, alignSelf: 'flex-start', marginLeft: 10,}}>{heading}</Text>
+                <Text style={{ fontSize: 36, fontFamily:'Inter_900Black', color:colors.text, alignSelf: 'flex-start', marginLeft: 10,}}>{heading}</Text>
                 <CategoryList titleType={"userPreferred"} type={TYPE} country={country} doujin={!doujin} format={format} noFormat={noFormat} sort={sort} season={undefined} year={undefined} />
             </>
         );
@@ -83,7 +83,7 @@ export const ExploreScreen = ({navigation, route}:ExploreProps) => {
     const SeasonList = ({heading, nextSeason=false}:SeasonListType) => {
         return(
             <>
-                <Text style={{ fontSize: 36, fontWeight: 'bold', color:colors.text, alignSelf: 'flex-start', marginLeft: 10, }}>{heading}</Text>
+                <Text style={{ fontSize: 36, fontFamily:'Inter_900Black', color:colors.text, alignSelf: 'flex-start', marginLeft: 10, }}>{heading}</Text>
                 <CategoryList titleType='userPreferred' type='ANIME' format={undefined} sort={'POPULARITY_DESC'} season={getSeason(nextSeason)} year={getYear()} />
             </>
         );

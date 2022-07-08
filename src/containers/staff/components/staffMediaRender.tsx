@@ -41,7 +41,7 @@ const StaffMediaRender = ({data, colors, isList, navigation}:Props) => {
         <View style={{flex:1}}>
             {anime.length > 0 && 
             <View>
-                <Text style={{  marginBottom: 5, color: colors.text, fontSize: 30, fontWeight: 'bold', marginTop: 20, }}>Anime Roles</Text>
+                <Text style={{  marginBottom: 5, color: colors.text, fontSize: 30, fontFamily:'Inter_900Black', marginTop: 20, }}>Anime Roles</Text>
                 <FlatList 
                     data={anime}
                     renderItem={contentRender}
@@ -54,7 +54,7 @@ const StaffMediaRender = ({data, colors, isList, navigation}:Props) => {
             </View>}
             {manga.length > 0 && 
             <View style={{marginBottom:10}}>
-                <Text style={{ marginBottom: 5, color: colors.text, fontSize: 30, fontWeight: 'bold', marginTop: 20, }}>Manga Roles</Text>
+                <Text style={{ marginBottom: 5, color: colors.text, fontSize: 30, fontFamily:'Inter_900Black', marginTop: 20, }}>Manga Roles</Text>
                 <FlatList 
                     data={manga}
                     renderItem={contentRender}

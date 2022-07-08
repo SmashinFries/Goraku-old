@@ -22,9 +22,9 @@ export const SummaryCard = ({ review, colors, onPress }:Props) => {
         <Card style={{ width:'90%', alignSelf:'center', marginVertical:10, backgroundColor:colors.card }}>
             <Card.Title
                 title={review.node.user.name} 
-                titleStyle={{color:'#FFF'}}
+                titleStyle={{color:'#FFF', fontFamily:'Inter_900Black',}}
                 left={(props) => <Pressable onPress={openUserInfo}><Avatar.Image {...props} source={{uri:review.node.user.avatar.large}} size={46} style={{backgroundColor:review.node.user.options.profileColor}} /></Pressable>}
-                right={() => <View style={{flexDirection:'row', alignItems:'center', padding:10, marginRight:10, borderRadius:8, backgroundColor:getScoreColor(review.node.score)}}><Text style={{color:'#FFF'}}>{review.node.score}</Text></View>}
+                right={() => <View style={{flexDirection:'row', alignItems:'center', padding:10, marginRight:10, borderRadius:8, borderWidth:.75, backgroundColor:getScoreColor(review.node.score)}}><Text style={{color:'#FFF'}}>{review.node.score}</Text></View>}
                 style={{backgroundColor:colors.primary}}
             />
             <Card.Content style={{paddingTop:10}}>

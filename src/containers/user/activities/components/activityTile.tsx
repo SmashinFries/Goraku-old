@@ -9,6 +9,7 @@ import { ThemeColors } from "../../../../Components/types";
 import { NavigationProp } from "@react-navigation/native";
 import { convertUnixTime } from "../../../../utils/time/getTime";
 import { UserModal } from "../../../../Components";
+import { _openBrowserUrl } from "../../../../utils";
 
 const statusText = (status: string, progress: number) => {
     if (progress) {
@@ -38,7 +39,7 @@ const DetailButton = ({ colors, onPress }: { colors: ThemeColors, onPress: () =>
 
 const AnilistLink = ({ link, color }: { link: string, color:string }) => {
     return (
-        <Pressable onPress={() => openURL(link)} style={{ marginTop: 20, width: 35, height: 35, justifyContent: 'center', alignItems: 'center', borderRadius: 35 / 2 }} android_ripple={{ color: color, borderless: true }}>
+        <Pressable onPress={() => _openBrowserUrl(link)} style={{ marginTop: 20, width: 35, height: 35, justifyContent: 'center', alignItems: 'center', borderRadius: 35 / 2 }} android_ripple={{ color: color, borderless: true }}>
             <AnilistSVG color={'#07A9FF'} />
         </Pressable>
     );
@@ -70,7 +71,7 @@ const ActivityTile = ({ item, colors, userId, navigation, deleteActivity }: Prop
             <View style={{ flex: 1, paddingTop: 15, alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
                 <OtherUser user={item.user} setVisible={setVisible} colors={colors} />
                 <Text style={{ color: colors.text, marginTop: 20, textTransform: 'capitalize' }}>{statusText(item.status, item.progress)}</Text>
-                <Text numberOfLines={2} style={{ color: colors.text, fontWeight: 'bold', paddingHorizontal: 5, fontSize: 16, height: 45, textAlign: 'center', textAlignVertical: 'center' }}>{item.media.title.userPreferred}</Text>
+                <Text numberOfLines={2} style={{ color: colors.text, fontFamily:'Inter_900Black', paddingHorizontal: 5, fontSize: 16, height: 45, textAlign: 'center', textAlignVertical: 'center' }}>{item.media.title.userPreferred}</Text>
                 
                 <View style={{ flex: 1, paddingLeft: 10, flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', width: '100%', paddingRight: 5, paddingBottom: 5 }}>
                     {(item.user.id === userId) && <DeleteButton onDelete={() => deleteActivity(item.id)} />}

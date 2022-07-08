@@ -107,6 +107,7 @@ const UserModal = ({user, visible, onDismiss, colors}:Props) => {
             marginTop:45,
             textAlign:'center',
             color:colors.text,
+            fontFamily:'Inter_900Black'
         },
         createdText: {
             color:colors.text,

@@ -12,7 +12,7 @@ const Trailer = ({trailer, width, colors}:Props) => {
     if (trailer === null) return null;
     return (
         <View style={{ flex: 1 }}>
-            <Text style={{ marginLeft: 10, marginTop: 20, fontSize: 28, fontWeight: 'bold', color: colors.text }}>Trailer</Text>
+            <Text style={{ marginLeft: 10, marginTop: 20, fontSize: 28, fontFamily:'Inter_900Black', color: colors.text }}>Trailer</Text>
             <View style={{ alignItems: 'center' }}>
                 <YoutubePlayer
                     height={270}

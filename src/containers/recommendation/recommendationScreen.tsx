@@ -140,7 +140,7 @@ export const RecommendationScreen = ({navigation, route}:RecommendationProps) =>
                     <View style={[borderRadius, {overflow:'hidden', margin:2}]}>
                         <FastImage fallback source={{ uri: cover }} resizeMode='cover' style={[borderRadius, { height: 120, width:(width * 90) / 100 }]} />
                         <LinearGradient colors={['transparent', 'rgba(0,0,0,.6)']} locations={[.5, .9]} style={[borderRadius, { position: 'absolute', width: '100%', height: '100%', justifyContent: 'flex-end' }]} >
-                            <Text numberOfLines={2} style={{ color: '#FFF', textAlign: 'center', paddingHorizontal: 5, fontSize: 20, fontWeight: 'bold' }}>{title}</Text>
+                            <Text numberOfLines={2} style={{ color: '#FFF', textAlign: 'center', paddingHorizontal: 5, fontSize: 20, fontFamily:'Inter_900Black', }}>{title}</Text>
                         </LinearGradient>
                     </View>
                 </Pressable>

@@ -41,15 +41,15 @@ export const MediaTile = (props: MediaTileProps) => {
     // onLongPress={() => {props.setActiveId({id:props.data.id, index:props.index}); console.log(props.data.id); props.sheetControl.current.present()}}
     return(
         <View style={{flex:1, width:width, height:height+65, marginHorizontal:10, paddingTop:10, justifyContent:'flex-start',}}>
-                <Shadow size={[width-8, height-8]} paintInside startColor={(status) ? listColor(props.data.mediaListEntry?.status) : 'transparent'} viewStyle={{position:'absolute', width:width-8, height:height-8, alignItems:'center', borderRadius:8, justifyContent:'center'}}>
-                    <View style={{ borderRadius: 8, overflow: 'hidden' }}>
+                <Shadow size={[width-8, height-8]} paintInside startColor={(status) ? listColor(props.data.mediaListEntry?.status) : 'transparent'} offset={[4,0]} viewStyle={{position:'absolute', width:width-8, height:height-8, alignItems:'center', alignSelf:'center', borderRadius:8, justifyContent:'center'}}>
+                    <View style={{ borderRadius: 8, overflow: 'hidden', alignItems:'center' }}>
                         <Pressable  onPress={() => onPress(props, nav)} android_ripple={{color:colors.primary,}} style={{height:height, width:width, borderRadius:8, alignItems:'center', justifyContent:'center'}}>
                             <View style={{overflow: 'hidden', borderRadius:8}}>
                                 <FastImage fallback source={{uri: props.data.coverImage.extraLarge}} style={{height:height-6, width:width-6, borderRadius:8, alignSelf:'center'}} resizeMode='cover' />
                                 <ScoreTag score={score} />
                                 {(props.data.nextAiringEpisode?.timeUntilAiring) ? 
                                 <View style={{position:'absolute', flexDirection:'row', justifyContent:'center', bottom:0, width:'100%', backgroundColor:'rgb(60,180,242)'}}>
-                                    <Text style={{fontWeight:'bold'}}>EP {props.data.nextAiringEpisode.episode} </Text>
+                                    <Text style={{}}>EP {props.data.nextAiringEpisode.episode} </Text>
                                     <MaterialIcons name="access-time" size={16} style={{ alignSelf: 'center' }} color={'#FFF'} />
                                     <Text style={{fontWeight:'bold'}}> {getTime(props.data.nextAiringEpisode.timeUntilAiring, false)}</Text>
                                 </View> : null}
@@ -57,7 +57,7 @@ export const MediaTile = (props: MediaTileProps) => {
                         </Pressable>
                     </View>
                 </Shadow>
-            <Text style={{textAlign:'center', marginTop:height+5, width:width, color:colors.text, fontSize:16}} onLongPress={() => handleCopy(props.data.title[props.titleType])} numberOfLines={2}>{props.data.title[props.titleType]}</Text>
+            <Text style={{textAlign:'center', marginTop:height+5, width:width, color:colors.text, fontFamily:'Inter_900Black', fontSize:16}} onLongPress={() => handleCopy(props.data.title[props.titleType])} numberOfLines={2}>{props.data.title[props.titleType]}</Text>
         </View>
     );
 }

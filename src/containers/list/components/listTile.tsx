@@ -54,7 +54,7 @@ const ListTile = memo(({item, colors, listStatus, tags, navigation}:TileProps) =
         <TouchableOpacity activeOpacity={.7} onPress={() => navigation.navigate('UserListDetail', {id: item.media.id, isList:true})} style={{ height: size.height, width:size.width, backgroundColor:colors.colors.primary, borderRadius: 8}}>
             <FastImage fallback source={{ uri: item.media.coverImage.extraLarge }} resizeMode={'cover'} style={{ height: size.height, width: size.width, borderRadius: 8 }} />
             <LinearGradient colors={['transparent', 'rgba(0,0,0,.7)']} locations={[.65, .95]} style={{ position: 'absolute', height: '100%', width: '100%', justifyContent: 'flex-end', alignItems: 'center', borderRadius:8 }}>
-                <Text numberOfLines={2} style={{ color: '#FFF', textAlign: 'center', fontWeight: 'bold', paddingBottom:10, paddingHorizontal:5 }}>{item.media.title.userPreferred}</Text>
+                <Text numberOfLines={2} style={{ color: '#FFF', textAlign: 'center', fontFamily:'Inter_900Black', paddingBottom:10, paddingHorizontal:5 }}>{item.media.title.userPreferred}</Text>
                 {/* {(item.progress > 0) ? <View style={{ position: 'absolute', bottom: .1, left: 0, height: 8, width: (item.media.episodes ?? item.media.chapters) ? `${progressPerc}%` : '50%', backgroundColor: colors.colors.primary, borderBottomLeftRadius: 8, borderBottomRightRadius: (progressPerc === '100') ? 8 : 0 }} /> : null} */}
                 {((item.media.episodes || item.media.chapters || item.media.volumes) && listStatus !== 'Completed' && tags.progressTag && item.media.status !== 'NOT_YET_RELEASED') ? 
                     <View style={{position:'absolute', top:5, right:5}}>

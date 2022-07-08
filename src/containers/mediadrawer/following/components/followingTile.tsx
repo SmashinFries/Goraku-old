@@ -42,7 +42,7 @@ const FollowingTile = ({item, colors}:{item:FollowingMediaList, colors:Theme}) =
             <Card.Title
                 style={{backgroundColor:(colors.dark) ? colors.colors.background : colors.colors.card}}
                 title={item.user.name}
-                titleStyle={{color:colors.colors.text}}
+                titleStyle={{color:colors.colors.text, fontFamily:'Inter_900Black',}}
                 subtitle={getSubtitles()}
                 subtitleStyle={{textTransform:'capitalize', color:colors.colors.text}}
                 subtitleNumberOfLines={2}

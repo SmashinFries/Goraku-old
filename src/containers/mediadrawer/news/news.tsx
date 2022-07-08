@@ -47,7 +47,7 @@ const NewsTab = ({navigation, route}) => {
     const newsCard = ({item}:renderProp) => {
         return(
             <Card style={{ width:'95%', alignSelf:'center', marginVertical:10, backgroundColor:colors.card }}>
-                <Card.Title title={item.title} titleNumberOfLines={2} subtitle={`By ${item.author_username} @ ${item.date.slice(0, 10)}`} right={props => <IconButton icon={'account'} onPress={() => openLink(item.author_url)} />} style={{backgroundColor:colors.primary}} />
+                <Card.Title title={item.title} titleNumberOfLines={2} titleStyle={{fontFamily:'Inter_900Black',}} subtitle={`By ${item.author_username} @ ${item.date.slice(0, 10)}`} right={props => <IconButton icon={'account'} onPress={() => openLink(item.author_url)} />} style={{backgroundColor:colors.primary}} />
                 <Card.Content style={{ padding:5 }}>
                     <View style={{ width:'70%', flexDirection:'row', paddingTop:10 }}>
                         <Card.Cover source={{ uri:item.images.jpg.image_url }} resizeMode='cover' style={{ width:90, height:140 }} />
