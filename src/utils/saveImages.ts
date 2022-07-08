@@ -9,12 +9,14 @@ export const saveImage = async(uri:string, title:string) => {
     const isSavedLocal = (uri.split(':')[0] === 'file') ? true : false;
     const fileType = await getSaveImgType();
     const isAllowed = await MediaLibrary.getPermissionsAsync();
+    const formattedTitle = title.replace(/\//g, '');
+    console.log(formattedTitle);
     if (!isAllowed.granted) {
         await MediaLibrary.requestPermissionsAsync();
     }
     try {
         if (!isSavedLocal) {
-            const fileUri = FileSystem.documentDirectory + title + '.' + fileType;
+            const fileUri = FileSystem.documentDirectory + formattedTitle + '.' + fileType;
             const result = await FileSystem.downloadAsync(uri, fileUri);
             await MediaLibrary.saveToLibraryAsync(result.uri);
         } else {
