@@ -7,10 +7,10 @@ import { ThemeColors } from "../../../../Components/types";
 import { handleCopy, _openBrowserUrl } from "../../../../utils";
 
 const getWikiURL = (title:string, slug:string, tags?:string, version?:number|null) => {
-    if (tags && version) return `https://staging.animethemes.moe/wiki/anime/${title}/${slug}-${tags}v${version}`;
-    if (tags && !version) return `https://staging.animethemes.moe/wiki/anime/${title}/${slug}-${tags}`;
-    if (!tags && version) return `https://staging.animethemes.moe/wiki/anime/${title}/${slug}v${version}`;
-    if (!tags && !version) return `https://staging.animethemes.moe/wiki/anime/${title}/${slug}`;
+    if (tags && version) return `https://animethemes.moe/anime/${title}/${slug}-${tags}v${version}`;
+    if (tags && !version) return `https://animethemes.moe/anime/${title}/${slug}-${tags}`;
+    if (!tags && version) return `https://animethemes.moe/anime/${title}/${slug}v${version}`;
+    if (!tags && !version) return `https://animethemes.moe/anime/${title}/${slug}`;
 };
 
 type ViewerProps = {
@@ -26,12 +26,13 @@ const MusicViewer = ({ track, animeTitle, colors }:ViewerProps) => {
         <View key={track.id} style={{ flex: 1, width: '95%', padding: 10, marginVertical: 15, alignItems: 'center', justifyContent: 'space-between', borderWidth: 0, borderRadius: 0, backgroundColor: 'transparent' }}>
             <Card style={{width:'100%', backgroundColor:colors.primary}}>
                 <Card.Title 
-                    right={props => (track.song.artists[0]?.name) && <IconButton {...props}icon="account" onPress={() => openLink(`https://staging.animethemes.moe/wiki/artist/${track.song.artists[0].slug}`)} />} 
-                    title={<Text onLongPress={() => handleCopy(track.song.title)}>{track.slug + '・' + track.song.title}</Text>} 
+                    right={props => (track.song.artists[0]?.name) && <IconButton {...props}icon="account" onPress={() => openLink(`https://animethemes.moe/artist/${track.song.artists[0].slug}`)} />} 
+                    title={<Text onLongPress={() => handleCopy(track.song.title + ' by ' + track.song.artists[0].name)}>{track.slug + '・' + track.song.title}</Text>} 
                     titleNumberOfLines={3}
+                    titleStyle={{fontFamily:'Inter_900Black',}}
                     subtitle={(track.song.artists[0]?.name) ? 'By ' + track.song.artists[0]?.name : undefined} 
                 />
-                <Card.Content style={{backgroundColor:colors.card}}>
+                {(track.animethemeentries[track.animethemeentries.length - 1]?.videos) ? <Card.Content style={{backgroundColor:colors.card}}>
                     {track.animethemeentries.map((entry, index) => 
                         <Card.Title
                             key={index}
@@ -53,7 +54,7 @@ const MusicViewer = ({ track, animeTitle, colors }:ViewerProps) => {
                     {(error) ? 
                     <Button onPress={() => {setError(false); setViewVid(true)}}>Retry</Button> : null
                     }
-                </Card.Content>
+                </Card.Content> : null}
             </Card>
         </View>
     );
