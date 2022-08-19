@@ -10,7 +10,7 @@
 </h1>
 
 <p align="center">
-  Another Anilist app for android - but with bonuses
+  Another Anilist app for android - but with extras
 </p>
 <a href="https://github.com/SmashinFries/Goraku/releases">
   <p align="center">
