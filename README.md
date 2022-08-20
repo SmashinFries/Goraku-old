@@ -1,3 +1,5 @@
+**UPDATE 08/09/2022**: I will be abroad from August to December so new content may or may not happen! I will still try to work on any current issues
+
 <h1 align="center">
   Goraku
   <p align="center">
@@ -8,7 +10,7 @@
 </h1>
 
 <p align="center">
-  Another Anilist app for android - but with bonuses
+  Another Anilist app for android - but with extras
 </p>
 <a href="https://github.com/SmashinFries/Goraku/releases">
   <p align="center">
