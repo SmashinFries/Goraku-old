@@ -182,6 +182,8 @@ export const CategoryList = (props:CategoryProps) => {
                 horizontal={true}
                 getItemLayout={(data, index) => ({length:250+65, offset:(250+65) * index, index})}
                 showsHorizontalScrollIndicator={false}
+                // enabling solves missing content but may lead to other issues
+                disableVirtualization={true}
                 contentContainerStyle={{paddingRight:10}}
                 onEndReached={() => (page.hasNextPage === true) ? handleMore() : null}
                 onEndReachedThreshold={0.75}
