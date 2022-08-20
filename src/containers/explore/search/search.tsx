@@ -12,9 +12,11 @@ import { getCharacterSearch } from "../../../Api/anilist/anilist";
 import { CharacterSearchTile, CharSearchType, StaffSearchType } from "../../../Api/types";
 import { CharacterTile } from "../../../Components/Tiles/CharacterTile";
 import { uniqueItems } from "../../../utils/filters/uniqueItems";
+import { useDynamicColumns } from "../../../utils";
 
 export const SearchScreen = ({ route, navigation }: SearchProps) => {
     const [data, setData] = useState<HomeType>();
+    const { listKey, numColumns } = useDynamicColumns(130);
     const [charData, setCharData] = useState<CharSearchType>();
     const [staffData, setStaffData] = useState<StaffSearchType>();
     const [loading, setLoading] = useState(false);
@@ -220,7 +222,8 @@ export const SearchScreen = ({ route, navigation }: SearchProps) => {
                     data={(data !== undefined) ? data.data.Page.media : []}
                     renderItem={renderItem}
                     keyExtractor={(item) => item.id.toString()}
-                    numColumns={3}
+                    numColumns={numColumns}
+                    key={listKey}
                     columnWrapperStyle={{ marginVertical: 5, justifyContent: 'space-evenly' }}
                     onEndReached={() => (data.data.Page.pageInfo.hasNextPage) ? fetchMore() : null}
                     onEndReachedThreshold={0.7}
@@ -235,7 +238,8 @@ export const SearchScreen = ({ route, navigation }: SearchProps) => {
                         data={(charData !== undefined) ? charData.data.Page.characters : []}
                         renderItem={charRenderItem}
                         keyExtractor={(item) => item.id.toString()}
-                        numColumns={3}
+                        numColumns={numColumns}
+                        key={listKey}
                         columnWrapperStyle={{ margin: 3, justifyContent: 'space-evenly' }}
                         ItemSeparatorComponent={() => <View style={{ height: 5 }} />}
                         onEndReached={() => (charData.data.Page.pageInfo.hasNextPage) ? fetchMoreChar() : null}
@@ -253,7 +257,8 @@ export const SearchScreen = ({ route, navigation }: SearchProps) => {
                         data={(staffData !== undefined) ? staffData.data.Page.staff : []}
                         renderItem={charRenderItem}
                         keyExtractor={(item) => item.id.toString()}
-                        numColumns={3}
+                        numColumns={numColumns}
+                        key={listKey}
                         columnWrapperStyle={{ margin: 3, justifyContent: 'space-evenly' }}
                         ItemSeparatorComponent={() => <View style={{ height: 5 }} />}
                         onEndReached={() => (staffData.data.Page.pageInfo.hasNextPage) ? fetchMoreChar() : null}
