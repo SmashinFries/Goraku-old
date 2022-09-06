@@ -78,13 +78,14 @@ export const ExploreScreen = ({navigation, route}:ExploreProps) => {
 
     type SeasonListType = {
         heading:string;
+        sortByAir?:boolean;
         nextSeason?:boolean;
     }
-    const SeasonList = ({heading, nextSeason=false}:SeasonListType) => {
+    const SeasonList = ({heading, sortByAir=false, nextSeason=false}:SeasonListType) => {
         return(
             <>
                 <Text style={{ fontSize: 36, fontFamily:'Inter_900Black', color:colors.text, alignSelf: 'flex-start', marginLeft: 10, }}>{heading}</Text>
-                <CategoryList titleType='userPreferred' type='ANIME' format={undefined} sort={'POPULARITY_DESC'} season={getSeason(nextSeason)} year={getYear()} />
+                <CategoryList titleType='userPreferred' sortByAir={sortByAir} type='ANIME' format={undefined} sort={'POPULARITY_DESC'} season={getSeason(nextSeason)} year={getYear()} />
             </>
         );
     }
@@ -93,7 +94,7 @@ export const ExploreScreen = ({navigation, route}:ExploreProps) => {
         return(
             <>
                 <GeneralList heading="Trending" TYPE={TYPE} format={format} noFormat={noFormat} sort='TRENDING_DESC' />
-                <SeasonList heading='This Season' />
+                <SeasonList heading='This Season' sortByAir />
                 <SeasonList heading='Next Season' nextSeason />
                 <GeneralList heading="Popular" TYPE={TYPE} format={format} noFormat={noFormat} sort='POPULARITY_DESC' />
                 <GeneralList heading="Top Rated" TYPE={TYPE} format={format} noFormat={noFormat} sort='SCORE_DESC' />

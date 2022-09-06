@@ -20,7 +20,6 @@ const MetaDataItem = ({ header, text, textColor, titleColor }:MetaDataTileProps)
 }
 
 const getOrigin = (countryCode:MediaCountries) => {
-    console.log(countryCode);
     if (countryCode === 'JP') return('🇯🇵');
     if (countryCode === 'KR') return('🇰🇷');
     if (countryCode === 'CN') return('🇨🇳');

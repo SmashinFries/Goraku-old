@@ -10,7 +10,8 @@ import { handleShare } from './share';
 import { handleLink } from './openLink';
 import { getTime, getDate, checkBD, range } from './time/getTime';
 import { _openBrowserUrl, _openAuthBrowser } from './browser/browserHandles';
+import { useDynamicColumns } from './compatibility';
 
 export { dataTitleFilter, getDate, getColor, getScoreColor, rgbConvert, getYear, 
     getSeason, useKeyboard, getTime, handleCopy, handleLink, saveImage, shareImage, 
-    getMalScoreColor, handleShare, _openBrowserUrl, _openAuthBrowser, checkBD, range };
+    getMalScoreColor, handleShare, _openBrowserUrl, _openAuthBrowser, checkBD, range, useDynamicColumns };

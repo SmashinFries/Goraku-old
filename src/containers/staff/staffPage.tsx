@@ -41,7 +41,6 @@ export const StaffInfo = ({ navigation, route }:StaffInfoProps) => {
 
     const toggleLike = async() => {
         const status = await toggleFav(id, 'STAFF');
-        console.log(status);
         setIsLiked(!isLiked);
     }
 
