@@ -28,7 +28,7 @@
   <h2>Features</h2>
   <p>Anilist・MAL Data・Music・Fan Art</p>
   <p>Want to know <b>everything</b> this app can do?</p>
-  <a href="https://github.com/SmashinFries/Goraku/blob/master/FEATURES.md">Read here</a>
+  <a href="https://github.com/SmashinFries/Goraku/wiki/Features">Read here</a>
 </div>
 
 <div align="center">
