@@ -10,6 +10,7 @@ import { AvailableThemes } from "../../Themes/themes";
 import { ThemeColors } from "../../Components/types";
 import { getImgType, getSaveImgType, storeSaveImgType, useDevArtEnabled } from "../../Storage/generalSettings";
 import { ADULT_ALLOW } from "../../constants";
+import { setButtonStyleAsync } from "expo-navigation-bar";
 
 const Stack = createNativeStackNavigator();
 
@@ -63,6 +64,7 @@ const Themes = ({navigation, route}:ThemesScreenProps) => {
     const [selectedColor, setSelectedColor] = useState<string>(theme);
 
     useEffect(() => {
+        setButtonStyleAsync(theme === 'Light' ? 'dark' : 'light');
         storeTheme(theme);
     },[theme]);
 
