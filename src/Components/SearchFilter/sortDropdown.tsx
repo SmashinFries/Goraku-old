@@ -13,7 +13,7 @@ type DropDownProps = {
 }
 export const SortDropDown = ({ data, onSelect, defaultText = 'Any', header, textColor, buttonColor }: DropDownProps) => {
     return (
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 10, }}>
             <Text style={{ fontSize: 16, textAlign: 'center', color:textColor }}>{`${header}:`}</Text>
             <SelectDropdown
                 data={data}

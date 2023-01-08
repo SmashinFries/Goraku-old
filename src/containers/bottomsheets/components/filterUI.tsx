@@ -144,7 +144,7 @@ export const FilterUI = ({handleSearch, searchParams, colors, dark}:Props) => {
         </View>);
 
     return(
-        <View style={{ flex: 1, backgroundColor:(dark) ? colors.background : (dark) ? colors.background : colors.card }}>
+        <View style={{ flex: 1, paddingHorizontal:20, backgroundColor:(dark) ? colors.background : (dark) ? colors.background : colors.card }}>
             <View style={{height:10}} />
             <SearchBar searchParams={searchParams} colors={colors} dark={dark} searchPress={() => handleSearch()} />
             <Pressable onPress={() => handleSearch()} android_ripple={{color:colors.primary}} style={{borderWidth:1, borderRadius:12, borderColor:colors.primary, justifyContent:'center', marginTop:10, width:'85%', alignSelf:'center', height:35}}>
