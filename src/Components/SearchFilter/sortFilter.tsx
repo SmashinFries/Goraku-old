@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Dispatch, SetStateAction } from "react";
-import { View } from "react-native";
+import { useWindowDimensions, View } from "react-native";
 import { FilterRef } from "../../containers/types";
 import { filterSet } from "../../utils/filters/filterChange";
 import { ThemeColors } from "../types";
@@ -38,6 +38,7 @@ interface SortFilterParams {
     setType: any;
 }
 const SortFilterUI = ({ searchParams, colors, dark, isAuth, setType }:SortFilterParams) => {
+    const {width, height} = useWindowDimensions();
     const [checkBoxState, setCheckBoxState] = useState({
         hideList: (searchParams.onList !== undefined) ? (searchParams.onList === false) ? true : false : false,
         onlyShowList: (searchParams.onList !== undefined) ? (searchParams.onList === true) ? true : false : false,
@@ -230,6 +231,7 @@ const SortFilterUI = ({ searchParams, colors, dark, isAuth, setType }:SortFilter
                     markerColor={colors.border}
                     onValueChange={(res) => { setSliderState({...sliderState, score: res}) }}
                     textColor={colors.text}
+                    width={width}
                 />
                 <SliderFilter
                     header='Year Range'
@@ -239,6 +241,7 @@ const SortFilterUI = ({ searchParams, colors, dark, isAuth, setType }:SortFilter
                     markerColor={colors.border}
                     onValueChange={(res) => setSliderState({...sliderState, years: res}) }
                     textColor={colors.text}
+                    width={width}
                 />
                 {(dropDownState.type === 'ANIME') ? 
                 <SliderFilter
@@ -249,6 +252,7 @@ const SortFilterUI = ({ searchParams, colors, dark, isAuth, setType }:SortFilter
                     markerColor={colors.border}
                     onValueChange={(res) => setSliderState({...sliderState, episodes: res})}
                     textColor={colors.text}
+                    width={width}
                 /> : 
                 <SliderFilter
                     header={'Volumes'}
@@ -258,6 +262,7 @@ const SortFilterUI = ({ searchParams, colors, dark, isAuth, setType }:SortFilter
                     markerColor={colors.border}
                     onValueChange={(res) => setSliderState({...sliderState, episodes: res})}
                     textColor={colors.text}
+                    width={width}
                 />
                 }
                 {(dropDownState.type === 'MANGA') ? 
@@ -269,6 +274,7 @@ const SortFilterUI = ({ searchParams, colors, dark, isAuth, setType }:SortFilter
                         markerColor={colors.border}
                         onValueChange={(res) => setSliderState({...sliderState, chapters: res})}
                         textColor={colors.text}
+                        width={width}
                     />
                 : null}
                 </View>}
