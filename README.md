@@ -1,4 +1,4 @@
-**UPDATE 08/09/2022**: I will be abroad from August to December so new content may or may not happen! I will still try to work on any current issues
+**UPDATE 01/08/2023**: Will be moving Goraku to a new repo soon due to another large rework of the app.
 
 <h1 align="center">
   Goraku
