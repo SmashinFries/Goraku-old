@@ -116,11 +116,7 @@ export const ShareMediaInfo = ({ screenWidth, data, shareRef, colors }: Props) =
     }
 
     return (
-<<<<<<< HEAD
         <View ref={shareRef} style={{position:'absolute', display:'none', right:screenWidth+size, height:size, width:size, backgroundColor:'#FFFFFF'}}>
-=======
-        <View ref={shareRef} style={{position:'absolute', right:-screenWidth-size, height:size, width:size, backgroundColor:'#FFFFFF'}}>
->>>>>>> 0c9012c66097ecdd51e17ef422f672d34bc9de29
             <View style={{flex:1, height:size, width:size}}>
                 <BackgroundView />
                 <TitleView />
