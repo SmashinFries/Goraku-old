@@ -13,7 +13,7 @@ type Props = {
     navigation: OverviewNav;
 }
 const RecommendationList = ({data, colors, navigation}:Props) => {
-    if (data?.anilist.recommendations.edges.length <= 0) return null;
+    if (data?.anilist.recommendations.edges.length < 1) return null;
     return(
         <View>
             <Text style={{ marginLeft: 10, marginTop: 20, fontSize: 28, fontFamily:'Inter_900Black', color: colors.text }}>Recommendations</Text>
