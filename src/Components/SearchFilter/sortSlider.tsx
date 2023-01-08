@@ -11,8 +11,9 @@ type SliderProps = {
     markerColor: string;
     onValueChange: (value: number[]) => void;
     textColor: string;
+    width: number;
 }
-export const SliderFilter = ({header, values, range, activeColor, markerColor, textColor, onValueChange }:SliderProps) => {
+export const SliderFilter = ({header, values, range, width, activeColor, markerColor, textColor, onValueChange }:SliderProps) => {
     const animValue = useRef(new Animated.Value(0)).current;
     const scaleButton = (scale:number) => {
         Animated.spring(animValue, {
@@ -66,6 +67,7 @@ export const SliderFilter = ({header, values, range, activeColor, markerColor, t
                 enableLabel={true}
                 snapped={false}
                 isMarkersSeparated={true}
+                sliderLength={width - ((width/100)*15)}
             />
         </View>
     );
