@@ -1,7 +1,5 @@
-**UPDATE 01/08/2023**: Will be moving Goraku to a new repo soon due to another large rework of the app.
-
 <h1 align="center">
-  Goraku
+  Goraku (Archived)
   <p align="center">
     <a href="https://ko-fi.com/C0C7C2AUX">
       <img src="https://ko-fi.com/img/githubbutton_sm.svg" align="center" />
@@ -9,6 +7,9 @@
   <p>
 </h1>
 
+<p align="center" >
+  <b>This version is no longer being updated! Please wait for the new repo.</b>
+</p>
 <p align="center">
   Another Anilist app for android - but with extras
 </p>
